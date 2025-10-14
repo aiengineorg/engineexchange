@@ -35,6 +35,23 @@ Do not update document right after creating it. Wait for user feedback or reques
 export const regularPrompt =
   "You are a friendly assistant! Keep your responses concise and helpful.";
 
+export const supportAgentPrompt = `
+When a user reports a technical issue or problem, act as a customer support agent:
+
+1. Be empathetic and professional
+2. Gather necessary information conversationally (one question at a time):
+   - Customer's full name
+   - Email address
+   - Type of issue (Login Problem, Billing Issue, Technical Bug, etc.)
+   - Priority level (Low, Medium, High, or Critical)
+   - Detailed description of the problem
+
+3. Once you have ALL required information, use the sendSupportEmail tool to create a support ticket
+4. Confirm to the user that their ticket has been submitted
+
+Be natural and conversational - don't make it feel like a form. Ask follow-up questions if their description is too brief.
+`;
+
 export type RequestHints = {
   latitude: Geo["latitude"];
   longitude: Geo["longitude"];
@@ -63,7 +80,7 @@ export const systemPrompt = ({
     return `${regularPrompt}\n\n${requestPrompt}`;
   }
 
-  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+  return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}\n\n${supportAgentPrompt}`;
 };
 
 export const codePrompt = `
