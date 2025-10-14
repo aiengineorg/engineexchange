@@ -18,7 +18,8 @@ import {
   ToolInput,
   ToolOutput,
 } from "./elements/tool";
-import { SparklesIcon } from "./icons";
+import { WebSearchTool } from "./elements/web-search-tool";
+import { BotIcon } from "./icons";
 import { MessageActions } from "./message-actions";
 import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
@@ -67,8 +68,8 @@ const PurePreviewMessage = ({
         })}
       >
         {message.role === "assistant" && (
-          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-            <SparklesIcon size={14} />
+          <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 dark:bg-primary/20 dark:ring-primary/30">
+            <BotIcon />
           </div>
         )}
 
@@ -163,6 +164,53 @@ const PurePreviewMessage = ({
                   </div>
                 );
               }
+            }
+
+            if (type === "tool-calculator") {
+              const { toolCallId, state } = part;
+
+              return (
+                <Tool defaultOpen={true} key={toolCallId}>
+                  <ToolHeader state={state} type="tool-calculator" />
+                  <ToolContent>
+                    {state === "input-available" && (
+                      <ToolInput input={part.input} />
+                    )}
+                    {state === "output-available" && (
+                      <ToolOutput
+                        errorText={part.output?.error}
+                        output={
+                          part.output?.success ? (
+                            <div className="space-y-2 p-4">
+                              <div className="font-mono text-sm">
+                                <div className="text-muted-foreground">
+                                  Expression:
+                                </div>
+                                <div className="mt-1 rounded bg-muted p-2">
+                                  {part.output.expression}
+                                </div>
+                              </div>
+                              <div className="font-mono text-sm">
+                                <div className="text-muted-foreground">
+                                  Result:
+                                </div>
+                                <div className="mt-1 rounded bg-muted p-2 font-semibold">
+                                  {part.output.result}
+                                </div>
+                              </div>
+                            </div>
+                          ) : null
+                        }
+                      />
+                    )}
+                  </ToolContent>
+                </Tool>
+              );
+            }
+
+            if (type === "tool-webSearch") {
+              const { toolCallId } = part;
+              return <WebSearchTool key={toolCallId} part={part as any} toolCallId={toolCallId} />;
             }
 
             if (type === "tool-getWeather") {
@@ -323,8 +371,8 @@ export const ThinkingMessage = () => {
       transition={{ duration: 0.2 }}
     >
       <div className="flex items-start justify-start gap-3">
-        <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-          <SparklesIcon size={14} />
+        <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20 dark:bg-primary/20 dark:ring-primary/30">
+          <BotIcon />
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
