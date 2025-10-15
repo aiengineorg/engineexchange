@@ -18,8 +18,8 @@ POSTGRES_URL=your_postgres_connection_string
 # Auth Secret
 AUTH_SECRET=your_auth_secret_here
 
-# Optional: Redis for resumable streams
-# REDIS_URL=your_redis_url_here
+# Redis for resumable streams (recommended for production)
+REDIS_URL=redis://localhost:6379
 ```
 
 ## For Production (Vercel)
