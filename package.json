@@ -15,6 +15,8 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
+    "get-user-id": "npx tsx scripts/get-user-id.ts",
+    "ingest": "npx tsx scripts/ingest-resources.ts",
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
   },
   "dependencies": {

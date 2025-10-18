@@ -20,6 +20,7 @@ import { myProvider } from "@/lib/ai/providers";
 import { calculator } from "@/lib/ai/tools/calculator";
 import { createDocument } from "@/lib/ai/tools/create-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
+import { knowledgeBaseSearch } from "@/lib/ai/tools/knowledge-base-search";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
 import { sendSupportEmail } from "@/lib/ai/tools/send-support-email";
 import { updateDocument } from "@/lib/ai/tools/update-document";
@@ -161,6 +162,7 @@ export async function POST(request: Request) {
             selectedChatModel === "chat-model-reasoning"
               ? {}
               : {
+                  knowledgeBaseSearch,
                   calculator,
                   webSearch,
                   getWeather,

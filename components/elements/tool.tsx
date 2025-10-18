@@ -34,6 +34,21 @@ export type ToolHeaderProps = {
   className?: string;
 };
 
+const getToolLabel = (type: string): string => {
+  const toolLabels: Record<string, string> = {
+    "tool-knowledgeBaseSearch": "Knowledge Base Search",
+    "tool-webSearch": "Web Search",
+    "tool-calculator": "Calculator",
+    "tool-getWeather": "Get Weather",
+    "tool-createDocument": "Create Document",
+    "tool-updateDocument": "Update Document",
+    "tool-requestSuggestions": "Request Suggestions",
+    "tool-sendSupportEmail": "Send Support Email",
+  };
+  
+  return toolLabels[type] || type;
+};
+
 const getStatusBadge = (status: ToolUIPart["state"]) => {
   const labels = {
     "input-streaming": "Pending",
@@ -75,7 +90,7 @@ export const ToolHeader = ({
   >
     <div className="flex min-w-0 flex-1 items-center gap-2">
       <WrenchIcon className="size-4 shrink-0 text-muted-foreground" />
-      <span className="truncate font-medium text-sm">{type}</span>
+      <span className="truncate font-medium text-sm">{getToolLabel(type)}</span>
     </div>
     <div className="flex shrink-0 items-center gap-2">
       {getStatusBadge(state)}

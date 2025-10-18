@@ -18,6 +18,7 @@ import {
   ToolInput,
   ToolOutput,
 } from "./elements/tool";
+import { KnowledgeBaseTool } from "./elements/knowledge-base-tool";
 import { WebSearchTool } from "./elements/web-search-tool";
 import { BotIcon } from "./icons";
 import { MessageActions } from "./message-actions";
@@ -206,6 +207,11 @@ const PurePreviewMessage = ({
                   </ToolContent>
                 </Tool>
               );
+            }
+
+            if (type === "tool-knowledgeBaseSearch") {
+              const { toolCallId } = part;
+              return <KnowledgeBaseTool key={toolCallId} part={part as any} toolCallId={toolCallId} />;
             }
 
             if (type === "tool-webSearch") {
