@@ -35,7 +35,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        Welcome to AI Engine Bot
+        Your Hackathon Assistant
       </motion.div>
       
       <motion.div
@@ -45,10 +45,10 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.6 }}
       >
-        🚀 Your intelligent assistant for the AI Engine Warsaw Edition Hackathon
+        Ask me anything about the AI Engine Warsaw Edition event. I have instant access to all hackathon information!
       </motion.div>
 
-      {/* Features Card */}
+      {/* Knowledge Base Features */}
       <motion.div
         animate={{ opacity: 1, y: 0 }}
         className="mt-6 rounded-xl bg-card p-6 shadow-md"
@@ -57,39 +57,50 @@ export const Greeting = () => {
         transition={{ delay: 0.7 }}
       >
         <div className="mb-4 font-space text-base font-bold uppercase tracking-wide text-primary">
-          🔧 Powered by Advanced Tools
+          📚 What I Know About
         </div>
         <div className="space-y-2 text-sm text-card-foreground md:text-base">
           <div className="flex items-start gap-2">
-            <span className="text-accent">📚</span>
-            <span><span className="font-semibold">Knowledge Base Search</span> - Instant access to hackathon wiki</span>
+            <span className="text-accent">👥</span>
+            <span><span className="font-semibold">Mentors & Organizers</span> - Meet the team guiding your journey</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-accent">🔍</span>
-            <span><span className="font-semibold">Web Search</span> - Real-time information from the web</span>
+            <span className="text-accent">🎯</span>
+            <span><span className="font-semibold">Themes & Challenges</span> - AI for Science, Agentic Commerce & more</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-accent">🧮</span>
-            <span><span className="font-semibold">Calculator</span> - Complex computations on demand</span>
+            <span className="text-accent">🏆</span>
+            <span><span className="font-semibold">Prizes & Judging</span> - What you can win and how projects are evaluated</span>
           </div>
           <div className="flex items-start gap-2">
-            <span className="text-accent">🌤️</span>
-            <span><span className="font-semibold">Weather API</span> - Live weather data for Warsaw</span>
+            <span className="text-accent">📅</span>
+            <span><span className="font-semibold">Schedule & Logistics</span> - Timing, venue details, and event flow</span>
+          </div>
+          <div className="flex items-start gap-2">
+            <span className="text-accent">🤝</span>
+            <span><span className="font-semibold">Tech Partners</span> - Anthropic, Vercel, ElevenLabs, Deepnote & more</span>
           </div>
         </div>
       </motion.div>
 
-      {/* Call to Action */}
+      {/* Example Questions */}
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="mt-6 rounded-xl bg-accent/10 p-4 text-center"
+        className="mt-6 rounded-xl bg-accent/10 p-4"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.8 }}
       >
-        <p className="text-sm text-foreground md:text-base">
-          <span className="font-semibold">Try asking:</span> &quot;Who are the mentors?&quot; • &quot;What are the themes?&quot; • &quot;Tell me about judging criteria&quot;
+        <p className="mb-2 text-center font-semibold text-foreground text-sm md:text-base">
+          💡 Try asking me:
         </p>
+        <div className="space-y-1 text-center text-foreground text-xs md:text-sm">
+          <div>&quot;Who are the mentors and what are their backgrounds?&quot;</div>
+          <div>&quot;What are the hackathon themes and prize categories?&quot;</div>
+          <div>&quot;Tell me about the judging criteria&quot;</div>
+          <div>&quot;What&apos;s the event schedule?&quot;</div>
+          <div>&quot;Which tech partners are involved and what do they offer?&quot;</div>
+        </div>
       </motion.div>
     </div>
   );
