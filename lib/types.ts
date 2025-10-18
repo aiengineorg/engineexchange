@@ -4,6 +4,7 @@ import type { ArtifactKind } from "@/components/artifact";
 import type { calculator } from "./ai/tools/calculator";
 import type { createDocument } from "./ai/tools/create-document";
 import type { getWeather } from "./ai/tools/get-weather";
+import type { knowledgeBaseSearch } from "./ai/tools/knowledge-base-search";
 import type { requestSuggestions } from "./ai/tools/request-suggestions";
 import type { updateDocument } from "./ai/tools/update-document";
 import type { webSearch } from "./ai/tools/web-search";
@@ -19,6 +20,7 @@ export const messageMetadataSchema = z.object({
 export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
 
 type calculatorTool = InferUITool<typeof calculator>;
+type knowledgeBaseSearchTool = InferUITool<typeof knowledgeBaseSearch>;
 type webSearchTool = InferUITool<typeof webSearch>;
 type weatherTool = InferUITool<typeof getWeather>;
 type createDocumentTool = InferUITool<ReturnType<typeof createDocument>>;
@@ -29,6 +31,7 @@ type requestSuggestionsTool = InferUITool<
 
 export type ChatTools = {
   calculator: calculatorTool;
+  knowledgeBaseSearch: knowledgeBaseSearchTool;
   webSearch: webSearchTool;
   getWeather: weatherTool;
   createDocument: createDocumentTool;
