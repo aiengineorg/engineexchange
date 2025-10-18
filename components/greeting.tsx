@@ -35,7 +35,7 @@ export const Greeting = () => {
         initial={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.5 }}
       >
-        <div className="mb-4 font-space text-base font-bold uppercase tracking-wide text-primary">
+        <div className="mb-4 font-space text-base font-bold uppercase tracking-wide text-accent">
           📚 What I Know About
         </div>
         <div className="space-y-2 text-sm text-card-foreground md:text-base">
