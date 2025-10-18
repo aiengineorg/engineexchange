@@ -27,34 +27,13 @@ export const Greeting = () => {
         </div>
       </motion.div>
 
-      {/* Welcome Message */}
-      <motion.div
-        animate={{ opacity: 1, y: 0 }}
-        className="font-space text-2xl font-bold uppercase text-primary md:text-3xl"
-        exit={{ opacity: 0, y: 10 }}
-        initial={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.5 }}
-      >
-        Your Hackathon Assistant
-      </motion.div>
-      
-      <motion.div
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-3 text-lg text-muted-foreground md:text-xl"
-        exit={{ opacity: 0, y: 10 }}
-        initial={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.6 }}
-      >
-        Ask me anything about the AI Engine Warsaw Edition event. I have instant access to all hackathon information!
-      </motion.div>
-
       {/* Knowledge Base Features */}
       <motion.div
         animate={{ opacity: 1, y: 0 }}
-        className="mt-6 rounded-xl bg-card p-6 shadow-md"
+        className="rounded-xl bg-card p-6 shadow-md"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.5 }}
       >
         <div className="mb-4 font-space text-base font-bold uppercase tracking-wide text-primary">
           📚 What I Know About
@@ -89,17 +68,17 @@ export const Greeting = () => {
         className="mt-6 rounded-xl bg-accent/10 p-4"
         exit={{ opacity: 0, y: 10 }}
         initial={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.6 }}
       >
-        <p className="mb-2 text-center font-semibold text-foreground text-sm md:text-base">
-          💡 Try asking me:
+        <p className="mb-3 text-center font-semibold text-foreground text-sm md:text-base">
+          💡 Example Questions
         </p>
-        <div className="space-y-1 text-center text-foreground text-xs md:text-sm">
-          <div>&quot;Who are the mentors and what are their backgrounds?&quot;</div>
-          <div>&quot;What are the hackathon themes and prize categories?&quot;</div>
-          <div>&quot;Tell me about the judging criteria&quot;</div>
-          <div>&quot;What&apos;s the event schedule?&quot;</div>
-          <div>&quot;Which tech partners are involved and what do they offer?&quot;</div>
+        <div className="space-y-2 text-foreground text-xs md:text-sm">
+          <div className="rounded-lg bg-card/50 p-2 text-center">&quot;Tell me about the AI for Science theme and what kind of projects I can build&quot;</div>
+          <div className="rounded-lg bg-card/50 p-2 text-center">&quot;Who is Mikayel Harutyunyan and what&apos;s his expertise?&quot;</div>
+          <div className="rounded-lg bg-card/50 p-2 text-center">&quot;What are the judging criteria and how will projects be evaluated?&quot;</div>
+          <div className="rounded-lg bg-card/50 p-2 text-center">&quot;What resources and APIs do tech partners like Anthropic provide?&quot;</div>
+          <div className="rounded-lg bg-card/50 p-2 text-center">&quot;When does the hackathon start and what&apos;s the full schedule?&quot;</div>
         </div>
       </motion.div>
     </div>
