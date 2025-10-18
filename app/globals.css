@@ -1,3 +1,6 @@
+/* Font Imports - AI Engine Theme */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;700&display=swap");
+
 @import "tailwindcss";
 
 /* include utility classes in streamdown */
@@ -10,80 +13,112 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
-/* define design tokens (light mode) */
+/* AI ENGINE THEME - Light Mode */
 :root {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(240 10% 3.9%);
-  --card: hsl(0 0% 100%);
-  --card-foreground: hsl(240 10% 3.9%);
+  /* Core AI Engine Colors */
+  --background: hsl(0 0% 96%); /* Light gray background */
+  --foreground: hsl(255 79% 24%); /* Deep purple text */
+  
+  --card: hsl(0 0% 100%); /* White cards */
+  --card-foreground: hsl(255 79% 24%); /* Deep purple on cards */
+  
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(240 10% 3.9%);
-  --primary: hsl(240 5.9% 10%);
-  --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(240 4.8% 95.9%);
-  --secondary-foreground: hsl(240 5.9% 10%);
-  --muted: hsl(240 4.8% 95.9%);
-  --muted-foreground: hsl(240 3.8% 46.1%);
-  --accent: hsl(240 4.8% 95.9%);
-  --accent-foreground: hsl(240 5.9% 10%);
+  --popover-foreground: hsl(255 79% 24%);
+  
+  --primary: hsl(255 79% 24%); /* Deep purple */
+  --primary-foreground: hsl(85 88% 71%); /* Lime green on purple */
+  
+  --secondary: hsl(227 100% 30%); /* Royal blue */
+  --secondary-foreground: hsl(0 0% 100%); /* White on blue */
+  
+  --muted: hsl(0 0% 91%); /* Light gray muted */
+  --muted-foreground: hsl(255 79% 24%); /* Purple text */
+  
+  --accent: hsl(85 88% 71%); /* Lime green accent */
+  --accent-foreground: hsl(255 79% 24%); /* Purple on lime */
+  
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(240 5.9% 90%);
-  --input: hsl(240 5.9% 90%);
-  --ring: hsl(240 10% 3.9%);
-  --chart-1: hsl(12 76% 61%);
-  --chart-2: hsl(173 58% 39%);
-  --chart-3: hsl(197 37% 24%);
-  --chart-4: hsl(43 74% 66%);
-  --chart-5: hsl(27 87% 67%);
-  --sidebar-background: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  
+  --border: hsl(0 0% 88%); /* Light border */
+  --input: hsl(0 0% 100%); /* White input */
+  --ring: hsl(85 88% 71%); /* Lime focus ring */
+  
+  --chart-1: hsl(255 79% 24%);
+  --chart-2: hsl(85 88% 71%);
+  --chart-3: hsl(227 100% 30%);
+  --chart-4: hsl(349 94% 87%);
+  --chart-5: hsl(269 42% 69%);
+  
+  --sidebar-background: hsl(0 0% 100%);
+  --sidebar-foreground: hsl(255 79% 24%);
+  --sidebar-primary: hsl(255 79% 24%);
+  --sidebar-primary-foreground: hsl(85 88% 71%);
+  --sidebar-accent: hsl(85 88% 71%);
+  --sidebar-accent-foreground: hsl(255 79% 24%);
+  --sidebar-border: hsl(0 0% 88%);
+  --sidebar-ring: hsl(85 88% 71%);
+  
+  /* AI Engine Extended Colors */
+  --pink: hsl(349 94% 87%); /* Soft pink */
+  --lavender: hsl(269 42% 69%); /* Soft lavender */
+  --navy: hsl(228 100% 10%); /* Near black */
+  
   /* border radius unit */
-  --radius: 0.5rem;
-  --sidebar: hsl(0 0% 98%);
+  --radius: 0.75rem; /* 12px rounded corners */
+  --sidebar: hsl(0 0% 100%);
 }
 
-/* define design tokens (dark mode) - Dark Grey-Blue Theme */
+/* AI ENGINE THEME - Dark Mode */
 .dark {
-  --background: hsl(215 20% 10%);
-  --foreground: hsl(216 12% 92%);
-  --card: hsl(215 18% 14%);
-  --card-foreground: hsl(216 12% 92%);
-  --popover: hsl(215 18% 14%);
-  --popover-foreground: hsl(216 12% 92%);
-  --primary: hsl(215 40% 55%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(215 16% 20%);
-  --secondary-foreground: hsl(216 12% 92%);
-  --muted: hsl(215 16% 20%);
-  --muted-foreground: hsl(215 12% 60%);
-  --accent: hsl(215 40% 55%);
-  --accent-foreground: hsl(0 0% 100%);
+  --background: hsl(228 100% 10%); /* Near black navy */
+  --foreground: hsl(85 88% 71%); /* Lime green text */
+  
+  --card: hsl(255 79% 24%); /* Deep purple cards */
+  --card-foreground: hsl(85 88% 71%); /* Lime on purple */
+  
+  --popover: hsl(255 79% 24%);
+  --popover-foreground: hsl(85 88% 71%);
+  
+  --primary: hsl(255 79% 24%); /* Deep purple */
+  --primary-foreground: hsl(85 88% 71%); /* Lime on purple */
+  
+  --secondary: hsl(227 100% 30%); /* Royal blue */
+  --secondary-foreground: hsl(85 88% 71%); /* Lime on blue */
+  
+  --muted: hsl(228 80% 15%); /* Dark navy muted */
+  --muted-foreground: hsl(269 42% 69%); /* Lavender text */
+  
+  --accent: hsl(85 88% 71%); /* Lime green accent */
+  --accent-foreground: hsl(255 79% 24%); /* Purple on lime */
+  
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(215 15% 25%);
-  --input: hsl(215 15% 25%);
-  --ring: hsl(215 40% 60%);
-  --chart-1: hsl(215 40% 55%);
-  --chart-2: hsl(195 45% 50%);
-  --chart-3: hsl(210 35% 55%);
-  --chart-4: hsl(200 40% 50%);
-  --chart-5: hsl(220 35% 60%);
-  --sidebar-background: hsl(215 22% 12%);
-  --sidebar-foreground: hsl(216 12% 85%);
-  --sidebar-primary: hsl(215 40% 55%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(215 18% 18%);
-  --sidebar-accent-foreground: hsl(216 12% 85%);
-  --sidebar-border: hsl(215 15% 25%);
-  --sidebar-ring: hsl(215 40% 55%);
-  --sidebar: hsl(215 22% 12%);
+  
+  --border: hsl(255 40% 30%); /* Purple border */
+  --input: hsl(255 79% 24%); /* Purple input */
+  --ring: hsl(85 88% 71%); /* Lime focus ring */
+  
+  --chart-1: hsl(255 79% 24%);
+  --chart-2: hsl(85 88% 71%);
+  --chart-3: hsl(227 100% 30%);
+  --chart-4: hsl(349 94% 87%);
+  --chart-5: hsl(269 42% 69%);
+  
+  --sidebar-background: hsl(228 100% 10%);
+  --sidebar-foreground: hsl(85 88% 71%);
+  --sidebar-primary: hsl(255 79% 24%);
+  --sidebar-primary-foreground: hsl(85 88% 71%);
+  --sidebar-accent: hsl(255 79% 24%);
+  --sidebar-accent-foreground: hsl(85 88% 71%);
+  --sidebar-border: hsl(255 40% 30%);
+  --sidebar-ring: hsl(85 88% 71%);
+  --sidebar: hsl(228 100% 10%);
+  
+  /* AI Engine Extended Colors */
+  --pink: hsl(349 94% 87%);
+  --lavender: hsl(269 42% 69%);
+  --navy: hsl(228 100% 10%);
 }
 
 /* define theme */
@@ -198,8 +233,14 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     overflow-x: hidden;
     position: relative;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold uppercase;
+    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   html {
