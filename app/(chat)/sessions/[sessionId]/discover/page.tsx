@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CardStack } from "@/components/matching/card-stack";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,9 @@ interface Profile {
 export default function DiscoverPage({
   params,
 }: {
-  params: { sessionId: string };
+  params: Promise<{ sessionId: string }>;
 }) {
+  const { sessionId } = use(params);
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ export default function DiscoverPage({
 
     try {
       const url = new URL("/api/feed/discover", window.location.origin);
-      url.searchParams.set("sessionId", params.sessionId);
+      url.searchParams.set("sessionId", sessionId);
       if (customQuery) {
         url.searchParams.set("query", customQuery);
       }
@@ -57,7 +58,7 @@ export default function DiscoverPage({
 
   useEffect(() => {
     loadProfiles();
-  }, [params.sessionId]);
+  }, [sessionId]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
     try {
@@ -66,7 +67,7 @@ export default function DiscoverPage({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           targetUserId: profileId,
-          sessionId: params.sessionId,
+          sessionId,
           decision,
         }),
       });
@@ -81,7 +82,7 @@ export default function DiscoverPage({
       // Show match modal if matched
       if (result.matched) {
         alert(`It's a Match! 🎉`); // TODO: Replace with proper match modal
-        router.push(`/sessions/${params.sessionId}/matches`);
+        router.push(`/sessions/${sessionId}/matches`);
       }
     } catch (err) {
       console.error("Swipe error:", err);
@@ -154,7 +155,7 @@ export default function DiscoverPage({
         {/* Card Stack */}
         <CardStack
           profiles={profiles}
-          sessionId={params.sessionId}
+          sessionId={sessionId}
           onSwipe={handleSwipe}
         />
       </div>

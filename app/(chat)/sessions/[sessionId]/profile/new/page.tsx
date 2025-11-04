@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 export default function NewProfilePage({
   params,
 }: {
-  params: { sessionId: string };
+  params: Promise<{ sessionId: string }>;
 }) {
+  const { sessionId } = use(params);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,7 +35,7 @@ export default function NewProfilePage({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId: params.sessionId,
+          sessionId,
           displayName: formData.displayName,
           age: Number.parseInt(formData.age),
           bio: formData.bio || null,
@@ -50,7 +51,7 @@ export default function NewProfilePage({
       }
 
       // Redirect to discover feed
-      router.push(`/sessions/${params.sessionId}/discover`);
+      router.push(`/sessions/${sessionId}/discover`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
