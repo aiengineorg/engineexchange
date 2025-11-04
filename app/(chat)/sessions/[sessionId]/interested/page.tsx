@@ -1,0 +1,108 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { CardStack } from "@/components/matching/card-stack";
+import { Loader2 } from "lucide-react";
+
+interface Profile {
+  id: string;
+  displayName: string;
+  age: number;
+  bio: string | null;
+  whatIOffer: string;
+  whatImLookingFor: string;
+}
+
+export default function InterestedPage({
+  params,
+}: {
+  params: { sessionId: string };
+}) {
+  const router = useRouter();
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadProfiles = async () => {
+      try {
+        const url = new URL("/api/feed/interested", window.location.origin);
+        url.searchParams.set("sessionId", params.sessionId);
+
+        const response = await fetch(url.toString());
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to load profiles");
+        }
+
+        const data = await response.json();
+        setProfiles(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProfiles();
+  }, [params.sessionId]);
+
+  const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
+    try {
+      const response = await fetch("/api/swipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUserId: profileId,
+          sessionId: params.sessionId,
+          decision,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to swipe");
+      }
+
+      const result = await response.json();
+
+      if (result.matched) {
+        alert(`It's a Match! 🎉`);
+        router.push(`/sessions/${params.sessionId}/matches`);
+      }
+    } catch (err) {
+      console.error("Swipe error:", err);
+      throw err;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-destructive">{error}</div>;
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-2xl space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">Interested in You</h1>
+          <p className="text-muted-foreground">People who swiped YES on you</p>
+        </div>
+
+        <CardStack
+          profiles={profiles}
+          sessionId={params.sessionId}
+          onSwipe={handleSwipe}
+        />
+      </div>
+    </div>
+  );
+}
