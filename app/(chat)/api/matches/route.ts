@@ -37,7 +37,16 @@ export async function GET(request: Request) {
     // Get all matches
     const matches = await getMatchesByProfile(myProfile.id);
 
-    return NextResponse.json(matches);
+    // Remove embeddings from otherProfile in each match (not JSON serializable)
+    const cleanMatches = matches.map((m) => {
+      const { whatIOfferEmbedding, whatImLookingForEmbedding, ...otherProfile } = m.otherProfile;
+      return {
+        ...m,
+        otherProfile,
+      };
+    });
+
+    return NextResponse.json(cleanMatches);
   } catch (error) {
     console.error("Failed to get matches:", error);
     return NextResponse.json(

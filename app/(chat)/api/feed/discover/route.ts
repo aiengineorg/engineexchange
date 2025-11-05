@@ -25,6 +25,8 @@ export async function GET(request: Request) {
   }
 
   try {
+    console.log("🔍 Discover feed request:", { sessionId, customQuery, searchField });
+    
     // Get current user's profile
     const myProfile = await getProfileByUserAndSession({
       userId: session.user.id,
@@ -32,11 +34,14 @@ export async function GET(request: Request) {
     });
 
     if (!myProfile) {
+      console.error("❌ Profile not found for user:", session.user.id);
       return NextResponse.json(
         { error: "Profile not found. Create a profile first." },
         { status: 404 }
       );
     }
+    
+    console.log("✅ Found user profile:", myProfile.id);
 
     // Get profiles user has already swiped on
     const swipes = await getSwipesByProfile(myProfile.id);
@@ -51,6 +56,7 @@ export async function GET(request: Request) {
 
     if (customQuery) {
       // Custom search mode: user typed their own query
+      console.log("🔍 Using custom query mode");
       targetField =
         searchField === "looking_for"
           ? "what_im_looking_for_embedding"
@@ -58,7 +64,48 @@ export async function GET(request: Request) {
       // Embedding will be generated inside searchProfilesByVector
     } else {
       // Default mode: match my "looking for" against their "offers"
-      embedding = myProfile.whatImLookingForEmbedding as number[];
+      console.log("📊 Using profile embedding for matching");
+      const lookingForEmbedding = myProfile.whatImLookingForEmbedding;
+      
+      console.log("🔍 Embedding check:", {
+        hasEmbedding: !!lookingForEmbedding,
+        isArray: Array.isArray(lookingForEmbedding),
+        isObject: typeof lookingForEmbedding === 'object',
+        length: lookingForEmbedding ? (Array.isArray(lookingForEmbedding) ? lookingForEmbedding.length : 'not array') : 'null',
+        constructor: lookingForEmbedding?.constructor?.name,
+      });
+      
+      // Convert pgvector to array if needed
+      let embeddingArray: number[] | null = null;
+      if (lookingForEmbedding) {
+        if (Array.isArray(lookingForEmbedding)) {
+          embeddingArray = lookingForEmbedding;
+        } else if (typeof lookingForEmbedding === 'string') {
+          // Sometimes pgvector returns as string "[1,2,3,...]"
+          try {
+            embeddingArray = JSON.parse(lookingForEmbedding);
+          } catch (e) {
+            console.error("Failed to parse embedding string:", e);
+          }
+        } else if (typeof lookingForEmbedding === 'object') {
+          // pgvector might return as object, try to convert
+          embeddingArray = Object.values(lookingForEmbedding);
+        }
+      }
+      
+      if (!embeddingArray || embeddingArray.length === 0) {
+        console.error("❌ Profile missing valid whatImLookingForEmbedding:", {
+          profileId: myProfile.id,
+          embeddingArray,
+        });
+        return NextResponse.json(
+          { error: "Profile embeddings not ready. Please try again in a moment." },
+          { status: 503 }
+        );
+      }
+      
+      console.log("✅ Successfully extracted embedding array:", embeddingArray.length);
+      embedding = embeddingArray;
       targetField = "what_i_offer_embedding";
     }
 
@@ -73,11 +120,18 @@ export async function GET(request: Request) {
       minSimilarity: 0.5,
     });
 
+    // searchProfilesByVector already returns clean ProfileSearchResult objects
+    // without embedding fields, so they're safe to serialize
     return NextResponse.json(profiles);
   } catch (error) {
     console.error("Failed to get discover feed:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    console.error("Error details:", errorMessage);
     return NextResponse.json(
-      { error: "Failed to get discover feed" },
+      { 
+        error: "Failed to get discover feed",
+        details: process.env.NODE_ENV === "development" ? errorMessage : undefined
+      },
       { status: 500 }
     );
   }

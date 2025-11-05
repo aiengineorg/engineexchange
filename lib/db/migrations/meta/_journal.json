@@ -71,6 +71,13 @@
       "when": 1741000000000,
       "tag": "0009_refactor_to_dating_app",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1741100000000,
+      "tag": "0010_enable_pgvector",
+      "breakpoints": true
     }
   ]
 }

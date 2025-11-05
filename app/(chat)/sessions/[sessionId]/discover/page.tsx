@@ -44,7 +44,8 @@ export default function DiscoverPage({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to load profiles");
+        const errorMsg = data.details || data.error || "Failed to load profiles";
+        throw new Error(errorMsg);
       }
 
       const data = await response.json();
@@ -56,9 +57,32 @@ export default function DiscoverPage({
     }
   };
 
+  // Check if profile exists on mount
   useEffect(() => {
-    loadProfiles();
-  }, [sessionId]);
+    const checkProfile = async () => {
+      try {
+        const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
+        
+        if (response.status === 404) {
+          // Profile doesn't exist, redirect to profile creation
+          router.push(`/sessions/${sessionId}/profile/new`);
+          return;
+        }
+        
+        if (!response.ok) {
+          throw new Error("Failed to check profile");
+        }
+        
+        // Profile exists, load profiles
+        loadProfiles();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+        setLoading(false);
+      }
+    };
+    
+    checkProfile();
+  }, [sessionId, router]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
     try {
@@ -110,8 +134,11 @@ export default function DiscoverPage({
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="text-center">
-          <p className="text-destructive">{error}</p>
+        <div className="max-w-md text-center">
+          <p className="text-destructive mb-2">{error}</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            If you just created your profile, please wait a moment for embeddings to be generated.
+          </p>
           <Button onClick={() => loadProfiles()} className="mt-4">
             Try Again
           </Button>
@@ -152,12 +179,21 @@ export default function DiscoverPage({
           )}
         </div>
 
-        {/* Card Stack */}
-        <CardStack
-          profiles={profiles}
-          sessionId={sessionId}
-          onSwipe={handleSwipe}
-        />
+        {/* Empty State or Card Stack */}
+        {profiles.length === 0 && !loading ? (
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground mb-2">No profiles found</p>
+            <p className="text-sm text-muted-foreground">
+              Be the first to explore or wait for others to join this session!
+            </p>
+          </div>
+        ) : (
+          <CardStack
+            profiles={profiles}
+            sessionId={sessionId}
+            onSwipe={handleSwipe}
+          />
+        )}
       </div>
     </div>
   );

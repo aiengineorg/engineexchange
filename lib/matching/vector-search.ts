@@ -52,12 +52,22 @@ export async function searchProfilesByVector(
   // Generate embedding if custom query provided
   let queryEmbedding = providedEmbedding;
   if (customQuery && !providedEmbedding) {
+    console.log("🔍 Generating embedding for custom query:", customQuery.substring(0, 50) + "...");
     queryEmbedding = await generateEmbedding(customQuery);
   }
 
   if (!queryEmbedding) {
     throw new Error("Either embedding or customQuery must be provided");
   }
+
+  console.log("🎯 Performing vector search with:", {
+    sessionId,
+    excludeCount: excludeProfileIds.length,
+    embeddingLength: queryEmbedding.length,
+    targetField,
+    limit,
+    minSimilarity,
+  });
 
   // Convert embedding array to pgvector format
   const embeddingStr = `[${queryEmbedding.join(",")}]`;
@@ -72,7 +82,7 @@ export async function searchProfilesByVector(
       : sql``;
 
   // Vector similarity search query
-  const results = await db.execute<ProfileSearchResult>(sql`
+  const results = await db.execute(sql`
     SELECT
       p.id,
       p.user_id as "userId",
@@ -91,7 +101,30 @@ export async function searchProfilesByVector(
     LIMIT ${limit}
   `);
 
-  return results.rows;
+  console.log("🔍 Raw results type:", typeof results, Array.isArray(results));
+  
+  // drizzle-orm execute returns results directly as an array
+  const rows = (Array.isArray(results) ? results : []) as unknown[];
+  
+  console.log("✅ Vector search completed:", {
+    resultsFound: rows.length,
+    topProfile: rows[0] ? (rows[0] as Record<string, unknown>)?.displayName : 'none',
+  });
+
+  // Explicitly clean results to ensure no pgvector objects leak through
+  const cleanResults: ProfileSearchResult[] = rows.map((row: any) => ({
+    id: row.id,
+    userId: row.userId,
+    displayName: row.displayName,
+    age: row.age,
+    bio: row.bio,
+    images: row.images,
+    whatIOffer: row.whatIOffer,
+    whatImLookingFor: row.whatImLookingFor,
+    similarity: row.similarity,
+  }));
+
+  return cleanResults;
 }
 
 /**
@@ -114,7 +147,7 @@ export async function getInterestedProfiles(params: {
         )})`
       : sql``;
 
-  const results = await db.execute<ProfileSearchResult>(sql`
+  const results = await db.execute(sql`
     SELECT
       p.id,
       p.user_id as "userId",
@@ -135,5 +168,21 @@ export async function getInterestedProfiles(params: {
     LIMIT ${limit}
   `);
 
-  return results.rows;
+  // drizzle-orm execute returns results directly as an array
+  const rows = (Array.isArray(results) ? results : []) as unknown[];
+
+  // Explicitly clean results to ensure no pgvector objects leak through
+  const cleanResults: ProfileSearchResult[] = rows.map((row: any) => ({
+    id: row.id,
+    userId: row.userId,
+    displayName: row.displayName,
+    age: row.age,
+    bio: row.bio,
+    images: row.images,
+    whatIOffer: row.whatIOffer,
+    whatImLookingFor: row.whatImLookingFor,
+    similarity: row.similarity,
+  }));
+
+  return cleanResults;
 }

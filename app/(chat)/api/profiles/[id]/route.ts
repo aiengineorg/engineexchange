@@ -95,7 +95,10 @@ export async function PATCH(
       whatImLookingForEmbedding: lookingForEmbedding,
     });
 
-    return NextResponse.json(updatedProfile);
+    // Exclude embeddings from response (they're not JSON serializable and not needed by client)
+    const { whatIOfferEmbedding: _offer, whatImLookingForEmbedding: _looking, ...profileData } = updatedProfile;
+    
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error("Failed to update profile:", error);
     return NextResponse.json(

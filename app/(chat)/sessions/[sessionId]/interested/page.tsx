@@ -25,8 +25,22 @@ export default function InterestedPage({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadProfiles = async () => {
+    const checkProfileAndLoad = async () => {
       try {
+        // Check if profile exists first
+        const profileCheck = await fetch(`/api/profiles/me?sessionId=${params.sessionId}`);
+        
+        if (profileCheck.status === 404) {
+          // Profile doesn't exist, redirect to profile creation
+          router.push(`/sessions/${params.sessionId}/profile/new`);
+          return;
+        }
+        
+        if (!profileCheck.ok) {
+          throw new Error("Failed to check profile");
+        }
+
+        // Profile exists, load interested profiles
         const url = new URL("/api/feed/interested", window.location.origin);
         url.searchParams.set("sessionId", params.sessionId);
 
@@ -46,8 +60,8 @@ export default function InterestedPage({
       }
     };
 
-    loadProfiles();
-  }, [params.sessionId]);
+    checkProfileAndLoad();
+  }, [params.sessionId, router]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
     try {

@@ -172,6 +172,17 @@ export async function getProfileByUserAndSession({
       .where(and(eq(profiles.userId, userId), eq(profiles.sessionId, sessionId)))
       .limit(1);
 
+    if (profile) {
+      console.log("📖 Retrieved profile:", {
+        id: profile.id,
+        displayName: profile.displayName,
+        hasOfferEmbedding: !!profile.whatIOfferEmbedding,
+        hasLookingForEmbedding: !!profile.whatImLookingForEmbedding,
+        offerEmbeddingType: typeof profile.whatIOfferEmbedding,
+        lookingForEmbeddingType: typeof profile.whatImLookingForEmbedding,
+      });
+    }
+
     return profile || null;
   } catch (error) {
     console.error("Failed to get profile:", error);
@@ -207,7 +218,24 @@ export async function createProfile(data: {
   whatImLookingForEmbedding: number[];
 }): Promise<Profile> {
   try {
+    console.log("📝 Inserting profile into database with:", {
+      displayName: data.displayName,
+      whatIOffer: data.whatIOffer.substring(0, 50) + "...",
+      whatIOfferEmbeddingLength: data.whatIOfferEmbedding.length,
+      whatImLookingFor: data.whatImLookingFor.substring(0, 50) + "...",
+      whatImLookingForEmbeddingLength: data.whatImLookingForEmbedding.length,
+    });
+    
     const [profile] = await db.insert(profiles).values(data).returning();
+    
+    console.log("✅ Profile inserted successfully:", {
+      id: profile.id,
+      hasOfferEmbedding: !!profile.whatIOfferEmbedding,
+      hasLookingForEmbedding: !!profile.whatImLookingForEmbedding,
+      offerEmbeddingType: typeof profile.whatIOfferEmbedding,
+      lookingForEmbeddingType: typeof profile.whatImLookingForEmbedding,
+    });
+    
     return profile;
   } catch (error) {
     console.error("Failed to create profile:", error);

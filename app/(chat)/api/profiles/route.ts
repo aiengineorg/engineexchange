@@ -75,8 +75,15 @@ export async function POST(request: Request) {
       generateEmbedding(whatIOffer),
       generateEmbedding(whatImLookingFor),
     ]);
+    console.log("✅ Embeddings generated:", {
+      offerEmbeddingLength: offerEmbedding.length,
+      lookingForEmbeddingLength: lookingForEmbedding.length,
+      offerEmbeddingSample: offerEmbedding.slice(0, 3),
+      lookingForEmbeddingSample: lookingForEmbedding.slice(0, 3),
+    });
 
     // Create profile
+    console.log("Saving profile to database with embeddings...");
     const profile = await createProfile({
       userId: session.user.id,
       sessionId,
@@ -89,8 +96,12 @@ export async function POST(request: Request) {
       whatImLookingFor,
       whatImLookingForEmbedding: lookingForEmbedding,
     });
+    console.log("✅ Profile saved successfully with ID:", profile.id);
 
-    return NextResponse.json(profile);
+    // Exclude embeddings from response (they're not JSON serializable and not needed by client)
+    const { whatIOfferEmbedding: _offer, whatImLookingForEmbedding: _looking, ...profileData } = profile;
+    
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error("Failed to create profile:", error);
     return NextResponse.json(

@@ -33,7 +33,10 @@ export async function GET(request: Request) {
       );
     }
 
-    return NextResponse.json(profile);
+    // Exclude embeddings from response (they're not JSON serializable and not needed by client)
+    const { whatIOfferEmbedding, whatImLookingForEmbedding, ...profileData } = profile;
+    
+    return NextResponse.json(profileData);
   } catch (error) {
     console.error("Failed to get profile:", error);
     return NextResponse.json(

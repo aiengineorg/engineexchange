@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
@@ -27,12 +28,27 @@ export default function MatchesPage({
 }: {
   params: { sessionId: string };
 }) {
+  const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadMatches = async () => {
+    const checkProfileAndLoadMatches = async () => {
       try {
+        // Check if profile exists first
+        const profileCheck = await fetch(`/api/profiles/me?sessionId=${params.sessionId}`);
+        
+        if (profileCheck.status === 404) {
+          // Profile doesn't exist, redirect to profile creation
+          router.push(`/sessions/${params.sessionId}/profile/new`);
+          return;
+        }
+        
+        if (!profileCheck.ok) {
+          throw new Error("Failed to check profile");
+        }
+
+        // Profile exists, load matches
         const url = new URL("/api/matches", window.location.origin);
         url.searchParams.set("sessionId", params.sessionId);
 
@@ -48,8 +64,8 @@ export default function MatchesPage({
       }
     };
 
-    loadMatches();
-  }, [params.sessionId]);
+    checkProfileAndLoadMatches();
+  }, [params.sessionId, router]);
 
   if (loading) {
     return (
