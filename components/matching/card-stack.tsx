@@ -80,8 +80,7 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
             onSwipe={index === 0 ? handleSwipe : () => {}}
             style={{
               zIndex: 3 - index,
-              scale: 1 - index * 0.05,
-              y: index * 10,
+              transform: `scale(${1 - index * 0.05}) translateY(${index * 10}px)`,
             }}
           />
         ))}
