@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CardStack } from "@/components/matching/card-stack";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Loader2 } from "lucide-react";
 
 interface Profile {
@@ -104,18 +105,23 @@ export default function InterestedPage({
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Interested in You</h1>
-          <p className="text-muted-foreground">People who swiped YES on you</p>
-        </div>
+    <div className="flex min-h-screen flex-col p-4">
+      <div className="mb-4">
+        <SidebarTrigger />
+      </div>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="w-full max-w-2xl space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Interested in You</h1>
+            <p className="text-muted-foreground">People who swiped YES on you</p>
+          </div>
 
-        <CardStack
-          profiles={profiles}
-          sessionId={params.sessionId}
-          onSwipe={handleSwipe}
-        />
+          <CardStack
+            profiles={profiles}
+            sessionId={params.sessionId}
+            onSwipe={handleSwipe}
+          />
+        </div>
       </div>
     </div>
   );

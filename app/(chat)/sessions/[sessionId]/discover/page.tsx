@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CardStack } from "@/components/matching/card-stack";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Search, Loader2 } from "lucide-react";
 
 interface Profile {
@@ -148,12 +149,16 @@ export default function DiscoverPage({
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl space-y-6">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Discover</h1>
-          <p className="text-muted-foreground">AI-powered semantic matching</p>
-        </div>
+    <div className="flex min-h-screen flex-col p-4">
+      <div className="mb-4">
+        <SidebarTrigger />
+      </div>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="w-full max-w-2xl space-y-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Discover</h1>
+            <p className="text-muted-foreground">AI-powered semantic matching</p>
+          </div>
 
         {/* Custom Search */}
         <div className="flex gap-2">
@@ -194,6 +199,7 @@ export default function DiscoverPage({
             onSwipe={handleSwipe}
           />
         )}
+        </div>
       </div>
     </div>
   );

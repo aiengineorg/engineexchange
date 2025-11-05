@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SessionSidebar } from "@/components/session-sidebar";
 import { auth } from "../(auth)/auth";
 
 export const experimental_ppr = true;
@@ -14,6 +15,7 @@ export default async function Layout({
 
   return (
     <SidebarProvider defaultOpen={!isCollapsed}>
+      <SessionSidebar />
       <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
