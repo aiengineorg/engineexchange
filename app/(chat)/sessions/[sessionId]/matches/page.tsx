@@ -27,21 +27,29 @@ interface Match {
 export default function MatchesPage({
   params,
 }: {
-  params: { sessionId: string };
+  params: Promise<{ sessionId: string }>;
 }) {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Unwrap params
+  useEffect(() => {
+    params.then((p) => setSessionId(p.sessionId));
+  }, [params]);
 
   useEffect(() => {
+    if (!sessionId) return;
+    
     const checkProfileAndLoadMatches = async () => {
       try {
         // Check if profile exists first
-        const profileCheck = await fetch(`/api/profiles/me?sessionId=${params.sessionId}`);
+        const profileCheck = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
         
         if (profileCheck.status === 404) {
           // Profile doesn't exist, redirect to profile creation
-          router.push(`/sessions/${params.sessionId}/profile/new`);
+          router.push(`/sessions/${sessionId}/profile/new`);
           return;
         }
         
@@ -51,7 +59,7 @@ export default function MatchesPage({
 
         // Profile exists, load matches
         const url = new URL("/api/matches", window.location.origin);
-        url.searchParams.set("sessionId", params.sessionId);
+        url.searchParams.set("sessionId", sessionId);
 
         const response = await fetch(url.toString());
         if (response.ok) {
@@ -66,7 +74,7 @@ export default function MatchesPage({
     };
 
     checkProfileAndLoadMatches();
-  }, [params.sessionId, router]);
+  }, [sessionId, router]);
 
   if (loading) {
     return (
@@ -98,10 +106,10 @@ export default function MatchesPage({
       <h1 className="mb-6 text-3xl font-bold">Your Matches</h1>
 
       <div className="space-y-3">
-        {matches.map((m) => (
+        {sessionId && matches.map((m) => (
           <Link
             key={m.match.id}
-            href={`/sessions/${params.sessionId}/matches/${m.match.id}`}
+            href={`/sessions/${sessionId}/matches/${m.match.id}`}
           >
             <Card className="hover:bg-accent">
               <CardContent className="flex items-center justify-between p-4">

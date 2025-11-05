@@ -18,22 +18,30 @@ interface Profile {
 export default function InterestedPage({
   params,
 }: {
-  params: { sessionId: string };
+  params: Promise<{ sessionId: string }>;
 }) {
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
+  // Unwrap params
+  useEffect(() => {
+    params.then((p) => setSessionId(p.sessionId));
+  }, [params]);
 
   useEffect(() => {
+    if (!sessionId) return;
+    
     const checkProfileAndLoad = async () => {
       try {
         // Check if profile exists first
-        const profileCheck = await fetch(`/api/profiles/me?sessionId=${params.sessionId}`);
+        const profileCheck = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
         
         if (profileCheck.status === 404) {
           // Profile doesn't exist, redirect to profile creation
-          router.push(`/sessions/${params.sessionId}/profile/new`);
+          router.push(`/sessions/${sessionId}/profile/new`);
           return;
         }
         
@@ -43,7 +51,7 @@ export default function InterestedPage({
 
         // Profile exists, load interested profiles
         const url = new URL("/api/feed/interested", window.location.origin);
-        url.searchParams.set("sessionId", params.sessionId);
+        url.searchParams.set("sessionId", sessionId);
 
         const response = await fetch(url.toString());
 
@@ -62,16 +70,18 @@ export default function InterestedPage({
     };
 
     checkProfileAndLoad();
-  }, [params.sessionId, router]);
+  }, [sessionId, router]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
+    if (!sessionId) return;
+    
     try {
       const response = await fetch("/api/swipe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           targetUserId: profileId,
-          sessionId: params.sessionId,
+          sessionId: sessionId,
           decision,
         }),
       });
@@ -84,7 +94,7 @@ export default function InterestedPage({
 
       if (result.matched) {
         alert(`It's a Match! 🎉`);
-        router.push(`/sessions/${params.sessionId}/matches`);
+        router.push(`/sessions/${sessionId}/matches`);
       }
     } catch (err) {
       console.error("Swipe error:", err);
@@ -116,11 +126,13 @@ export default function InterestedPage({
             <p className="text-muted-foreground">People who swiped YES on you</p>
           </div>
 
-          <CardStack
-            profiles={profiles}
-            sessionId={params.sessionId}
-            onSwipe={handleSwipe}
-          />
+          {sessionId && (
+            <CardStack
+              profiles={profiles}
+              sessionId={sessionId}
+              onSwipe={handleSwipe}
+            />
+          )}
         </div>
       </div>
     </div>

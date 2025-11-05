@@ -15,7 +15,7 @@ const CreateMessageSchema = z.object({
 // GET /api/matches/[matchId]/messages - Get messages for a match
 export async function GET(
   request: Request,
-  { params }: { params: { matchId: string } }
+  { params }: { params: Promise<{ matchId: string }> }
 ) {
   const session = await auth();
 
@@ -24,7 +24,7 @@ export async function GET(
   }
 
   try {
-    const { matchId } = params;
+    const { matchId } = await params;
 
     // Verify match exists
     const match = await getMatchById(matchId);
@@ -61,7 +61,7 @@ export async function GET(
 // POST /api/matches/[matchId]/messages - Send a message
 export async function POST(
   request: Request,
-  { params }: { params: { matchId: string } }
+  { params }: { params: Promise<{ matchId: string }> }
 ) {
   const session = await auth();
 
@@ -70,7 +70,7 @@ export async function POST(
   }
 
   try {
-    const { matchId } = params;
+    const { matchId } = await params;
 
     // Verify match exists
     const match = await getMatchById(matchId);

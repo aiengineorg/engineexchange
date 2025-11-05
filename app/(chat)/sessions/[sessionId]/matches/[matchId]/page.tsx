@@ -15,18 +15,26 @@ interface Message {
 export default function ChatPage({
   params,
 }: {
-  params: { sessionId: string; matchId: string };
+  params: Promise<{ sessionId: string; matchId: string }>;
 }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [matchId, setMatchId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Unwrap params
+  useEffect(() => {
+    params.then((p) => setMatchId(p.matchId));
+  }, [params]);
+
   const loadMessages = async () => {
+    if (!matchId) return;
+    
     try {
       const response = await fetch(
-        `/api/matches/${params.matchId}/messages`
+        `/api/matches/${matchId}/messages`
       );
       if (response.ok) {
         const data = await response.json();
@@ -40,10 +48,12 @@ export default function ChatPage({
   };
 
   useEffect(() => {
+    if (!matchId) return;
+    
     loadMessages();
     const interval = setInterval(loadMessages, 3000);
     return () => clearInterval(interval);
-  }, [params.matchId]);
+  }, [matchId]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -51,12 +61,12 @@ export default function ChatPage({
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || sending) return;
+    if (!input.trim() || sending || !matchId) return;
 
     setSending(true);
     try {
       const response = await fetch(
-        `/api/matches/${params.matchId}/messages`,
+        `/api/matches/${matchId}/messages`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

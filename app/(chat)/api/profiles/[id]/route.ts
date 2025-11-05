@@ -16,7 +16,7 @@ const UpdateProfileSchema = z.object({
 // PATCH /api/profiles/[id] - Update a profile
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -25,7 +25,7 @@ export async function PATCH(
   }
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Verify profile exists and belongs to user
     const existingProfile = await getProfileById(id);
