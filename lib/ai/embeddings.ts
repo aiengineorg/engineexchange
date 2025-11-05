@@ -16,4 +16,3 @@ export const generateEmbedding = async (
   });
   return embedding;
 };
-

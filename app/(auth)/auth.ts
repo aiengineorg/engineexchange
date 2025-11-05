@@ -78,6 +78,3 @@ export const {
     },
   },
 });
-
-// Stub type for unused entitlements feature
-export type UserType = "free" | "pro" | "enterprise";

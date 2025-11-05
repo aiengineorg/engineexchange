@@ -30,5 +30,16 @@
     ".next/types/**/*.ts",
     "next.config.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "tests/**/*",
+    "lib/ai/tools/**/*",
+    "lib/db/actions/**/*",
+    "lib/db/queries/embeddings.ts",
+    "scripts/ingest-resources.ts",
+    "lib/types.ts",
+    "lib/ai/entitlements.ts",
+    "components/version-footer.tsx",
+    "components/suggested-actions.tsx"
+  ]
 }
