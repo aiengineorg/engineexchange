@@ -1,7 +1,8 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ export default function NewProfilePage({
 }) {
   const { sessionId } = use(params);
   const router = useRouter();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -22,6 +24,16 @@ export default function NewProfilePage({
     whatIOffer: "",
     whatImLookingFor: "",
   });
+
+  // Pre-fill display name with Discord username if available
+  useEffect(() => {
+    if (session?.user?.discordUsername && !formData.displayName) {
+      setFormData((prev) => ({
+        ...prev,
+        displayName: session.user.discordUsername || "",
+      }));
+    }
+  }, [session?.user?.discordUsername, formData.displayName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +90,11 @@ export default function NewProfilePage({
                 maxLength={50}
                 disabled={loading}
               />
+              {session?.user?.discordUsername && (
+                <p className="text-xs text-muted-foreground">
+                  Pre-filled from your Discord account ({session.user.discordUsername})
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
