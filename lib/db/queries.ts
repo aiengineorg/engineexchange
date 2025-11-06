@@ -33,19 +33,37 @@ export async function getUser(email: string): Promise<User[]> {
     return await db.select().from(user).where(eq(user.email, email));
   } catch (error) {
     console.error("Failed to get user by email:", error);
-    throw new Error("Failed to get user by email");
+    // Return empty array instead of throwing to allow sign-in to proceed
+    // This handles cases where the database might have temporary issues
+    return [];
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(email: string, password: string, discordId?: string | null) {
   // For OAuth users, password can be empty
   const hashedPassword = password ? generateHashedPassword(password) : null;
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db.insert(user).values({
+      email,
+      password: hashedPassword,
+      discordId: discordId || null,
+    });
   } catch (error) {
     console.error("Failed to create user:", error);
     throw new Error("Failed to create user");
+  }
+}
+
+export async function updateUserDiscordId(userId: string, discordId: string) {
+  try {
+    return await db
+      .update(user)
+      .set({ discordId })
+      .where(eq(user.id, userId));
+  } catch (error) {
+    console.error("Failed to update user Discord ID:", error);
+    throw new Error("Failed to update user Discord ID");
   }
 }
 
@@ -413,6 +431,7 @@ export async function getMatchesByProfile(profileId: string): Promise<
   Array<{
     match: Match;
     otherProfile: Profile;
+    otherUserDiscordId: string | null;
     lastMessage: MatchMessage | null;
   }>
 > {
@@ -424,7 +443,7 @@ export async function getMatchesByProfile(profileId: string): Promise<
       .where(or(eq(matches.user1Id, profileId), eq(matches.user2Id, profileId)))
       .orderBy(desc(matches.createdAt));
 
-    // For each match, get the other profile and last message
+    // For each match, get the other profile, user's Discord ID, and last message
     const results = await Promise.all(
       userMatches.map(async (match) => {
         const otherProfileId =
@@ -434,6 +453,13 @@ export async function getMatchesByProfile(profileId: string): Promise<
           .select()
           .from(profiles)
           .where(eq(profiles.id, otherProfileId))
+          .limit(1);
+
+        // Get the Discord ID of the other user
+        const [otherUser] = await db
+          .select({ discordId: user.discordId })
+          .from(user)
+          .where(eq(user.id, otherProfile.userId))
           .limit(1);
 
         const [lastMessage] = await db
@@ -446,6 +472,7 @@ export async function getMatchesByProfile(profileId: string): Promise<
         return {
           match,
           otherProfile,
+          otherUserDiscordId: otherUser?.discordId || null,
           lastMessage: lastMessage || null,
         };
       })

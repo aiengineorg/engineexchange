@@ -10,4 +10,5 @@ export const authConfig = {
     // while this file is also used in non-Node.js environments
   ],
   callbacks: {},
+  trustHost: true, // Required for NextAuth v5 in development
 } satisfies NextAuthConfig;

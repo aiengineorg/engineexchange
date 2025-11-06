@@ -4,7 +4,7 @@ import type { DefaultJWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import Discord from "next-auth/providers/discord";
 import { DUMMY_PASSWORD } from "@/lib/constants";
-import { getUser, createUser } from "@/lib/db/queries";
+import { getUser, createUser, updateUserDiscordId } from "@/lib/db/queries";
 import { authConfig } from "./auth.config";
 
 declare module "next-auth" {
@@ -40,6 +40,7 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  secret: process.env.AUTH_SECRET,
   providers: [
     Discord({
       clientId: process.env.DISCORD_CLIENT_ID,
@@ -76,16 +77,37 @@ export const {
     async signIn({ user, account, profile }) {
       // Handle OAuth sign-ins (Discord)
       if (account?.provider === "discord" && user.email) {
-        const existingUsers = await getUser(user.email);
-        
-        // If user doesn't exist, create them (without password for OAuth users)
-        if (existingUsers.length === 0) {
-          try {
-            await createUser(user.email, "");
-          } catch (error) {
-            console.error("Failed to create user from Discord OAuth:", error);
-            return false;
+        try {
+          const discordProfile = profile as { id?: string } | undefined;
+          const discordId = discordProfile?.id;
+          
+          const existingUsers = await getUser(user.email);
+          
+          // If user doesn't exist, create them (without password for OAuth users)
+          if (existingUsers.length === 0) {
+            try {
+              await createUser(user.email, "", discordId);
+            } catch (error) {
+              console.error("Failed to create user from Discord OAuth:", error);
+              return false;
+            }
+          } else if (discordId) {
+            // Update existing user's Discord ID if it's missing or changed
+            const [existingUser] = existingUsers;
+            if (existingUser.discordId !== discordId) {
+              try {
+                await updateUserDiscordId(existingUser.id, discordId);
+              } catch (error) {
+                console.error("Failed to update Discord ID:", error);
+                // Don't fail sign-in if update fails
+              }
+            }
           }
+        } catch (error) {
+          console.error("Error during Discord sign-in:", error);
+          // If there's a database error, still allow sign-in to proceed
+          // The user might be created in the JWT callback instead
+          return true;
         }
       }
       

@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Loader2 } from "lucide-react";
+import { toast } from "@/components/toast";
+import { Loader2, MessageCircle, Copy, Check } from "lucide-react";
 
 interface Match {
   match: {
@@ -18,6 +19,7 @@ interface Match {
     matchReason?: string;
     searchedField?: "what_i_offer" | "what_im_looking_for";
   };
+  otherUserDiscordId: string | null;
   lastMessage: {
     content: string;
     createdAt: string;
@@ -33,6 +35,7 @@ export default function MatchesPage({
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Unwrap params
   useEffect(() => {
@@ -116,31 +119,105 @@ export default function MatchesPage({
       <h1 className="mb-6 text-3xl font-bold">Your Matches</h1>
 
       <div className="space-y-3">
-        {sessionId && matches.map((m) => (
-          <Link
-            key={m.match.id}
-            href={`/sessions/${sessionId}/matches/${m.match.id}`}
-          >
-            <Card className="hover:bg-accent">
+        {sessionId && matches.map((m) => {
+          const discordDmUrl = m.otherUserDiscordId 
+            ? `https://discord.com/users/${m.otherUserDiscordId}`
+            : null;
+          
+          const discordDmProtocol = m.otherUserDiscordId
+            ? `discord://-/channels/@me/${m.otherUserDiscordId}`
+            : null;
+          
+          const handleCopyDiscordId = async (e: React.MouseEvent) => {
+            e.stopPropagation();
+            if (m.otherUserDiscordId) {
+              try {
+                await navigator.clipboard.writeText(m.otherUserDiscordId);
+                setCopiedId(m.otherUserDiscordId);
+                toast({
+                  type: "success",
+                  description: "Discord User ID copied to clipboard!",
+                });
+                // Reset copied state after 2 seconds
+                setTimeout(() => {
+                  setCopiedId(null);
+                }, 2000);
+              } catch (error) {
+                console.error("Failed to copy:", error);
+                toast({
+                  type: "error",
+                  description: "Failed to copy Discord ID",
+                });
+              }
+            }
+          };
+
+          return (
+            <Card key={m.match.id} className="hover:bg-accent">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{m.otherProfile.displayName}</h3>
                 </div>
                 {m.otherProfile.matchReason && (
-                  <div className="mb-2 rounded-lg bg-muted/30 border border-border p-2">
+                  <div className="mb-3 rounded-lg bg-muted/30 border border-border p-2">
                     <p className="text-xs font-medium text-foreground mb-1">Why you matched:</p>
                     <p className="text-xs text-muted-foreground leading-relaxed">{m.otherProfile.matchReason}</p>
                   </div>
                 )}
-                <p className="text-sm text-muted-foreground">
-                  {m.lastMessage
-                    ? m.lastMessage.content.slice(0, 50) + "..."
-                    : "Start chatting!"}
-                </p>
+                {discordDmUrl ? (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">
+                      {m.lastMessage
+                        ? m.lastMessage.content.slice(0, 50) + "..."
+                        : "Start chatting on Discord!"}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleCopyDiscordId}
+                        className="flex-1"
+                        variant="outline"
+                      >
+                        {copiedId === m.otherUserDiscordId ? (
+                          <>
+                            <Check className="mr-2 h-4 w-4" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4" />
+                            Copy Discord ID
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (discordDmUrl) {
+                            window.open(discordDmUrl, "_blank", "noopener,noreferrer");
+                          }
+                        }}
+                        className="flex-1"
+                        variant="default"
+                      >
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Open Profile
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Copy the Discord ID to find them in Discord, or open their profile
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {m.lastMessage
+                      ? m.lastMessage.content.slice(0, 50) + "..."
+                      : "Start chatting!"}
+                  </p>
+                )}
               </CardContent>
             </Card>
-          </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
