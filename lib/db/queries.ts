@@ -172,7 +172,7 @@ export async function getSessionsByUserId(userId: string): Promise<Array<Matchin
   }
 }
 
-export async function getAvailableSessions(userId: string): Promise<MatchingSession[]> {
+export async function getAvailableSessions(userId: string): Promise<Array<MatchingSession & { profileCount: number }>> {
   try {
     // Get all session IDs where user has a profile
     const userProfiles = await db
@@ -183,19 +183,37 @@ export async function getAvailableSessions(userId: string): Promise<MatchingSess
     const userSessionIds = userProfiles.map((p) => p.sessionId);
 
     // Get all sessions where user doesn't have a profile
+    let sessions: MatchingSession[];
     if (userSessionIds.length === 0) {
       // User has no sessions, return all sessions
-      return await db
+      sessions = await db
         .select()
         .from(matchingSessions)
         .orderBy(desc(matchingSessions.createdAt));
+    } else {
+      sessions = await db
+        .select()
+        .from(matchingSessions)
+        .where(notInArray(matchingSessions.id, userSessionIds))
+        .orderBy(desc(matchingSessions.createdAt));
     }
 
-    return await db
-      .select()
-      .from(matchingSessions)
-      .where(notInArray(matchingSessions.id, userSessionIds))
-      .orderBy(desc(matchingSessions.createdAt));
+    // Get profile counts for each session
+    const sessionsWithCounts = await Promise.all(
+      sessions.map(async (session) => {
+        const countResult = await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(profiles)
+          .where(eq(profiles.sessionId, session.id));
+
+        return {
+          ...session,
+          profileCount: countResult[0]?.count || 0,
+        };
+      })
+    );
+
+    return sessionsWithCounts;
   } catch (error) {
     console.error("Failed to get available sessions:", error);
     throw new Error("Failed to get available sessions");

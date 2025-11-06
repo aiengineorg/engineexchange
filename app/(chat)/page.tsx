@@ -90,7 +90,7 @@ export default async function LandingPage() {
                       <div>
                         <p className="font-medium">{s.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Code: {s.code}
+                          Code: {s.code} • {s.profileCount} {s.profileCount === 1 ? 'profile' : 'profiles'}
                         </p>
                       </div>
                       <Button variant="outline" size="sm">
