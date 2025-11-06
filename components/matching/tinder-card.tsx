@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 interface Profile {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   whatIOffer: string;
   whatImLookingFor: string;
   similarity?: number;
+  matchReason?: string;
+  searchedField?: "what_i_offer" | "what_im_looking_for";
 }
 
 interface TinderCardProps {
@@ -51,7 +51,6 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-2xl font-bold">{profile.displayName}</h3>
-                <p className="text-muted-foreground">{profile.age} years old</p>
               </div>
               {profile.similarity !== undefined && (
                 <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
@@ -60,22 +59,38 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
               )}
             </div>
 
-            {profile.bio && (
-              <div>
-                <p className="text-sm text-muted-foreground">{profile.bio}</p>
+            {profile.matchReason && (
+              <div className="rounded-lg bg-muted/30 border border-border p-3">
+                <p className="text-xs font-medium text-foreground mb-1">Why you're seeing this:</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{profile.matchReason}</p>
               </div>
             )}
 
             <div className="space-y-3">
-              <div>
-                <h4 className="mb-1 text-sm font-semibold">What I Offer:</h4>
-                <p className="text-sm leading-relaxed">{profile.whatIOffer}</p>
-              </div>
-
-              <div>
-                <h4 className="mb-1 text-sm font-semibold">What I'm Looking For:</h4>
-                <p className="text-sm leading-relaxed">{profile.whatImLookingFor}</p>
-              </div>
+              {/* Show the searched field first */}
+              {profile.searchedField === "what_im_looking_for" ? (
+                <>
+                  <div>
+                    <h4 className="mb-1 text-sm font-semibold">What I'm Looking For:</h4>
+                    <p className="text-sm leading-relaxed">{profile.whatImLookingFor}</p>
+                  </div>
+                  <div>
+                    <h4 className="mb-1 text-sm font-semibold">What I Offer:</h4>
+                    <p className="text-sm leading-relaxed">{profile.whatIOffer}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <h4 className="mb-1 text-sm font-semibold">What I Offer:</h4>
+                    <p className="text-sm leading-relaxed">{profile.whatIOffer}</p>
+                  </div>
+                  <div>
+                    <h4 className="mb-1 text-sm font-semibold">What I'm Looking For:</h4>
+                    <p className="text-sm leading-relaxed">{profile.whatImLookingFor}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

@@ -11,8 +11,6 @@ import {
 const CreateProfileSchema = z.object({
   sessionId: z.string().uuid(),
   displayName: z.string().min(1).max(50),
-  age: z.number().int().min(18).max(120),
-  bio: z.string().max(500).optional().nullable(),
   images: z.array(z.string().url()).max(5).default([]),
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
@@ -40,8 +38,6 @@ export async function POST(request: Request) {
     const {
       sessionId,
       displayName,
-      age,
-      bio,
       images,
       whatIOffer,
       whatImLookingFor,
@@ -88,8 +84,6 @@ export async function POST(request: Request) {
       userId: session.user.id,
       sessionId,
       displayName,
-      age,
-      bio: bio || null,
       images,
       whatIOffer,
       whatIOfferEmbedding: offerEmbedding,

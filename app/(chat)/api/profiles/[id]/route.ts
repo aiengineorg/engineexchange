@@ -6,8 +6,6 @@ import { getProfileById, updateProfile } from "@/lib/db/queries";
 
 const UpdateProfileSchema = z.object({
   displayName: z.string().min(1).max(50),
-  age: z.number().int().min(18).max(120),
-  bio: z.string().max(500).optional().nullable(),
   images: z.array(z.string().url()).max(5),
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
@@ -53,8 +51,6 @@ export async function PATCH(
 
     const {
       displayName,
-      age,
-      bio,
       images,
       whatIOffer,
       whatImLookingFor,
@@ -86,8 +82,6 @@ export async function PATCH(
     const updatedProfile = await updateProfile({
       id,
       displayName,
-      age,
-      bio: bio || null,
       images,
       whatIOffer,
       whatIOfferEmbedding: offerEmbedding,

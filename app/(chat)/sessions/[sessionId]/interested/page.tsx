@@ -9,8 +9,6 @@ import { Loader2 } from "lucide-react";
 interface Profile {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   whatIOffer: string;
   whatImLookingFor: string;
 }

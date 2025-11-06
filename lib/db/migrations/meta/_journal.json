@@ -78,6 +78,20 @@
       "when": 1741100000000,
       "tag": "0010_enable_pgvector",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1741200000000,
+      "tag": "0011_remove_age_from_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1741300000000,
+      "tag": "0012_remove_bio_from_profiles",
+      "breakpoints": true
     }
   ]
 }

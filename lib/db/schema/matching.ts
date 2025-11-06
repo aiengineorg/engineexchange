@@ -38,8 +38,6 @@ export const profiles = pgTable(
 
     // Basic Info
     displayName: text("display_name").notNull(),
-    age: integer("age").notNull(),
-    bio: text("bio"),
     images: text("images").array().default([]),
 
     // Vector Embedding Fields (Core Feature!)

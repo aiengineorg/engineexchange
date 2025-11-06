@@ -1,25 +1,20 @@
-import Form from "next/form";
+"use client";
 
-import { signOut } from "@/app/(auth)/auth";
+import Form from "next/form";
+import { LogOut } from "lucide-react";
+import { signOutAction } from "@/app/(auth)/actions";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 
 export const SignOutForm = () => {
   return (
-    <Form
-      action={async () => {
-        "use server";
-
-        await signOut({
-          redirectTo: "/",
-        });
-      }}
-      className="w-full"
-    >
-      <button
-        className="w-full px-1 py-0.5 text-left text-red-500"
+    <Form action={signOutAction} className="w-full">
+      <SidebarMenuButton
+        className="w-full text-red-500 hover:text-red-600 hover:bg-sidebar-accent"
         type="submit"
       >
-        Sign out
-      </button>
+        <LogOut className="h-4 w-4" />
+        <span>Sign out</span>
+      </SidebarMenuButton>
     </Form>
   );
 };

@@ -6,6 +6,7 @@ import { Heart, MessageCircle, Sparkles, User, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -13,6 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { SignOutForm } from "@/components/sign-out-form";
 
 export function SessionSidebar() {
   const params = useParams();
@@ -40,6 +42,11 @@ export function SessionSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <div className="p-2">
+            <SignOutForm />
+          </div>
+        </SidebarFooter>
       </Sidebar>
     );
   }
@@ -112,6 +119,11 @@ export function SessionSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <div className="p-2">
+          <SignOutForm />
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }

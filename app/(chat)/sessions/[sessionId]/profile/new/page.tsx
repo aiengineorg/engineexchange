@@ -19,8 +19,6 @@ export default function NewProfilePage({
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     displayName: "",
-    age: "",
-    bio: "",
     whatIOffer: "",
     whatImLookingFor: "",
   });
@@ -37,8 +35,6 @@ export default function NewProfilePage({
         body: JSON.stringify({
           sessionId,
           displayName: formData.displayName,
-          age: Number.parseInt(formData.age),
-          bio: formData.bio || null,
           images: [],
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
@@ -82,41 +78,6 @@ export default function NewProfilePage({
                 maxLength={50}
                 disabled={loading}
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="age">Age *</Label>
-              <Input
-                id="age"
-                type="number"
-                min="18"
-                max="120"
-                placeholder="18"
-                value={formData.age}
-                onChange={(e) =>
-                  setFormData({ ...formData, age: e.target.value })
-                }
-                required
-                disabled={loading}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio (Optional)</Label>
-              <Textarea
-                id="bio"
-                placeholder="Tell us a bit about yourself..."
-                value={formData.bio}
-                onChange={(e) =>
-                  setFormData({ ...formData, bio: e.target.value })
-                }
-                maxLength={500}
-                disabled={loading}
-                rows={3}
-              />
-              <p className="text-xs text-muted-foreground">
-                {formData.bio.length}/500 characters
-              </p>
             </div>
 
             <div className="space-y-2">
@@ -183,7 +144,6 @@ export default function NewProfilePage({
                 disabled={
                   loading ||
                   !formData.displayName ||
-                  !formData.age ||
                   formData.whatIOffer.length < 10 ||
                   formData.whatImLookingFor.length < 10
                 }

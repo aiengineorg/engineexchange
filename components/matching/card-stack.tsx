@@ -8,8 +8,6 @@ import { TinderCard } from "./tinder-card";
 interface Profile {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   whatIOffer: string;
   whatImLookingFor: string;
   similarity?: number;
@@ -81,6 +79,7 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
             style={{
               zIndex: 3 - index,
               transform: `scale(${1 - index * 0.05}) translateY(${index * 10}px)`,
+              filter: index > 0 ? "blur(4px)" : "none",
             }}
           />
         ))}

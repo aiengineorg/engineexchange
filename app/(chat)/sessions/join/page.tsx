@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,18 @@ import { Label } from "@/components/ui/label";
 
 export default function JoinSessionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const codeFromQuery = searchParams.get("code") || "";
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Pre-fill code from query parameter
+  useEffect(() => {
+    if (codeFromQuery) {
+      setCode(codeFromQuery.toUpperCase().slice(0, 6));
+    }
+  }, [codeFromQuery]);
 
   const handleCodeChange = (value: string) => {
     // Auto-uppercase and limit to 6 characters

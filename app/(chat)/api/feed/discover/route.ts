@@ -57,10 +57,13 @@ export async function GET(request: Request) {
     if (customQuery) {
       // Custom search mode: user typed their own query
       console.log("🔍 Using custom query mode");
+      // Semantic matching: 
+      // - "What I'm Looking For" searches against their "What I Offer"
+      // - "What I Offer" searches against their "What I'm Looking For"
       targetField =
         searchField === "looking_for"
-          ? "what_im_looking_for_embedding"
-          : "what_i_offer_embedding";
+          ? "what_i_offer_embedding"  // I'm looking for what they offer
+          : "what_im_looking_for_embedding";  // I offer what they're looking for
       // Embedding will be generated inside searchProfilesByVector
     } else {
       // Default mode: match my "looking for" against their "offers"
@@ -119,6 +122,8 @@ export async function GET(request: Request) {
       limit: 50,
       minSimilarity: 0.5,
     });
+
+    // Match reasons are already set in vector-search.ts with proper context
 
     // searchProfilesByVector already returns clean ProfileSearchResult objects
     // without embedding fields, so they're safe to serialize

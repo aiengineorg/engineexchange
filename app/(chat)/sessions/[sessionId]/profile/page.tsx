@@ -10,8 +10,6 @@ import { Loader2 } from "lucide-react";
 interface Profile {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   images: string[];
   whatIOffer: string;
   whatImLookingFor: string;
@@ -97,20 +95,6 @@ export default function ProfilePage({
             </h3>
             <p className="text-lg">{profile.displayName}</p>
           </div>
-
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground mb-1">Age</h3>
-            <p className="text-lg">{profile.age}</p>
-          </div>
-
-          {profile.bio && (
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                Bio
-              </h3>
-              <p className="text-base">{profile.bio}</p>
-            </div>
-          )}
 
           <div>
             <h3 className="text-sm font-medium text-muted-foreground mb-1">

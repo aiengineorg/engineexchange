@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, inArray, or, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, notInArray, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { nanoid } from "nanoid";
@@ -131,7 +131,7 @@ export async function getSessionById(id: string): Promise<MatchingSession | null
   }
 }
 
-export async function getSessionsByUserId(userId: string): Promise<MatchingSession[]> {
+export async function getSessionsByUserId(userId: string): Promise<Array<MatchingSession & { profileCount: number }>> {
   try {
     // Get all sessions where user has a profile
     const userProfiles = await db
@@ -143,14 +143,62 @@ export async function getSessionsByUserId(userId: string): Promise<MatchingSessi
 
     const sessionIds = userProfiles.map((p) => p.sessionId);
 
-    return await db
+    // Get sessions
+    const sessions = await db
       .select()
       .from(matchingSessions)
       .where(inArray(matchingSessions.id, sessionIds))
       .orderBy(desc(matchingSessions.createdAt));
+
+    // Get profile counts for each session
+    const sessionsWithCounts = await Promise.all(
+      sessions.map(async (session) => {
+        const countResult = await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(profiles)
+          .where(eq(profiles.sessionId, session.id));
+
+        return {
+          ...session,
+          profileCount: countResult[0]?.count || 0,
+        };
+      })
+    );
+
+    return sessionsWithCounts;
   } catch (error) {
     console.error("Failed to get sessions by user id:", error);
     throw new Error("Failed to get sessions by user id");
+  }
+}
+
+export async function getAvailableSessions(userId: string): Promise<MatchingSession[]> {
+  try {
+    // Get all session IDs where user has a profile
+    const userProfiles = await db
+      .select({ sessionId: profiles.sessionId })
+      .from(profiles)
+      .where(eq(profiles.userId, userId));
+
+    const userSessionIds = userProfiles.map((p) => p.sessionId);
+
+    // Get all sessions where user doesn't have a profile
+    if (userSessionIds.length === 0) {
+      // User has no sessions, return all sessions
+      return await db
+        .select()
+        .from(matchingSessions)
+        .orderBy(desc(matchingSessions.createdAt));
+    }
+
+    return await db
+      .select()
+      .from(matchingSessions)
+      .where(notInArray(matchingSessions.id, userSessionIds))
+      .orderBy(desc(matchingSessions.createdAt));
+  } catch (error) {
+    console.error("Failed to get available sessions:", error);
+    throw new Error("Failed to get available sessions");
   }
 }
 
@@ -209,8 +257,6 @@ export async function createProfile(data: {
   userId: string;
   sessionId: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   images: string[];
   whatIOffer: string;
   whatIOfferEmbedding: number[];
@@ -246,8 +292,6 @@ export async function createProfile(data: {
 export async function updateProfile({
   id,
   displayName,
-  age,
-  bio,
   images,
   whatIOffer,
   whatIOfferEmbedding,
@@ -256,8 +300,6 @@ export async function updateProfile({
 }: {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   images: string[];
   whatIOffer: string;
   whatIOfferEmbedding: number[];
@@ -269,8 +311,6 @@ export async function updateProfile({
       .update(profiles)
       .set({
         displayName,
-        age,
-        bio,
         images,
         whatIOffer,
         whatIOfferEmbedding,
@@ -457,6 +497,30 @@ export async function createMatch(data: {
 
     return match;
   } catch (error) {
+    // Handle unique constraint violation (race condition)
+    // Postgres error code 23505 = unique_violation
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "23505"
+    ) {
+      // Match already exists, fetch and return it
+      const existingMatch = await getExistingMatch({
+        profileId1: data.user1Id,
+        profileId2: data.user2Id,
+      });
+
+      if (existingMatch) {
+        return existingMatch;
+      }
+
+      // If we can't find it, something else went wrong
+      console.error("Failed to create match - duplicate but not found:", error);
+      throw new Error("Failed to create match");
+    }
+
+    // Other errors
     console.error("Failed to create match:", error);
     throw new Error("Failed to create match");
   }

@@ -38,11 +38,42 @@ export async function GET(request: Request) {
     const matches = await getMatchesByProfile(myProfile.id);
 
     // Remove embeddings from otherProfile in each match (not JSON serializable)
+    // and generate match reasons
     const cleanMatches = matches.map((m) => {
       const { whatIOfferEmbedding, whatImLookingForEmbedding, ...otherProfile } = m.otherProfile;
+      
+      // Generate match reason: default matching is "my looking for" vs "their offers"
+      // Extract a relevant sentence from their "What I Offer" that relates to my "What I'm Looking For"
+      const myLookingFor = myProfile.whatImLookingFor.toLowerCase();
+      const theirOffer = otherProfile.whatIOffer;
+      
+      // Find sentences in their offer that might relate to what I'm looking for
+      const sentences = theirOffer.split(/[.!?]\s+/);
+      const myKeywords = myLookingFor.split(/\s+/).filter(w => w.length > 3);
+      
+      const relevantSentences = sentences.filter((sentence: string) => {
+        const lowerSentence = sentence.toLowerCase();
+        return myKeywords.some(keyword => lowerSentence.includes(keyword));
+      });
+
+      let matchReason: string;
+      if (relevantSentences.length > 0) {
+        let matchText = relevantSentences[0].trim();
+        if (matchText.length > 150) {
+          matchText = matchText.substring(0, 150) + "...";
+        }
+        matchReason = `This person offers: "${matchText}"`;
+      } else {
+        matchReason = `This person offers what you're looking for`;
+      }
+
       return {
         ...m,
-        otherProfile,
+        otherProfile: {
+          ...otherProfile,
+          matchReason,
+          searchedField: "what_i_offer" as const,
+        },
       };
     });
 

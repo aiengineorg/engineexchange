@@ -15,7 +15,7 @@ export interface VectorSearchParams {
   excludeProfileIds: string[];
   embedding?: number[];
   customQuery?: string;
-  targetField?: "what_i_offer_embedding" | "what_im_looking_for_embedding";
+  targetField?: "what_i_offer_embedding" | "what_im_looking_for_embedding" | "both";
   limit?: number;
   minSimilarity?: number;
 }
@@ -24,12 +24,12 @@ export interface ProfileSearchResult {
   id: string;
   userId: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   images: string[];
   whatIOffer: string;
   whatImLookingFor: string;
   similarity: number;
+  matchReason?: string;
+  searchedField?: "what_i_offer" | "what_im_looking_for";
 }
 
 /**
@@ -87,8 +87,6 @@ export async function searchProfilesByVector(
       p.id,
       p.user_id as "userId",
       p.display_name as "displayName",
-      p.age,
-      p.bio,
       p.images,
       p.what_i_offer as "whatIOffer",
       p.what_im_looking_for as "whatImLookingFor",
@@ -111,18 +109,103 @@ export async function searchProfilesByVector(
     topProfile: rows[0] ? (rows[0] as Record<string, unknown>)?.displayName : 'none',
   });
 
-  // Explicitly clean results to ensure no pgvector objects leak through
-  const cleanResults: ProfileSearchResult[] = rows.map((row: any) => ({
-    id: row.id,
-    userId: row.userId,
-    displayName: row.displayName,
-    age: row.age,
-    bio: row.bio,
-    images: row.images,
-    whatIOffer: row.whatIOffer,
-    whatImLookingFor: row.whatImLookingFor,
-    similarity: row.similarity,
-  }));
+  // Generate match reasons if custom query provided
+  const cleanResults: ProfileSearchResult[] = rows.map((row: any) => {
+    const result: ProfileSearchResult = {
+      id: row.id,
+      userId: row.userId,
+      displayName: row.displayName,
+      images: row.images,
+      whatIOffer: row.whatIOffer,
+      whatImLookingFor: row.whatImLookingFor,
+      similarity: row.similarity,
+    };
+
+    // Store which field was searched against for card reordering
+    result.searchedField = targetField === "what_i_offer_embedding" 
+      ? "what_i_offer" 
+      : "what_im_looking_for";
+
+    // Generate match reason
+    if (customQuery) {
+      const targetText = targetField === "what_i_offer_embedding" 
+        ? row.whatIOffer 
+        : row.whatImLookingFor;
+      
+      // Extract relevant phrases - improved keyword matching
+      // Normalize query: remove punctuation, split into words, filter meaningful words
+      const normalizedQuery = customQuery.toLowerCase()
+        .replace(/[^\w\s]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 2); // Lower threshold to catch more words
+      
+      // Normalize target text and split into sentences
+      const sentences = targetText.split(/[.!?]\s+/);
+      
+      // Find sentences that contain query keywords (more flexible matching)
+      const relevantSentences = sentences.filter((sentence: string) => {
+        const normalizedSentence = sentence.toLowerCase().replace(/[^\w\s]/g, ' ');
+        const sentenceWords = normalizedSentence.split(/\s+/);
+        
+        // Check if any query word appears in the sentence (allowing partial matches)
+        return normalizedQuery.some(queryWord => {
+          // Exact word match
+          if (sentenceWords.includes(queryWord)) return true;
+          // Word contains query (for compound words)
+          if (sentenceWords.some(word => word.includes(queryWord) || queryWord.includes(word))) return true;
+          // Check if sentence contains the query word as substring
+          return normalizedSentence.includes(queryWord);
+        });
+      });
+
+      if (relevantSentences.length > 0) {
+        // Take the first relevant sentence
+        let matchText = relevantSentences[0].trim();
+        if (matchText.length > 150) {
+          matchText = matchText.substring(0, 150) + "...";
+        }
+        
+        // Set match reason based on what was searched
+        if (targetField === "what_i_offer_embedding") {
+          // Searched their "What I Offer" - so show what they offer
+          result.matchReason = `This person offers: "${matchText}"`;
+        } else {
+          // Searched their "What I'm Looking For" - so show what they're looking for
+          result.matchReason = `This person is looking for: "${matchText}"`;
+        }
+      } else {
+        // Fallback: show first sentence or first 150 chars of the matched field
+        let fallbackText = targetText.trim();
+        const firstSentence = fallbackText.split(/[.!?]\s+/)[0];
+        if (firstSentence && firstSentence.length > 20) {
+          fallbackText = firstSentence;
+        }
+        if (fallbackText.length > 150) {
+          fallbackText = fallbackText.substring(0, 150) + "...";
+        }
+        
+        if (targetField === "what_i_offer_embedding") {
+          result.matchReason = `This person offers: "${fallbackText}"`;
+        } else {
+          result.matchReason = `This person is looking for: "${fallbackText}"`;
+        }
+      }
+    } else {
+      // Default mode: match my "looking for" against their "offers"
+      // Show first sentence from their "What I Offer"
+      let defaultText = row.whatIOffer.trim();
+      const firstSentence = defaultText.split(/[.!?]\s+/)[0];
+      if (firstSentence && firstSentence.length > 20) {
+        defaultText = firstSentence;
+      }
+      if (defaultText.length > 150) {
+        defaultText = defaultText.substring(0, 150) + "...";
+      }
+      result.matchReason = `This person offers: "${defaultText}"`;
+    }
+
+    return result;
+  });
 
   return cleanResults;
 }
@@ -152,8 +235,6 @@ export async function getInterestedProfiles(params: {
       p.id,
       p.user_id as "userId",
       p.display_name as "displayName",
-      p.age,
-      p.bio,
       p.images,
       p.what_i_offer as "whatIOffer",
       p.what_im_looking_for as "whatImLookingFor",
@@ -176,8 +257,6 @@ export async function getInterestedProfiles(params: {
     id: row.id,
     userId: row.userId,
     displayName: row.displayName,
-    age: row.age,
-    bio: row.bio,
     images: row.images,
     whatIOffer: row.whatIOffer,
     whatImLookingFor: row.whatImLookingFor,

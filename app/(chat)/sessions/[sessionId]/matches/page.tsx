@@ -15,8 +15,8 @@ interface Match {
   otherProfile: {
     id: string;
     displayName: string;
-    age: number;
-    bio: string | null;
+    matchReason?: string;
+    searchedField?: "what_i_offer" | "what_im_looking_for";
   };
   lastMessage: {
     content: string;
@@ -78,20 +78,30 @@ export default function MatchesPage({
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex min-h-screen flex-col p-4">
+        <div className="mb-4">
+          <SidebarTrigger />
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
       </div>
     );
   }
 
   if (matches.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="text-center">
-          <p className="text-lg text-muted-foreground">No matches yet!</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Keep swiping to find your matches
-          </p>
+      <div className="flex min-h-screen flex-col p-4">
+        <div className="mb-4">
+          <SidebarTrigger />
+        </div>
+        <div className="flex flex-1 items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground">No matches yet!</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Keep swiping to find your matches
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -112,18 +122,21 @@ export default function MatchesPage({
             href={`/sessions/${sessionId}/matches/${m.match.id}`}
           >
             <Card className="hover:bg-accent">
-              <CardContent className="flex items-center justify-between p-4">
-                <div>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold">{m.otherProfile.displayName}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {m.lastMessage
-                      ? m.lastMessage.content.slice(0, 50) + "..."
-                      : "Start chatting!"}
-                  </p>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {m.otherProfile.age}
-                </div>
+                {m.otherProfile.matchReason && (
+                  <div className="mb-2 rounded-lg bg-muted/30 border border-border p-2">
+                    <p className="text-xs font-medium text-foreground mb-1">Why you matched:</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{m.otherProfile.matchReason}</p>
+                  </div>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {m.lastMessage
+                    ? m.lastMessage.content.slice(0, 50) + "..."
+                    : "Start chatting!"}
+                </p>
               </CardContent>
             </Card>
           </Link>

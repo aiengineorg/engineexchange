@@ -5,17 +5,24 @@ import { useRouter } from "next/navigation";
 import { CardStack } from "@/components/matching/card-stack";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Search, Loader2 } from "lucide-react";
 
 interface Profile {
   id: string;
   displayName: string;
-  age: number;
-  bio: string | null;
   whatIOffer: string;
   whatImLookingFor: string;
   similarity?: number;
+  matchReason?: string;
+  searchedField?: "what_i_offer" | "what_im_looking_for";
 }
 
 export default function DiscoverPage({
@@ -27,11 +34,17 @@ export default function DiscoverPage({
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchField, setSearchField] = useState<"offers" | "looking_for">("offers");
 
-  const loadProfiles = async (customQuery?: string) => {
-    setLoading(true);
+  const loadProfiles = async (customQuery?: string, isSearch = false) => {
+    if (isSearch) {
+      setSearching(true);
+    } else {
+      setLoading(true);
+    }
     setError("");
 
     try {
@@ -39,6 +52,7 @@ export default function DiscoverPage({
       url.searchParams.set("sessionId", sessionId);
       if (customQuery) {
         url.searchParams.set("query", customQuery);
+        url.searchParams.set("searchField", searchField);
       }
 
       const response = await fetch(url.toString());
@@ -54,7 +68,11 @@ export default function DiscoverPage({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
-      setLoading(false);
+      if (isSearch) {
+        setSearching(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
@@ -117,7 +135,7 @@ export default function DiscoverPage({
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      loadProfiles(searchQuery);
+      loadProfiles(searchQuery, true);
     }
   };
 
@@ -161,27 +179,49 @@ export default function DiscoverPage({
           </div>
 
         {/* Custom Search */}
-        <div className="flex gap-2">
-          <Input
-            placeholder="Search for specific traits..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          />
-          <Button onClick={handleSearch} disabled={!searchQuery.trim()}>
-            <Search className="h-4 w-4" />
-          </Button>
-          {searchQuery && (
-            <Button
-              variant="outline"
-              onClick={() => {
-                setSearchQuery("");
-                loadProfiles();
-              }}
-            >
-              Clear
-            </Button>
-          )}
+        <div className="flex justify-center">
+          <div className="w-full max-w-3xl border-2 rounded-lg p-4 bg-card">
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <Select value={searchField} onValueChange={(value: "offers" | "looking_for") => setSearchField(value)}>
+                <SelectTrigger className="w-auto min-w-[140px]">
+                  <SelectValue placeholder="Search field" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="offers">I can offer</SelectItem>
+                  <SelectItem value="looking_for">I am looking for</SelectItem>
+                </SelectContent>
+              </Select>
+              <span className="text-muted-foreground">
+                {searchField === "offers" ? "expertise in" : "someone who"}
+              </span>
+              <div className="flex-1 min-w-[200px] max-w-md">
+                <Input
+                  placeholder={searchField === "offers" 
+                    ? "React, TypeScript, Node.js..." 
+                    : "has React experience..."}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  className="w-full"
+                />
+              </div>
+              <Button onClick={handleSearch} disabled={!searchQuery.trim()}>
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </Button>
+              {searchQuery && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery("");
+                    loadProfiles();
+                  }}
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Empty State or Card Stack */}
@@ -193,11 +233,21 @@ export default function DiscoverPage({
             </p>
           </div>
         ) : (
-          <CardStack
-            profiles={profiles}
-            sessionId={sessionId}
-            onSwipe={handleSwipe}
-          />
+          <div className="relative">
+            <CardStack
+              profiles={profiles}
+              sessionId={sessionId}
+              onSwipe={handleSwipe}
+            />
+            {searching && (
+              <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-background/80 backdrop-blur-sm">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="mt-4 text-sm font-medium text-foreground">
+                  Generating new suggestions...
+                </p>
+              </div>
+            )}
+          </div>
         )}
         </div>
       </div>
