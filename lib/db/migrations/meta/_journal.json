@@ -92,6 +92,13 @@
       "when": 1741300000000,
       "tag": "0012_remove_bio_from_profiles",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1741400000000,
+      "tag": "0013_add_discord_id_to_users",
+      "breakpoints": true
     }
   ]
 }

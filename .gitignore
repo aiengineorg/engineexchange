@@ -44,3 +44,6 @@ yarn-error.log*
 
 # Resources (already ingested into vector DB)
 /resources/
+
+# Database backups
+/backups/

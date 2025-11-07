@@ -45,6 +45,9 @@ export const {
     Discord({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      // Note: With trustHost: true, NextAuth automatically detects the redirect URI
+      // from request headers. For preview deployments, add the preview URL to Discord:
+      // https://your-preview-url.vercel.app/api/auth/callback/discord
     }),
     Credentials({
       credentials: {},

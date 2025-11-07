@@ -10,5 +10,6 @@ export const authConfig = {
     // while this file is also used in non-Node.js environments
   ],
   callbacks: {},
-  trustHost: true, // Required for NextAuth v5 in development
+  trustHost: true, // Required for NextAuth v5 - enables automatic URL detection from request headers
+  // This allows NextAuth to work with dynamic preview URLs on Vercel
 } satisfies NextAuthConfig;
