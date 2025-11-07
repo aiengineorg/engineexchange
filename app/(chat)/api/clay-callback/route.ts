@@ -60,10 +60,18 @@ export async function POST(request: Request) {
 
     // Find the profile by LinkedIn URL and update it with the summary
     const { updateProfileByLinkedInUrl } = await import("@/lib/db/queries");
+    const { generateEmbedding } = await import("@/lib/ai/embeddings");
     
     try {
+      // Generate embedding for the summary to update "What I Offer"
+      console.log("🔄 Generating embedding for enriched summary...");
+      const embedding = await generateEmbedding(summary);
+      
+      // Update both the enrichment summary and the "What I Offer" field
       const updated = await updateProfileByLinkedInUrl(linkedinUrl, {
         linkedinEnrichmentSummary: summary,
+        whatIOffer: summary, // Auto-fill "What I Offer" with the enriched summary
+        whatIOfferEmbedding: embedding, // Update the embedding too
       });
 
       if (updated) {
@@ -71,6 +79,7 @@ export async function POST(request: Request) {
           profileId: updated.id,
           linkedinUrl,
           summaryLength: summary.length,
+          embeddingLength: embedding.length,
         });
       } else {
         console.log("ℹ️ No profile found with this LinkedIn URL:", linkedinUrl);

@@ -398,15 +398,33 @@ export async function updateProfileByLinkedInUrl(
   linkedinUrl: string,
   data: {
     linkedinEnrichmentSummary?: string;
+    whatIOffer?: string;
+    whatIOfferEmbedding?: number[];
   }
 ): Promise<Profile | null> {
   try {
+    const updateData: {
+      linkedinEnrichmentSummary?: string;
+      whatIOffer?: string;
+      whatIOfferEmbedding?: number[];
+      updatedAt: Date;
+    } = {
+      updatedAt: new Date(),
+    };
+
+    if (data.linkedinEnrichmentSummary !== undefined) {
+      updateData.linkedinEnrichmentSummary = data.linkedinEnrichmentSummary;
+    }
+    if (data.whatIOffer !== undefined) {
+      updateData.whatIOffer = data.whatIOffer;
+    }
+    if (data.whatIOfferEmbedding !== undefined) {
+      updateData.whatIOfferEmbedding = data.whatIOfferEmbedding;
+    }
+
     const [profile] = await db
       .update(profiles)
-      .set({
-        linkedinEnrichmentSummary: data.linkedinEnrichmentSummary,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(profiles.linkedinUrl, linkedinUrl))
       .returning();
 
