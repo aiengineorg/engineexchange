@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from "@/components/toast";
-import { Loader2, MessageCircle, Copy, Check } from "lucide-react";
+import { Loader2, MessageCircle, Copy, Check, RefreshCw } from "lucide-react";
 
 interface Match {
   match: {
@@ -34,6 +34,7 @@ export default function MatchesPage({
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -42,41 +43,51 @@ export default function MatchesPage({
     params.then((p) => setSessionId(p.sessionId));
   }, [params]);
 
-  useEffect(() => {
+  const loadMatches = async (isRefresh = false) => {
     if (!sessionId) return;
     
-    const checkProfileAndLoadMatches = async () => {
-      try {
-        // Check if profile exists first
-        const profileCheck = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
-        
-        if (profileCheck.status === 404) {
-          // Profile doesn't exist, redirect to profile creation
-          router.push(`/sessions/${sessionId}/profile/new`);
-          return;
-        }
-        
-        if (!profileCheck.ok) {
-          throw new Error("Failed to check profile");
-        }
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    
+    try {
+      // Check if profile exists first
+      const profileCheck = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
+      
+      if (profileCheck.status === 404) {
+        // Profile doesn't exist, redirect to profile creation
+        router.push(`/sessions/${sessionId}/profile/new`);
+        return;
+      }
+      
+      if (!profileCheck.ok) {
+        throw new Error("Failed to check profile");
+      }
 
-        // Profile exists, load matches
-        const url = new URL("/api/matches", window.location.origin);
-        url.searchParams.set("sessionId", sessionId);
+      // Profile exists, load matches
+      const url = new URL("/api/matches", window.location.origin);
+      url.searchParams.set("sessionId", sessionId);
 
-        const response = await fetch(url.toString());
-        if (response.ok) {
-          const data = await response.json();
-          setMatches(data);
-        }
-      } catch (err) {
-        console.error("Failed to load matches:", err);
-      } finally {
+      const response = await fetch(url.toString());
+      if (response.ok) {
+        const data = await response.json();
+        setMatches(data);
+      }
+    } catch (err) {
+      console.error("Failed to load matches:", err);
+    } finally {
+      if (isRefresh) {
+        setRefreshing(false);
+      } else {
         setLoading(false);
       }
-    };
+    }
+  };
 
-    checkProfileAndLoadMatches();
+  useEffect(() => {
+    loadMatches();
   }, [sessionId, router]);
 
   if (loading) {
@@ -116,7 +127,18 @@ export default function MatchesPage({
         <SidebarTrigger />
       </div>
       
-      <h1 className="mb-6 text-3xl font-bold">Your Matches</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">Your Matches</h1>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => loadMatches(true)}
+          disabled={refreshing}
+          title="Refresh matches"
+        >
+          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+        </Button>
+      </div>
 
       <div className="space-y-3">
         {sessionId && matches.map((m) => {

@@ -28,8 +28,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
-const LIGHT_THEME_COLOR = "hsl(0 0% 100%)";
-const DARK_THEME_COLOR = "hsl(240deg 10% 3.92%)";
+const LIGHT_THEME_COLOR = "hsl(220 13% 18%)";
+const DARK_THEME_COLOR = "hsl(220 13% 18%)";
 const THEME_COLOR_SCRIPT = `\
 (function() {
   var html = document.documentElement;
@@ -72,14 +72,37 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        {/* Neon green accents at top and bottom */}
+        <div
+          className="fixed top-0 left-0 right-0 h-[400px] pointer-events-none z-0"
+          style={{
+            background:
+              "linear-gradient(180deg, hsl(120 100% 60% / 0.8) 0%, hsl(142 100% 50% / 0.6) 15%, hsl(200 100% 60% / 0.4) 35%, hsl(280 100% 70% / 0.2) 55%, transparent 100%)",
+            filter: "blur(100px)",
+            boxShadow:
+              "0 0 200px hsl(120 100% 60% / 0.6), 0 0 120px hsl(142 100% 50% / 0.5), 0 0 60px hsl(142 100% 50% / 0.4)",
+          }}
+        />
+        <div
+          className="fixed bottom-0 left-0 right-0 h-[400px] pointer-events-none z-0"
+          style={{
+            background:
+              "linear-gradient(0deg, hsl(120 100% 60% / 0.8) 0%, hsl(142 100% 50% / 0.6) 15%, hsl(330 100% 70% / 0.4) 35%, hsl(280 100% 70% / 0.2) 55%, transparent 100%)",
+            filter: "blur(100px)",
+            boxShadow:
+              "0 0 200px hsl(120 100% 60% / 0.6), 0 0 120px hsl(142 100% 50% / 0.5), 0 0 60px hsl(142 100% 50% / 0.4)",
+          }}
+        />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           disableTransitionOnChange
           enableSystem
         >
-          <Toaster position="top-center" />
-          <SessionProvider>{children}</SessionProvider>
+          <div className="relative z-10">
+            <Toaster position="top-center" />
+            <SessionProvider>{children}</SessionProvider>
+          </div>
         </ThemeProvider>
       </body>
     </html>

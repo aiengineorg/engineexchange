@@ -13,112 +13,114 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
-/* AI ENGINE THEME - Light Mode */
+/* DISCORD-LIKE THEME - Light Mode (fallback) */
 :root {
-  /* Core AI Engine Colors */
-  --background: hsl(0 0% 96%); /* Light gray background */
-  --foreground: hsl(255 79% 24%); /* Deep purple text */
+  /* Discord-like Colors */
+  --background: hsl(220 13% 18%); /* Discord dark grey */
+  --foreground: hsl(0 0% 100%); /* White text */
   
-  --card: hsl(0 0% 100%); /* White cards */
-  --card-foreground: hsl(255 79% 24%); /* Deep purple on cards */
+  --card: hsl(220 13% 22%); /* Slightly lighter grey cards */
+  --card-foreground: hsl(0 0% 100%); /* White on cards */
   
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(255 79% 24%);
+  --popover: hsl(220 13% 22%);
+  --popover-foreground: hsl(0 0% 100%);
   
-  --primary: hsl(255 79% 24%); /* Deep purple */
-  --primary-foreground: hsl(85 88% 71%); /* Lime green on purple */
+  --primary: hsl(235 85% 65%); /* Discord blurple */
+  --primary-foreground: hsl(0 0% 100%); /* White on blurple */
   
-  --secondary: hsl(227 100% 30%); /* Royal blue */
-  --secondary-foreground: hsl(0 0% 100%); /* White on blue */
+  --secondary: hsl(220 13% 25%); /* Dark grey secondary */
+  --secondary-foreground: hsl(0 0% 100%); /* White on grey */
   
-  --muted: hsl(0 0% 91%); /* Light gray muted */
-  --muted-foreground: hsl(255 79% 24%); /* Purple text */
+  --muted: hsl(220 13% 25%); /* Dark grey muted */
+  --muted-foreground: hsl(220 9% 66%); /* Light grey text */
   
-  --accent: hsl(85 88% 71%); /* Lime green accent */
-  --accent-foreground: hsl(255 79% 24%); /* Purple on lime */
+  --accent: hsl(235 85% 65%); /* Discord blurple accent */
+  --accent-foreground: hsl(0 0% 100%); /* White on accent */
   
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
   
-  --border: hsl(0 0% 88%); /* Light border */
-  --input: hsl(0 0% 100%); /* White input */
-  --ring: hsl(85 88% 71%); /* Lime focus ring */
+  --border: hsl(220 13% 30%); /* Dark grey border */
+  --input: hsl(220 13% 25%); /* Dark grey input */
+  --ring: hsl(235 85% 65%); /* Discord blurple focus ring */
   
-  --chart-1: hsl(255 79% 24%);
-  --chart-2: hsl(85 88% 71%);
+  --chart-1: hsl(235 85% 65%);
+  --chart-2: hsl(142 76% 36%);
   --chart-3: hsl(227 100% 30%);
   --chart-4: hsl(349 94% 87%);
   --chart-5: hsl(269 42% 69%);
   
-  --sidebar-background: hsl(0 0% 100%);
-  --sidebar-foreground: hsl(255 79% 24%);
-  --sidebar-primary: hsl(255 79% 24%);
-  --sidebar-primary-foreground: hsl(85 88% 71%);
-  --sidebar-accent: hsl(85 88% 71%);
-  --sidebar-accent-foreground: hsl(255 79% 24%);
-  --sidebar-border: hsl(0 0% 88%);
-  --sidebar-ring: hsl(85 88% 71%);
+  --sidebar-background: hsl(220 13% 15%); /* Darker sidebar */
+  --sidebar-foreground: hsl(0 0% 100%);
+  --sidebar-primary: hsl(235 85% 65%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(235 85% 65%);
+  --sidebar-accent-foreground: hsl(0 0% 100%);
+  --sidebar-border: hsl(220 13% 30%);
+  --sidebar-ring: hsl(235 85% 65%);
   
-  /* AI Engine Extended Colors */
-  --pink: hsl(349 94% 87%); /* Soft pink */
-  --lavender: hsl(269 42% 69%); /* Soft lavender */
-  --navy: hsl(228 100% 10%); /* Near black */
+  /* Neon accent colors */
+  --neon-blue: hsl(200 100% 60%);
+  --neon-purple: hsl(280 100% 70%);
+  --neon-pink: hsl(330 100% 70%);
+  --neon-green: hsl(142 100% 50%);
   
   /* border radius unit */
-  --radius: 0.75rem; /* 12px rounded corners */
-  --sidebar: hsl(0 0% 100%);
+  --radius: 0.5rem; /* 8px rounded corners (Discord style) */
+  --sidebar: hsl(220 13% 15%);
 }
 
-/* AI ENGINE THEME - Dark Mode */
+/* DISCORD-LIKE THEME - Dark Mode */
 .dark {
-  --background: hsl(228 100% 10%); /* Near black navy */
-  --foreground: hsl(85 88% 71%); /* Lime green text */
+  --background: hsl(220 13% 18%); /* Discord dark grey */
+  --foreground: hsl(0 0% 100%); /* White text */
   
-  --card: hsl(255 79% 24%); /* Deep purple cards */
-  --card-foreground: hsl(85 88% 71%); /* Lime on purple */
+  --card: hsl(220 13% 22%); /* Slightly lighter grey cards */
+  --card-foreground: hsl(0 0% 100%); /* White on cards */
   
-  --popover: hsl(255 79% 24%);
-  --popover-foreground: hsl(85 88% 71%);
+  --popover: hsl(220 13% 22%);
+  --popover-foreground: hsl(0 0% 100%);
   
-  --primary: hsl(255 79% 24%); /* Deep purple */
-  --primary-foreground: hsl(85 88% 71%); /* Lime on purple */
+  --primary: hsl(235 85% 65%); /* Discord blurple */
+  --primary-foreground: hsl(0 0% 100%); /* White on blurple */
   
-  --secondary: hsl(227 100% 30%); /* Royal blue */
-  --secondary-foreground: hsl(85 88% 71%); /* Lime on blue */
+  --secondary: hsl(220 13% 25%); /* Dark grey secondary */
+  --secondary-foreground: hsl(0 0% 100%); /* White on grey */
   
-  --muted: hsl(228 80% 15%); /* Dark navy muted */
-  --muted-foreground: hsl(269 42% 69%); /* Lavender text */
+  --muted: hsl(220 13% 25%); /* Dark grey muted */
+  --muted-foreground: hsl(220 9% 66%); /* Light grey text */
   
-  --accent: hsl(85 88% 71%); /* Lime green accent */
-  --accent-foreground: hsl(255 79% 24%); /* Purple on lime */
+  --accent: hsl(235 85% 65%); /* Discord blurple accent */
+  --accent-foreground: hsl(0 0% 100%); /* White on accent */
   
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
   
-  --border: hsl(255 40% 30%); /* Purple border */
-  --input: hsl(255 79% 24%); /* Purple input */
-  --ring: hsl(85 88% 71%); /* Lime focus ring */
+  --border: hsl(220 13% 30%); /* Dark grey border */
+  --input: hsl(220 13% 25%); /* Dark grey input */
+  --ring: hsl(235 85% 65%); /* Discord blurple focus ring */
   
-  --chart-1: hsl(255 79% 24%);
-  --chart-2: hsl(85 88% 71%);
+  --chart-1: hsl(235 85% 65%);
+  --chart-2: hsl(142 76% 36%);
   --chart-3: hsl(227 100% 30%);
   --chart-4: hsl(349 94% 87%);
   --chart-5: hsl(269 42% 69%);
   
-  --sidebar-background: hsl(228 100% 10%);
-  --sidebar-foreground: hsl(85 88% 71%);
-  --sidebar-primary: hsl(255 79% 24%);
-  --sidebar-primary-foreground: hsl(85 88% 71%);
-  --sidebar-accent: hsl(255 79% 24%);
-  --sidebar-accent-foreground: hsl(85 88% 71%);
-  --sidebar-border: hsl(255 40% 30%);
-  --sidebar-ring: hsl(85 88% 71%);
-  --sidebar: hsl(228 100% 10%);
+  --sidebar-background: hsl(220 13% 15%); /* Darker sidebar */
+  --sidebar-foreground: hsl(0 0% 100%);
+  --sidebar-primary: hsl(235 85% 65%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(235 85% 65%);
+  --sidebar-accent-foreground: hsl(0 0% 100%);
+  --sidebar-border: hsl(220 13% 30%);
+  --sidebar-ring: hsl(235 85% 65%);
+  --sidebar: hsl(220 13% 15%);
   
-  /* AI Engine Extended Colors */
-  --pink: hsl(349 94% 87%);
-  --lavender: hsl(269 42% 69%);
-  --navy: hsl(228 100% 10%);
+  /* Neon accent colors */
+  --neon-blue: hsl(200 100% 60%);
+  --neon-purple: hsl(280 100% 70%);
+  --neon-pink: hsl(330 100% 70%);
+  --neon-green: hsl(142 100% 50%);
 }
 
 /* define theme */
@@ -239,12 +241,69 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold uppercase;
-    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    @apply font-bold;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   html {
     overflow-x: hidden;
+  }
+
+  /* Neon gradient overlays at top and bottom */
+  html::before,
+  html::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 300px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  html::before {
+    top: 0;
+    background: linear-gradient(
+      180deg,
+      hsl(142 100% 50% / 0.6) 0%,
+      hsl(142 100% 50% / 0.4) 20%,
+      hsl(200 100% 60% / 0.3) 40%,
+      hsl(280 100% 70% / 0.2) 60%,
+      transparent 100%
+    );
+    filter: blur(80px);
+    box-shadow: 
+      0 0 150px hsl(142 100% 50% / 0.4),
+      0 0 80px hsl(142 100% 50% / 0.3);
+  }
+
+  html::after {
+    bottom: 0;
+    background: linear-gradient(
+      0deg,
+      hsl(142 100% 50% / 0.6) 0%,
+      hsl(142 100% 50% / 0.4) 20%,
+      hsl(330 100% 70% / 0.3) 40%,
+      hsl(280 100% 70% / 0.2) 60%,
+      transparent 100%
+    );
+    filter: blur(80px);
+    box-shadow: 
+      0 0 150px hsl(142 100% 50% / 0.4),
+      0 0 80px hsl(142 100% 50% / 0.3);
+  }
+
+  /* Ensure main content is above neon effects */
+  body {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Ensure all main containers are above neon */
+  body > * {
+    position: relative;
+    z-index: 1;
   }
 }
 

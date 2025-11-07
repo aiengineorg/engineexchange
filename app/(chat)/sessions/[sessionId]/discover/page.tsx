@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, RefreshCw } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -34,13 +34,16 @@ export default function DiscoverPage({
   const router = useRouter();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchField, setSearchField] = useState<"offers" | "looking_for">("offers");
 
-  const loadProfiles = async (customQuery?: string, isSearch = false) => {
-    if (isSearch) {
+  const loadProfiles = async (customQuery?: string, isSearch = false, isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else if (isSearch) {
       setSearching(true);
     } else {
       setLoading(true);
@@ -68,7 +71,9 @@ export default function DiscoverPage({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
-      if (isSearch) {
+      if (isRefresh) {
+        setRefreshing(false);
+      } else if (isSearch) {
         setSearching(false);
       } else {
         setLoading(false);
@@ -173,9 +178,20 @@ export default function DiscoverPage({
       </div>
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="w-full max-w-2xl space-y-6">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold">Discover</h1>
-            <p className="text-muted-foreground">AI-powered semantic matching</p>
+          <div className="flex items-center justify-between">
+            <div className="text-center flex-1">
+              <h1 className="text-3xl font-bold">Discover</h1>
+              <p className="text-muted-foreground">AI-powered semantic matching</p>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => loadProfiles(undefined, false, true)}
+              disabled={refreshing}
+              title="Refresh profiles"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            </Button>
           </div>
 
         {/* Custom Search */}
@@ -239,11 +255,11 @@ export default function DiscoverPage({
               sessionId={sessionId}
               onSwipe={handleSwipe}
             />
-            {searching && (
+            {(searching || refreshing) && (
               <div className="absolute inset-0 z-50 flex flex-col items-center justify-center rounded-lg bg-background/80 backdrop-blur-sm">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 <p className="mt-4 text-sm font-medium text-foreground">
-                  Generating new suggestions...
+                  {searching ? "Generating new suggestions..." : "Refreshing profiles..."}
                 </p>
               </div>
             )}

@@ -19,8 +19,6 @@ export default function NewProfilePage({
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
-  const [enriching, setEnriching] = useState(false);
   const [formData, setFormData] = useState({
     displayName: "",
     whatIOffer: "",
@@ -37,55 +35,6 @@ export default function NewProfilePage({
     }
   }, [session?.user?.discordUsername, formData.displayName]);
 
-  // Enrich profile with LinkedIn data when URL is provided
-  const handleEnrichLinkedIn = async () => {
-    if (!linkedinUrl) {
-      setError("Please enter a LinkedIn URL");
-      return;
-    }
-
-    // Basic URL validation
-    try {
-      new URL(linkedinUrl);
-    } catch {
-      setError("Please enter a valid LinkedIn URL");
-      return;
-    }
-
-    setEnriching(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/profiles/enrich", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          linkedinUrl,
-          displayName: formData.displayName || undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to enrich profile");
-      }
-
-      const result = await response.json();
-
-      if (result.success && result.summary) {
-        // Auto-fill "What I Offer" with the enrichment summary
-        setFormData((prev) => ({
-          ...prev,
-          whatIOffer: result.summary,
-        }));
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to enrich profile");
-    } finally {
-      setEnriching(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -101,7 +50,6 @@ export default function NewProfilePage({
           images: [],
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
-          linkedinUrl: linkedinUrl || undefined,
         }),
       });
 
@@ -147,32 +95,6 @@ export default function NewProfilePage({
                   Pre-filled from your Discord account ({session.user.discordUsername})
                 </p>
               )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="linkedinUrl">LinkedIn Profile (Optional)</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="linkedinUrl"
-                  type="url"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  disabled={loading || enriching}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleEnrichLinkedIn}
-                  disabled={loading || enriching || !linkedinUrl}
-                >
-                  {enriching ? "Enriching..." : "Auto-Fill"}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Enter your LinkedIn URL and click "Auto-Fill" to automatically populate your profile
-              </p>
             </div>
 
             <div className="space-y-2">
