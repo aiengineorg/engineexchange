@@ -16,6 +16,41 @@ const UpdateProfileSchema = z.object({
   linkedinUrl: z.string().url().optional(),
 });
 
+// GET /api/profiles/[id] - Get a profile by ID
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id } = await params;
+    const profile = await getProfileById(id);
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: "Profile not found" },
+        { status: 404 }
+      );
+    }
+
+    // Exclude embeddings from response (they're not JSON serializable and not needed by client)
+    const { whatIOfferEmbedding, whatImLookingForEmbedding, ...profileData } = profile;
+    
+    return NextResponse.json(profileData);
+  } catch (error) {
+    console.error("Failed to get profile:", error);
+    return NextResponse.json(
+      { error: "Failed to get profile" },
+      { status: 500 }
+    );
+  }
+}
+
 // PATCH /api/profiles/[id] - Update a profile
 export async function PATCH(
   request: Request,

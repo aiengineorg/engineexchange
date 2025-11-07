@@ -2,7 +2,7 @@
 
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Heart, MessageCircle, Sparkles, User, Home } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, User, Home, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -70,6 +70,12 @@ export function SessionSidebar() {
       href: `/sessions/${sessionId}/matches`,
       icon: MessageCircle,
       description: "Your matches",
+    },
+    {
+      title: "Directory",
+      href: `/sessions/${sessionId}/directory`,
+      icon: Users,
+      description: "Browse all profiles",
     },
     {
       title: "Profile",

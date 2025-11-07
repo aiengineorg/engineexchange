@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Heart, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TinderCard } from "./tinder-card";
 
 interface Profile {
@@ -22,7 +21,6 @@ interface CardStackProps {
 
 export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [swipeHistory, setSwipeHistory] = useState<Array<{ profileId: string; decision: "yes" | "no" }>>([]);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const currentProfile = profiles[currentIndex];
@@ -36,21 +34,12 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
 
     try {
       await onSwipe(currentProfile.id, decision);
-      setSwipeHistory([...swipeHistory, { profileId: currentProfile.id, decision }]);
       setCurrentIndex(currentIndex + 1);
     } catch (error) {
       console.error("Swipe failed:", error);
     } finally {
       setIsAnimating(false);
     }
-  };
-
-  const handleUndo = () => {
-    if (swipeHistory.length === 0 || isAnimating) return;
-
-    const lastSwipe = swipeHistory[swipeHistory.length - 1];
-    setSwipeHistory(swipeHistory.slice(0, -1));
-    setCurrentIndex(currentIndex - 1);
   };
 
   if (!hasMore) {
@@ -69,7 +58,22 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
   return (
     <div className="flex flex-col items-center space-y-8">
       {/* Card Stack */}
-      <div className="relative h-[500px] w-[350px]">
+      <div className="relative h-[400px] w-[350px] md:w-[550px]">
+        {/* Desktop Swipe Indicators */}
+        <div className="pointer-events-none absolute inset-0 hidden md:flex items-center justify-between">
+          <div className="flex flex-col items-center gap-3 text-muted-foreground opacity-50 -ml-4">
+            <ChevronLeft className="h-16 w-16 text-red-600" />
+            <span className="text-sm font-bold text-red-600 whitespace-nowrap">
+              Swipe to reject
+            </span>
+          </div>
+          <div className="flex flex-col items-center gap-3 text-muted-foreground opacity-30">
+            <ChevronRight className="h-16 w-16 text-green-500" />
+            <span className="text-sm font-medium text-green-500 whitespace-nowrap">
+              Swipe to like
+            </span>
+          </div>
+        </div>
         {/* Show next 3 cards in stack */}
         {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
           <TinderCard
@@ -78,6 +82,8 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
             onSwipe={index === 0 ? handleSwipe : () => {}}
             style={{
               zIndex: 3 - index,
+              left: "50%",
+              marginLeft: "-175px", // Half of card width (350px / 2) to center
               transform: `scale(${1 - index * 0.05}) translateY(${index * 10}px)`,
               filter: index > 0 ? "blur(4px)" : "none",
             }}
@@ -85,37 +91,16 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
         ))}
       </div>
 
-      {/* Swipe Buttons */}
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-14 w-14 rounded-full"
-          onClick={() => handleSwipe("left")}
-          disabled={isAnimating}
-        >
-          <X className="h-6 w-6 text-destructive" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-12 w-12 rounded-full"
-          onClick={handleUndo}
-          disabled={isAnimating || swipeHistory.length === 0}
-        >
-          <RotateCcw className="h-5 w-5" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-14 w-14 rounded-full"
-          onClick={() => handleSwipe("right")}
-          disabled={isAnimating}
-        >
-          <Heart className="h-6 w-6 text-green-500" />
-        </Button>
+      {/* Mobile Swipe Indicators */}
+      <div className="flex items-center justify-center gap-8 md:hidden -mt-4">
+        <div className="flex items-center gap-2 text-red-600 opacity-50">
+          <ChevronLeft className="h-6 w-6" />
+          <span className="text-sm font-bold">Swipe left to reject</span>
+        </div>
+        <div className="flex items-center gap-2 text-green-500 opacity-30">
+          <span className="text-sm font-medium">Swipe right to like</span>
+          <ChevronRight className="h-6 w-6" />
+        </div>
       </div>
 
       {/* Progress */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { X, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -22,13 +22,20 @@ interface TinderCardProps {
 
 export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-25, 25]);
-  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+  const rotate = useTransform(x, [-300, 300], [-15, 15]);
+  const opacity = useTransform(x, [-300, -150, 0, 150, 300], [0, 1, 1, 1, 0]);
 
   const handleDragEnd = (_: any, info: any) => {
     if (Math.abs(info.offset.x) > 100) {
       const direction = info.offset.x > 0 ? "right" : "left";
       onSwipe(direction);
+    } else {
+      // Recenter the card if swipe threshold not met
+      animate(x, 0, {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      });
     }
   };
 
@@ -41,7 +48,14 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
         ...style,
       }}
       drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
+      dragConstraints={{ left: -300, right: 300 }}
+      dragElastic={0.2}
+      dragMomentum={true}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }}
       onDragEnd={handleDragEnd}
       className="absolute cursor-grab active:cursor-grabbing"
     >
@@ -96,7 +110,7 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
 
           {/* Swipe indicators */}
           <motion.div
-            style={{ opacity: useTransform(x, [-100, 0], [1, 0]) }}
+            style={{ opacity: useTransform(x, [-150, -50, 0], [1, 0.5, 0]) }}
             className="pointer-events-none absolute left-8 top-8 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-lg font-bold text-destructive-foreground"
           >
             <X className="h-6 w-6" />
@@ -104,7 +118,7 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
           </motion.div>
 
           <motion.div
-            style={{ opacity: useTransform(x, [0, 100], [0, 1]) }}
+            style={{ opacity: useTransform(x, [0, 50, 150], [0, 0.5, 1]) }}
             className="pointer-events-none absolute right-8 top-8 flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-lg font-bold text-white"
           >
             <Heart className="h-6 w-6" />
