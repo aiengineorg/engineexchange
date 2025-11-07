@@ -3,12 +3,17 @@ import { z } from "zod";
 import { auth } from "@/app/(auth)/auth";
 import { generateEmbedding } from "@/lib/ai/embeddings";
 import { getProfileById, updateProfile } from "@/lib/db/queries";
+import {
+  enrichPersonWithClay,
+  generateLinkedInSummary,
+} from "@/lib/clay/enrichment";
 
 const UpdateProfileSchema = z.object({
   displayName: z.string().min(1).max(50),
   images: z.array(z.string().url()).max(5),
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
+  linkedinUrl: z.string().url().optional(),
 });
 
 // PATCH /api/profiles/[id] - Update a profile
@@ -54,7 +59,33 @@ export async function PATCH(
       images,
       whatIOffer,
       whatImLookingFor,
+      linkedinUrl,
     } = validation.data;
+
+    // Enrich with Clay if LinkedIn URL is provided and different from existing
+    let linkedinEnrichmentSummary: string | undefined = existingProfile.linkedinEnrichmentSummary ?? undefined;
+    if (linkedinUrl && linkedinUrl !== existingProfile.linkedinUrl) {
+      console.log("Enriching profile with Clay using LinkedIn URL:", linkedinUrl);
+      try {
+        const enrichmentResult = await enrichPersonWithClay({
+          linkedinUrl,
+          name: displayName,
+        });
+
+        if (enrichmentResult.success && enrichmentResult.data) {
+          linkedinEnrichmentSummary = generateLinkedInSummary(enrichmentResult.data);
+          console.log("✅ LinkedIn enrichment successful:", {
+            hasSummary: !!linkedinEnrichmentSummary,
+            summaryLength: linkedinEnrichmentSummary?.length,
+          });
+        } else {
+          console.warn("⚠️ LinkedIn enrichment failed:", enrichmentResult.error);
+        }
+      } catch (error) {
+        console.error("Failed to enrich with Clay:", error);
+        // Continue without enrichment - don't fail profile update
+      }
+    }
 
     // Regenerate embeddings if text changed
     const needsOfferEmbedding = whatIOffer !== existingProfile.whatIOffer;
@@ -87,6 +118,8 @@ export async function PATCH(
       whatIOfferEmbedding: offerEmbedding,
       whatImLookingFor,
       whatImLookingForEmbedding: lookingForEmbedding,
+      linkedinUrl,
+      linkedinEnrichmentSummary,
     });
 
     // Exclude embeddings from response (they're not JSON serializable and not needed by client)

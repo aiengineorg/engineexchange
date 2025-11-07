@@ -40,6 +40,10 @@ export const profiles = pgTable(
     displayName: text("display_name").notNull(),
     images: text("images").array().default([]),
 
+    // LinkedIn Enrichment (via Clay)
+    linkedinUrl: text("linkedin_url"),
+    linkedinEnrichmentSummary: text("linkedin_enrichment_summary"),
+
     // Vector Embedding Fields (Core Feature!)
     whatIOffer: text("what_i_offer").notNull(),
     whatIOfferEmbedding: vector("what_i_offer_embedding", { dimensions: 1536 }),

@@ -7,6 +7,10 @@ import {
   getProfileByUserAndSession,
   getSessionById,
 } from "@/lib/db/queries";
+import {
+  enrichPersonWithClay,
+  generateLinkedInSummary,
+} from "@/lib/clay/enrichment";
 
 const CreateProfileSchema = z.object({
   sessionId: z.string().uuid(),
@@ -14,6 +18,7 @@ const CreateProfileSchema = z.object({
   images: z.array(z.string().url()).max(5).default([]),
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
+  linkedinUrl: z.string().url().optional(),
 });
 
 // POST /api/profiles - Create a new profile
@@ -41,6 +46,7 @@ export async function POST(request: Request) {
       images,
       whatIOffer,
       whatImLookingFor,
+      linkedinUrl,
     } = validation.data;
 
     // Verify session exists
@@ -63,6 +69,31 @@ export async function POST(request: Request) {
         { error: "Profile already exists for this session" },
         { status: 409 }
       );
+    }
+
+    // Enrich with Clay if LinkedIn URL is provided
+    let linkedinEnrichmentSummary: string | undefined;
+    if (linkedinUrl) {
+      console.log("Enriching profile with Clay using LinkedIn URL:", linkedinUrl);
+      try {
+        const enrichmentResult = await enrichPersonWithClay({
+          linkedinUrl,
+          name: displayName,
+        });
+
+        if (enrichmentResult.success && enrichmentResult.data) {
+          linkedinEnrichmentSummary = generateLinkedInSummary(enrichmentResult.data);
+          console.log("✅ LinkedIn enrichment successful:", {
+            hasSummary: !!linkedinEnrichmentSummary,
+            summaryLength: linkedinEnrichmentSummary?.length,
+          });
+        } else {
+          console.warn("⚠️ LinkedIn enrichment failed:", enrichmentResult.error);
+        }
+      } catch (error) {
+        console.error("Failed to enrich with Clay:", error);
+        // Continue without enrichment - don't fail profile creation
+      }
     }
 
     // Generate embeddings
@@ -89,6 +120,8 @@ export async function POST(request: Request) {
       whatIOfferEmbedding: offerEmbedding,
       whatImLookingFor,
       whatImLookingForEmbedding: lookingForEmbedding,
+      linkedinUrl,
+      linkedinEnrichmentSummary,
     });
     console.log("✅ Profile saved successfully with ID:", profile.id);
 

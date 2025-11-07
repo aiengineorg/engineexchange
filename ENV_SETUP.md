@@ -32,6 +32,15 @@ AUTH_URL=https://yourdomain.com
 
 # Redis for resumable streams (recommended for production)
 REDIS_URL=redis://localhost:6379
+
+# Clay Webhook URL (for LinkedIn profile enrichment)
+# Get this from your Clay table: Add an "HTTP API" column to get the webhook URL
+# Format: https://api.clay.com/v3/sources/webhook/{webhook-id}
+CLAY_WEBHOOK_URL=https://api.clay.com/v3/sources/webhook/pull-in-data-from-a-webhook-7b96cf74-29df-4e88-a128-dbb700c3b031
+
+# Clay API Key (optional - only needed if your webhook requires authentication)
+# Get your API key from: https://app.clay.com/settings/api-keys
+# CLAY_API_KEY=your_clay_api_key_here
 ```
 
 ## For Production (Vercel)
@@ -66,6 +75,29 @@ Add these environment variables in your Vercel project settings:
 1. Visit https://platform.openai.com/api-keys
 2. Create a new API key
 3. Add it as `OPENAI_API_KEY` in your `.env.local`
+
+### Clay API (for LinkedIn Enrichment)
+
+1. **Get your API key:**
+   - Visit https://app.clay.com/settings/api-keys
+   - Sign in to your Clay account
+   - Create a new API key or use an existing one
+   - Add it as `CLAY_API_KEY` in your `.env.local`
+
+2. **Get your webhook URL:**
+   - In your Clay table, add an "HTTP API" column (if you haven't already)
+   - Copy the webhook URL that Clay provides
+   - Format: `https://api.clay.com/v3/sources/webhook/{webhook-id}`
+   - Add it as `CLAY_WEBHOOK_URL` in your `.env.local`
+   - Example: `CLAY_WEBHOOK_URL=https://api.clay.com/v3/sources/webhook/pull-in-data-from-a-webhook-7b96cf74-29df-4e88-a128-dbb700c3b031`
+
+3. **Note:** Clay enrichment is optional - profiles can be created without it. The enrichment will automatically run when a LinkedIn URL is provided during profile creation or update.
+
+4. **Troubleshooting 404 errors:**
+   - Make sure `CLAY_API_URL` is set correctly
+   - Verify the endpoint format matches Clay's current API structure
+   - Check that your API key has the necessary permissions
+   - Review Clay's API documentation for any recent changes
 
 ### Discord OAuth
 

@@ -9,7 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function NewProfilePage({
+interface Profile {
+  id: string;
+  displayName: string;
+  images: string[];
+  whatIOffer: string;
+  whatImLookingFor: string;
+  linkedinUrl?: string | null;
+}
+
+export default function EditProfilePage({
   params,
 }: {
   params: Promise<{ sessionId: string }>;
@@ -18,6 +27,7 @@ export default function NewProfilePage({
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const [error, setError] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [enriching, setEnriching] = useState(false);
@@ -27,15 +37,32 @@ export default function NewProfilePage({
     whatImLookingFor: "",
   });
 
-  // Pre-fill display name with Discord username if available
+  // Load existing profile
   useEffect(() => {
-    if (session?.user?.discordUsername && !formData.displayName) {
-      setFormData((prev) => ({
-        ...prev,
-        displayName: session.user.discordUsername || "",
-      }));
-    }
-  }, [session?.user?.discordUsername, formData.displayName]);
+    const loadProfile = async () => {
+      try {
+        const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to load profile");
+        }
+
+        const profile: Profile = await response.json();
+        setFormData({
+          displayName: profile.displayName,
+          whatIOffer: profile.whatIOffer,
+          whatImLookingFor: profile.whatImLookingFor,
+        });
+        setLinkedinUrl(profile.linkedinUrl || "");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong");
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    loadProfile();
+  }, [sessionId]);
 
   // Enrich profile with LinkedIn data when URL is provided
   const handleEnrichLinkedIn = async () => {
@@ -92,13 +119,19 @@ export default function NewProfilePage({
     setError("");
 
     try {
-      const response = await fetch("/api/profiles", {
-        method: "POST",
+      // First get the profile ID
+      const profileResponse = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
+      if (!profileResponse.ok) {
+        throw new Error("Failed to get profile");
+      }
+      const profile: Profile = await profileResponse.json();
+
+      const response = await fetch(`/api/profiles/${profile.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sessionId,
           displayName: formData.displayName,
-          images: [],
+          images: profile.images || [],
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
           linkedinUrl: linkedinUrl || undefined,
@@ -107,24 +140,36 @@ export default function NewProfilePage({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to create profile");
+        throw new Error(data.error || "Failed to update profile");
       }
 
-      // Redirect to discover feed
-      router.push(`/sessions/${sessionId}/discover`);
+      // Redirect back to profile view
+      router.push(`/sessions/${sessionId}/profile`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setLoading(false);
     }
   };
 
+  if (loadingProfile) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center p-4">
+        <Card className="w-full max-w-2xl">
+          <CardContent className="p-6">
+            <p className="text-center text-muted-foreground">Loading profile...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle>Create Your Profile</CardTitle>
+          <CardTitle>Edit Your Profile</CardTitle>
           <CardDescription>
-            Tell us about yourself. We'll use AI to find your best matches.
+            Update your profile information. We'll use AI to find your best matches.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,11 +187,6 @@ export default function NewProfilePage({
                 maxLength={50}
                 disabled={loading}
               />
-              {session?.user?.discordUsername && (
-                <p className="text-xs text-muted-foreground">
-                  Pre-filled from your Discord account ({session.user.discordUsername})
-                </p>
-              )}
             </div>
 
             <div className="space-y-2">
@@ -228,7 +268,7 @@ export default function NewProfilePage({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => router.push("/")}
+                onClick={() => router.push(`/sessions/${sessionId}/profile`)}
                 disabled={loading}
                 className="flex-1"
               >
@@ -244,13 +284,13 @@ export default function NewProfilePage({
                 }
                 className="flex-1"
               >
-                {loading ? "Creating Profile..." : "Create Profile"}
+                {loading ? "Updating Profile..." : "Update Profile"}
               </Button>
             </div>
 
             {loading && (
               <p className="text-center text-sm text-muted-foreground">
-                Generating AI embeddings... This may take a moment.
+                Regenerating AI embeddings... This may take a moment.
               </p>
             )}
           </form>
@@ -259,3 +299,4 @@ export default function NewProfilePage({
     </div>
   );
 }
+

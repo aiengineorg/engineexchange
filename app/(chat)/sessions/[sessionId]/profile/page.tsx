@@ -122,8 +122,7 @@ export default function ProfilePage({
             </Button>
             <Button
               onClick={() => {
-                // TODO: Implement profile editing
-                alert("Profile editing coming soon!");
+                router.push(`/sessions/${sessionId}/profile/edit`);
               }}
               className="flex-1"
             >

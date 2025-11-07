@@ -299,6 +299,8 @@ export async function createProfile(data: {
   whatIOfferEmbedding: number[];
   whatImLookingFor: string;
   whatImLookingForEmbedding: number[];
+  linkedinUrl?: string;
+  linkedinEnrichmentSummary?: string;
 }): Promise<Profile> {
   try {
     console.log("📝 Inserting profile into database with:", {
@@ -334,6 +336,8 @@ export async function updateProfile({
   whatIOfferEmbedding,
   whatImLookingFor,
   whatImLookingForEmbedding,
+  linkedinUrl,
+  linkedinEnrichmentSummary,
 }: {
   id: string;
   displayName: string;
@@ -342,19 +346,40 @@ export async function updateProfile({
   whatIOfferEmbedding: number[];
   whatImLookingFor: string;
   whatImLookingForEmbedding: number[];
+  linkedinUrl?: string;
+  linkedinEnrichmentSummary?: string;
 }): Promise<Profile> {
   try {
+    const updateData: {
+      displayName: string;
+      images: string[];
+      whatIOffer: string;
+      whatIOfferEmbedding: number[];
+      whatImLookingFor: string;
+      whatImLookingForEmbedding: number[];
+      updatedAt: Date;
+      linkedinUrl?: string;
+      linkedinEnrichmentSummary?: string;
+    } = {
+      displayName,
+      images,
+      whatIOffer,
+      whatIOfferEmbedding,
+      whatImLookingFor,
+      whatImLookingForEmbedding,
+      updatedAt: new Date(),
+    };
+
+    if (linkedinUrl !== undefined) {
+      updateData.linkedinUrl = linkedinUrl;
+    }
+    if (linkedinEnrichmentSummary !== undefined) {
+      updateData.linkedinEnrichmentSummary = linkedinEnrichmentSummary;
+    }
+
     const [profile] = await db
       .update(profiles)
-      .set({
-        displayName,
-        images,
-        whatIOffer,
-        whatIOfferEmbedding,
-        whatImLookingFor,
-        whatImLookingForEmbedding,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(profiles.id, id))
       .returning();
 
@@ -362,6 +387,33 @@ export async function updateProfile({
   } catch (error) {
     console.error("Failed to update profile:", error);
     throw new Error("Failed to update profile");
+  }
+}
+
+/**
+ * Update a profile's LinkedIn enrichment data by LinkedIn URL
+ * Used when Clay webhook sends enriched data back
+ */
+export async function updateProfileByLinkedInUrl(
+  linkedinUrl: string,
+  data: {
+    linkedinEnrichmentSummary?: string;
+  }
+): Promise<Profile | null> {
+  try {
+    const [profile] = await db
+      .update(profiles)
+      .set({
+        linkedinEnrichmentSummary: data.linkedinEnrichmentSummary,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.linkedinUrl, linkedinUrl))
+      .returning();
+
+    return profile || null;
+  } catch (error) {
+    console.error("Failed to update profile by LinkedIn URL:", error);
+    return null;
   }
 }
 
