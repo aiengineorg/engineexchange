@@ -29,10 +29,10 @@ export default async function LandingPage() {
         <div className="w-full max-w-2xl space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight">
-            Welcome to AI Engine Talent Matcher
+            Welcome to Ai Engine Exchange
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            AI-powered matching using vector embeddings
+            Fast matching through intelligent exchange - AI-powered connections using vector embeddings
           </p>
         </div>
 
