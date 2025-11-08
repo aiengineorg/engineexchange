@@ -8,7 +8,7 @@ import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Ai Engine Exchange",
+  title: "AI Engine Exchange",
   description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
   icons: {
     icon: "/icon.svg",

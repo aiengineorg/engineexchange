@@ -36,7 +36,7 @@ export default function Page() {
       <div className="flex w-full max-w-md flex-col gap-12 overflow-hidden rounded-2xl">
         <div className="flex flex-col items-center justify-center gap-2 px-4 text-center sm:px-16">
           <h1 className="text-4xl font-bold tracking-tight">
-            Welcome to Ai Engine Exchange
+            Welcome to AI Engine Exchange
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
             Fast matching through intelligent exchange - AI-powered connections using vector embeddings
