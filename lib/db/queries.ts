@@ -24,6 +24,9 @@ import { generateHashedPassword } from "./utils";
 const client = postgres(process.env.POSTGRES_URL!);
 const db = drizzle(client);
 
+// Export db instance for use in other modules
+export { db };
+
 // ==========================================
 // USER QUERIES
 // ==========================================

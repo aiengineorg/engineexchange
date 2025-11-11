@@ -18,6 +18,7 @@ export {
   swipes,
   matches,
   matchMessages,
+  userDetails,
 } from "./schema/matching";
 export type {
   MatchingSession,
@@ -25,4 +26,5 @@ export type {
   Swipe,
   Match,
   MatchMessage,
+  UserDetail,
 } from "./schema/matching";

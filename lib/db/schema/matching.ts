@@ -173,3 +173,35 @@ export const matchMessages = pgTable(
 );
 
 export type MatchMessage = InferSelectModel<typeof matchMessages>;
+
+// User Details (enriched LinkedIn data from Clay)
+export const userDetails = pgTable("user_details", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+
+  // Core identifiers
+  profileId: text("profile_id"), // From the webhook (Profile Id column)
+  linkedinUrl: text("linkedin_url"), // The full LinkedIn URL
+  email: text("email"), // From the Luma webhook (when available)
+  eventName: text("event_name"), // From the Luma webhook (when available)
+
+  // Basic profile info
+  firstName: text("first_name"), // From enriched profile
+  lastName: text("last_name"), // From enriched profile
+  title: text("title"), // Current job title
+  headline: text("headline"), // LinkedIn headline
+  summary: text("summary"), // AI-generated professional summary
+
+  // Professional details (stored as JSON)
+  education: text("education"), // Full education array with degrees, schools, dates (JSON)
+  experience: text("experience"), // Full experience array with all jobs, companies, dates, descriptions (JSON)
+
+  // Additional info
+  location: text("location"), // Current location
+  connections: integer("connections"), // Number of LinkedIn connections
+  profilePicture: text("profile_picture"), // Profile picture URL
+
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type UserDetail = InferSelectModel<typeof userDetails>;

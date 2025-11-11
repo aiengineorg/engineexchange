@@ -45,6 +45,12 @@ export const {
     Discord({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      authorization: {
+        url: "https://discord.com/api/oauth2/authorize",
+        params: {
+          scope: "identify email guilds.join",
+        },
+      },
       // Note: With trustHost: true, NextAuth automatically detects the redirect URI
       // from request headers. For preview deployments, add the preview URL to Discord:
       // https://your-preview-url.vercel.app/api/auth/callback/discord
@@ -83,9 +89,9 @@ export const {
         try {
           const discordProfile = profile as { id?: string } | undefined;
           const discordId = discordProfile?.id;
-          
+
           const existingUsers = await getUser(user.email);
-          
+
           // If user doesn't exist, create them (without password for OAuth users)
           if (existingUsers.length === 0) {
             try {
@@ -106,6 +112,33 @@ export const {
               }
             }
           }
+
+          // Add user to Discord server if we have the access token and Discord ID
+          if (account.access_token && discordId) {
+            try {
+              const baseUrl = process.env.AUTH_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
+              const response = await fetch(`${baseUrl}/api/discord/add-to-guild`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  userId: discordId,
+                  accessToken: account.access_token,
+                }),
+              });
+
+              if (response.ok) {
+                console.log("Successfully added user to Discord server");
+              } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.error("Failed to add user to Discord server:", errorData);
+              }
+            } catch (error) {
+              console.error("Error calling add-to-guild API:", error);
+              // Don't fail sign-in if adding to guild fails
+            }
+          }
         } catch (error) {
           console.error("Error during Discord sign-in:", error);
           // If there's a database error, still allow sign-in to proceed
@@ -113,7 +146,7 @@ export const {
           return true;
         }
       }
-      
+
       return true;
     },
     async jwt({ token, user, account, profile }) {
