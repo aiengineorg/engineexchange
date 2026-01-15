@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Loader2, RefreshCw, ExternalLink, User } from "lucide-react";
+import { Loader2, RefreshCw, ExternalLink, User, ArrowRight } from "lucide-react";
 
 interface Match {
   match: {
@@ -91,9 +90,6 @@ export default function MatchesPage({
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col p-4">
-        <div className="mb-4">
-          <SidebarTrigger />
-        </div>
         <div className="flex flex-1 items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
@@ -104,9 +100,6 @@ export default function MatchesPage({
   if (matches.length === 0) {
     return (
       <div className="flex min-h-screen flex-col p-4">
-        <div className="mb-4">
-          <SidebarTrigger />
-        </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <p className="text-lg text-muted-foreground">No matches yet!</p>
@@ -120,79 +113,122 @@ export default function MatchesPage({
   }
 
   return (
-    <div className="container mx-auto max-w-4xl p-4">
-      <div className="mb-4">
-        <SidebarTrigger />
-      </div>
-      
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Your Matches</h1>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => loadMatches(true)}
-          disabled={refreshing}
-          title="Refresh matches"
-        >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-        </Button>
+    <div className="px-6 py-12 md:px-12 max-w-5xl mx-auto min-h-screen">
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px w-8 bg-bfl-green" />
+          <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Your Connections</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Matches</h2>
+          <button
+            onClick={() => loadMatches(true)}
+            disabled={refreshing}
+            className="flex items-center gap-3 px-6 py-3 border border-white/10 text-bfl-muted font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white hover:bg-white/5 transition-all"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
-      <div className="space-y-3">
-        {sessionId && matches.map((m) => {
+      <div className="space-y-6">
+        {sessionId && matches.length > 0 && matches.map((m) => {
           const discordDmUrl = m.otherUserDiscordId 
             ? `https://discord.com/users/${m.otherUserDiscordId}`
             : null;
 
           return (
-            <Card key={m.match.id} className="transition-colors hover:bg-purple-50 dark:hover:bg-purple-950/20 hover:border-purple-200 dark:hover:border-purple-800 cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{m.otherProfile.displayName}</h3>
+            <div 
+              key={m.match.id}
+              className="group relative bg-white/[0.02] border border-white/5 rounded-none p-0 hover:bg-white/[0.04] hover:border-white/10 transition-all flex flex-col md:flex-row overflow-hidden shadow-2xl"
+            >
+              {/* Square Image - No Rounding */}
+              <div className="relative w-full md:w-48 h-48 md:h-auto flex-shrink-0">
+                <div className="w-full h-full bg-bfl-dark flex items-center justify-center">
+                  <User className="text-white/20" size={48} />
                 </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-bfl-black/60 to-transparent md:hidden" />
+                <div className="absolute bottom-4 left-4 md:hidden">
+                  <span className="font-mono text-[9px] text-bfl-green uppercase tracking-widest font-bold">Verified Node</span>
+                </div>
+              </div>
+
+              {/* Content Area */}
+              <div className="flex-1 p-8 flex flex-col">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className="font-mono text-[9px] text-bfl-muted uppercase tracking-[0.3em]">{m.otherProfile.id}</span>
+                      <div className="w-1 h-1 rounded-full bg-bfl-green" />
+                      <span className="font-mono text-[9px] text-bfl-muted uppercase tracking-[0.3em]">{m.lastMessage?.createdAt ? new Date(m.lastMessage.createdAt).toLocaleTimeString() : 'N/A'}</span>
+                    </div>
+                    <h3 className="text-3xl font-bold text-white uppercase tracking-tighter italic group-hover:text-glow transition-all">
+                      {m.otherProfile.displayName}
+                    </h3>
+                  </div>
+                </div>
+                
                 {m.otherProfile.matchReason && (
-                  <div className="mb-3 rounded-lg bg-muted/30 border border-border p-2">
-                    <p className="text-xs font-medium text-foreground mb-1">Why you matched:</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{m.otherProfile.matchReason}</p>
+                  <div className="relative mb-8">
+                    <div className="absolute left-0 top-0 bottom-0 w-px bg-bfl-green/30" />
+                    <div className="pl-6">
+                      <p className="font-mono text-[9px] font-bold text-bfl-muted uppercase tracking-[0.3em] mb-2">Match Analysis</p>
+                      <p className="text-bfl-muted text-sm leading-relaxed italic font-light">
+                        "{m.otherProfile.matchReason}"
+                      </p>
+                    </div>
                   </div>
                 )}
-                <div className="space-y-2">
-                  {m.lastMessage && (
-                    <p className="text-sm text-muted-foreground">
-                      {m.lastMessage.content.slice(0, 50) + "..."}
+                
+                {m.lastMessage && (
+                  <div className="relative mb-8">
+                    <div className="absolute left-0 top-0 bottom-0 w-px bg-bfl-green/30" />
+                    <p className="text-bfl-muted text-sm pl-6 leading-relaxed italic font-light">
+                      "{m.lastMessage.content}"
                     </p>
-                  )}
-                  <div className="flex gap-2">
-                    <Button
+                  </div>
+                )}
+
+                <div className="mt-auto pt-6 border-t border-white/5 flex flex-wrap gap-4 items-center">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/sessions/${sessionId}/matches/profile/${m.otherProfile.id}`);
+                    }}
+                    className="flex items-center gap-3 px-6 py-3 bg-white text-bfl-black font-black text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-none"
+                  >
+                    <User size={14} />
+                    Profile Data
+                  </button>
+                  {discordDmUrl && (
+                    <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/sessions/${sessionId}/matches/profile/${m.otherProfile.id}`);
+                        window.open(discordDmUrl, "_blank", "noopener,noreferrer");
                       }}
-                      className="flex-1"
-                      variant="outline"
+                      className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
                     >
-                      <User className="mr-2 h-4 w-4" />
-                      View Profile Details
-                    </Button>
-                    {discordDmUrl && (
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(discordDmUrl, "_blank", "noopener,noreferrer");
-                        }}
-                        className="flex-1"
-                        variant="default"
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Chat on Discord
-                      </Button>
-                    )}
+                      <ExternalLink size={14} />
+                      Open Discord
+                    </button>
+                  )}
+                  <div className="ml-auto hidden lg:flex items-center gap-2">
+                    <span className="font-mono text-[8px] text-white/20 uppercase tracking-[0.4em]">Connection Status: Optimal</span>
+                    <ArrowRight size={14} className="text-white/20" />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           );
         })}
+
+        {matches.length === 0 && (
+          <div className="text-center py-32 bg-white/[0.01] border border-dashed border-white/10 rounded-none">
+            <div className="font-mono text-[10px] text-white/20 uppercase tracking-[0.6em] mb-4">No Matches Yet</div>
+            <p className="text-bfl-muted font-medium text-sm">Go to Discover to find people and make connections.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TinderCard } from "./tinder-card";
 
 interface Profile {
@@ -17,9 +16,10 @@ interface CardStackProps {
   sessionId: string;
   onSwipe: (profileId: string, decision: "yes" | "no") => Promise<void>;
   onMatch?: (matchId: string) => void;
+  onCardClick?: (profile: Profile) => void;
 }
 
-export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackProps) {
+export function CardStack({ profiles, sessionId, onSwipe, onMatch, onCardClick }: CardStackProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -44,69 +44,33 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch }: CardStackPr
 
   if (!hasMore) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-12">
-        <p className="text-lg text-muted-foreground">
-          No more profiles to show!
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Check back later for new matches
+      <div className="text-center py-32 px-12 bg-white/[0.02] border border-white/5 rounded-sm w-full max-w-2xl">
+        <div className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.6em] mb-8">All Caught Up</div>
+        <h3 className="text-5xl font-extrabold text-white mb-6 italic tracking-tighter">NO MORE FOR NOW!</h3>
+        <p className="text-bfl-muted mb-12 font-medium max-w-md mx-auto leading-relaxed">
+          You've seen everyone available. Check back later for new people to connect with!
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center space-y-8">
-      {/* Card Stack */}
-      <div className="relative h-[400px] w-[350px] md:w-[550px]">
-        {/* Desktop Swipe Indicators */}
-        <div className="pointer-events-none absolute inset-0 hidden md:flex items-center justify-between">
-          <div className="flex flex-col items-center gap-3 text-muted-foreground opacity-50 -ml-4">
-            <ChevronLeft className="h-16 w-16 text-red-600" />
-            <span className="text-sm font-bold text-red-600 whitespace-nowrap">
-              Swipe to reject
-            </span>
-          </div>
-          <div className="flex flex-col items-center gap-3 text-muted-foreground opacity-30">
-            <ChevronRight className="h-16 w-16 text-green-500" />
-            <span className="text-sm font-medium text-green-500 whitespace-nowrap">
-              Swipe to like
-            </span>
-          </div>
-        </div>
-        {/* Show next 3 cards in stack */}
-        {profiles.slice(currentIndex, currentIndex + 3).map((profile, index) => (
-          <TinderCard
-            key={profile.id}
-            profile={profile}
-            onSwipe={index === 0 ? handleSwipe : () => {}}
-            style={{
-              zIndex: 3 - index,
-              left: "50%",
-              marginLeft: "-175px", // Half of card width (350px / 2) to center
-              transform: `scale(${1 - index * 0.05}) translateY(${index * 10}px)`,
-              filter: index > 0 ? "blur(4px)" : "none",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Mobile Swipe Indicators */}
-      <div className="flex items-center justify-center gap-8 md:hidden -mt-4">
-        <div className="flex items-center gap-2 text-red-600 opacity-50">
-          <ChevronLeft className="h-6 w-6" />
-          <span className="text-sm font-bold">Swipe left to reject</span>
-        </div>
-        <div className="flex items-center gap-2 text-green-500 opacity-30">
-          <span className="text-sm font-medium">Swipe right to like</span>
-          <ChevronRight className="h-6 w-6" />
-        </div>
-      </div>
-
-      {/* Progress */}
-      <p className="text-sm text-muted-foreground">
-        {currentIndex + 1} / {profiles.length}
-      </p>
+    <div className="relative w-full flex justify-center">
+      {/* Show next 2 cards in stack */}
+      {profiles.slice(currentIndex, currentIndex + 2).reverse().map((profile, index) => (
+        <TinderCard 
+          key={profile.id}
+          profile={profile}
+          onSwipe={index === 0 ? handleSwipe : () => {}}
+          onClick={onCardClick}
+          style={{
+            zIndex: 2 - index,
+            transform: `scale(${1 - index * 0.04}) translateY(${index * 20}px)`,
+            filter: index > 0 ? 'blur(2px) grayscale(1)' : 'none',
+            opacity: index > 0 ? 0.3 : 1
+          }}
+        />
+      ))}
     </div>
   );
 }

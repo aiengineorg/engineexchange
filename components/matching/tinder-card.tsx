@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { X, Heart } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Maximize2, User } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -12,25 +11,30 @@ interface Profile {
   similarity?: number;
   matchReason?: string;
   searchedField?: "what_i_offer" | "what_im_looking_for";
+  images?: string[];
 }
 
 interface TinderCardProps {
   profile: Profile;
   onSwipe: (direction: "left" | "right") => void;
+  onClick?: (profile: Profile) => void;
   style?: React.CSSProperties;
 }
 
-export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
+export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-300, 300], [-15, 15]);
-  const opacity = useTransform(x, [-300, -150, 0, 150, 300], [0, 1, 1, 1, 0]);
+  const rotate = useTransform(x, [-200, 200], [-15, 15]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+
+  const likeOpacity = useTransform(x, [50, 150], [0, 1]);
+  const nopeOpacity = useTransform(x, [-50, -150], [0, 1]);
 
   const handleDragEnd = (_: any, info: any) => {
-    if (Math.abs(info.offset.x) > 100) {
-      const direction = info.offset.x > 0 ? "right" : "left";
-      onSwipe(direction);
+    if (info.offset.x > 120) {
+      onSwipe('right');
+    } else if (info.offset.x < -120) {
+      onSwipe('left');
     } else {
-      // Recenter the card if swipe threshold not met
       animate(x, 0, {
         type: "spring",
         stiffness: 300,
@@ -41,91 +45,112 @@ export function TinderCard({ profile, onSwipe, style }: TinderCardProps) {
 
   return (
     <motion.div
-      style={{
-        x,
-        rotate,
-        opacity,
-        ...style,
-      }}
+      style={{ x, rotate, opacity, ...style }}
       drag="x"
-      dragConstraints={{ left: -300, right: 300 }}
-      dragElastic={0.2}
-      dragMomentum={true}
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-      }}
+      dragConstraints={{ left: -400, right: 400 }}
       onDragEnd={handleDragEnd}
-      className="absolute cursor-grab active:cursor-grabbing"
+      onClick={() => Math.abs(x.get()) < 5 && onClick?.(profile)}
+      className="absolute w-full h-[640px] cursor-grab active:cursor-grabbing max-w-[420px]"
     >
-      <Card className="w-[350px] select-none overflow-hidden shadow-xl">
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-2xl font-bold">{profile.displayName}</h3>
-              </div>
-              {profile.similarity !== undefined && (
-                <div className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-                  {Math.round(profile.similarity * 100)}% match
-                </div>
-              )}
-            </div>
+      <div className="relative h-full w-full bg-bfl-black rounded-[1rem] overflow-hidden subtle-border shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col group border-t border-white/20">
+        {/* Swipe Indicators */}
+        <motion.div
+          style={{ opacity: likeOpacity }}
+          className="absolute inset-0 z-40 bg-green-500/10 backdrop-blur-[2px] flex items-center justify-center border-4 border-green-500/50 m-4 rounded-xl pointer-events-none"
+        >
+          <span className="text-6xl font-black text-green-500 tracking-tighter uppercase italic">Connect</span>
+        </motion.div>
+        <motion.div
+          style={{ opacity: nopeOpacity }}
+          className="absolute inset-0 z-40 bg-red-500/10 backdrop-blur-[2px] flex items-center justify-center border-4 border-red-500/50 m-4 rounded-xl pointer-events-none"
+        >
+          <span className="text-6xl font-black text-red-500 tracking-tighter uppercase italic">Skip</span>
+        </motion.div>
 
-            {profile.matchReason && (
-              <div className="rounded-lg bg-muted/30 border border-border p-3">
-                <p className="text-xs font-medium text-foreground mb-1">Why you're seeing this:</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{profile.matchReason}</p>
+        {/* Header with small image and name */}
+        <div className="p-6 flex items-center gap-4 border-b border-white/10">
+          <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20">
+            {profile.images?.[0] ? (
+              <img
+                src={profile.images[0]}
+                className="w-full h-full object-cover"
+                alt={profile.displayName}
+              />
+            ) : (
+              <div className="w-full h-full bg-bfl-dark flex items-center justify-center">
+                <User className="text-white/30" size={24} />
               </div>
             )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-2xl font-extrabold text-white tracking-tight italic truncate">
+              {profile.displayName.toUpperCase()}
+            </h3>
+            {profile.similarity !== undefined && (
+              <div className="flex items-center gap-2 mt-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-bfl-green" />
+                <span className="font-mono text-xs text-bfl-green font-bold">
+                  {Math.round(profile.similarity * 100)}% Match
+                </span>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick?.(profile);
+            }}
+            className="p-2 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer flex-shrink-0"
+          >
+            <Maximize2 size={16} className="text-white/50" />
+          </button>
+        </div>
 
-            <div className="space-y-3">
-              {/* Show the searched field first */}
-              {profile.searchedField === "what_im_looking_for" ? (
-                <>
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">What I'm Looking For:</h4>
-                    <p className="text-sm leading-relaxed">{profile.whatImLookingFor}</p>
-                  </div>
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">What I Offer:</h4>
-                    <p className="text-sm leading-relaxed">{profile.whatIOffer}</p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">What I Offer:</h4>
-                    <p className="text-sm leading-relaxed">{profile.whatIOffer}</p>
-                  </div>
-                  <div>
-                    <h4 className="mb-1 text-sm font-semibold">What I'm Looking For:</h4>
-                    <p className="text-sm leading-relaxed">{profile.whatImLookingFor}</p>
-                  </div>
-                </>
-              )}
+        {/* Main Content - Text focused */}
+        <div className="flex-1 p-6 overflow-y-auto space-y-6">
+          {/* What I Can Offer */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-px w-6 bg-bfl-green" />
+              <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.3em]">What I Can Offer</h4>
             </div>
+            <p className="text-sm text-white leading-relaxed font-medium">
+              {profile.whatIOffer}
+            </p>
           </div>
 
-          {/* Swipe indicators */}
-          <motion.div
-            style={{ opacity: useTransform(x, [-150, -50, 0], [1, 0.5, 0]) }}
-            className="pointer-events-none absolute left-8 top-8 flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-lg font-bold text-destructive-foreground"
-          >
-            <X className="h-6 w-6" />
-            NOPE
-          </motion.div>
+          {/* What I'm Looking For */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-px w-6 bg-bfl-muted" />
+              <h4 className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.3em]">What I'm Looking For</h4>
+            </div>
+            <p className="text-sm text-white/80 leading-relaxed font-medium">
+              {profile.whatImLookingFor}
+            </p>
+          </div>
 
-          <motion.div
-            style={{ opacity: useTransform(x, [0, 50, 150], [0, 0.5, 1]) }}
-            className="pointer-events-none absolute right-8 top-8 flex items-center gap-2 rounded-full bg-green-500 px-4 py-2 text-lg font-bold text-white"
-          >
-            <Heart className="h-6 w-6" />
-            LIKE
-          </motion.div>
-        </CardContent>
-      </Card>
+          {/* Match Reason if available */}
+          {profile.matchReason && (
+            <div className="space-y-3 pt-4 border-t border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="h-px w-6 bg-bfl-green" />
+                <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.3em]">Why You Match</h4>
+              </div>
+              <p className="text-sm text-bfl-green/80 leading-relaxed font-medium italic">
+                {profile.matchReason}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Bottom hint */}
+        <div className="p-4 border-t border-white/10 text-center">
+          <span className="font-mono text-[9px] text-white/30 uppercase tracking-[0.3em]">
+            Swipe right to connect · Swipe left to skip
+          </span>
+        </div>
+      </div>
     </motion.div>
   );
 }
