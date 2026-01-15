@@ -144,11 +144,31 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
           )}
         </div>
 
-        {/* Bottom hint */}
-        <div className="p-4 border-t border-white/10 text-center">
-          <span className="font-mono text-[9px] text-white/30 uppercase tracking-[0.3em]">
-            Swipe right to connect · Swipe left to skip
+        {/* Action buttons */}
+        <div className="p-4 border-t border-white/10 flex items-center justify-center gap-6">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSwipe('left');
+            }}
+            className="w-14 h-14 rounded-full bg-red-500/10 border-2 border-red-500/50 flex items-center justify-center hover:bg-red-500/20 transition-all active:scale-95"
+            aria-label="Skip"
+          >
+            <span className="text-red-500 text-2xl font-bold">✕</span>
+          </button>
+          <span className="font-mono text-[8px] text-white/20 uppercase tracking-[0.2em]">
+            or swipe
           </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSwipe('right');
+            }}
+            className="w-14 h-14 rounded-full bg-green-500/10 border-2 border-green-500/50 flex items-center justify-center hover:bg-green-500/20 transition-all active:scale-95"
+            aria-label="Connect"
+          >
+            <span className="text-green-500 text-2xl font-bold">✓</span>
+          </button>
         </div>
       </div>
     </motion.div>
