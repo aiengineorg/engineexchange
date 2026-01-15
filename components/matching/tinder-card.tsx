@@ -50,7 +50,7 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
       dragConstraints={{ left: -400, right: 400 }}
       onDragEnd={handleDragEnd}
       onClick={() => Math.abs(x.get()) < 5 && onClick?.(profile)}
-      className="absolute w-full h-[640px] cursor-grab active:cursor-grabbing max-w-[420px]"
+      className="absolute w-full h-[640px] cursor-grab active:cursor-grabbing max-w-[420px] touch-pan-x"
     >
       <div className="relative h-full w-full bg-bfl-black rounded-[1rem] overflow-hidden subtle-border shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col group border-t border-white/20">
         {/* Swipe Indicators */}
@@ -106,38 +106,38 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
           </button>
         </div>
 
-        {/* Main Content - Text focused */}
-        <div className="flex-1 p-6 overflow-y-auto space-y-6">
+        {/* Main Content - Text focused (no scroll to prevent swipe conflicts) */}
+        <div className="flex-1 p-6 overflow-hidden space-y-5">
           {/* What I Can Offer */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-px w-6 bg-bfl-green" />
               <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.3em]">What I Can Offer</h4>
             </div>
-            <p className="text-sm text-white leading-relaxed font-medium">
+            <p className="text-sm text-white leading-relaxed font-medium line-clamp-5">
               {profile.whatIOffer}
             </p>
           </div>
 
           {/* What I'm Looking For */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
               <div className="h-px w-6 bg-bfl-muted" />
               <h4 className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.3em]">What I'm Looking For</h4>
             </div>
-            <p className="text-sm text-white/80 leading-relaxed font-medium">
+            <p className="text-sm text-white/80 leading-relaxed font-medium line-clamp-5">
               {profile.whatImLookingFor}
             </p>
           </div>
 
           {/* Match Reason if available */}
           {profile.matchReason && (
-            <div className="space-y-3 pt-4 border-t border-white/10">
+            <div className="space-y-2 pt-3 border-t border-white/10">
               <div className="flex items-center gap-2">
                 <div className="h-px w-6 bg-bfl-green" />
                 <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.3em]">Why You Match</h4>
               </div>
-              <p className="text-sm text-bfl-green/80 leading-relaxed font-medium italic">
+              <p className="text-sm text-bfl-green/80 leading-relaxed font-medium italic line-clamp-3">
                 {profile.matchReason}
               </p>
             </div>
