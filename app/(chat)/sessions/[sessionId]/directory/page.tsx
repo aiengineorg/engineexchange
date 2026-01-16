@@ -35,7 +35,7 @@ export default function DirectoryPage({
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchField, setSearchField] = useState<"offers" | "looking_for">("offers");
+  const [searchField, setSearchField] = useState<"offers" | "looking_for">("looking_for");
 
   const loadProfiles = async (customQuery?: string, isSearch = false, isRefresh = false) => {
     if (isRefresh) {
@@ -155,17 +155,7 @@ export default function DirectoryPage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">All People</span>
         </div>
-        <div className="flex items-center justify-between">
-          <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Directory</h2>
-          <button
-            onClick={() => loadProfiles(undefined, false, true)}
-            disabled={refreshing}
-            className="flex items-center gap-3 px-6 py-3 border border-white/10 text-bfl-muted font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white hover:bg-white/5 transition-all"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-            Refresh
-          </button>
-        </div>
+        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Directory</h2>
       </div>
 
       {/* Search and Filter */}
@@ -190,8 +180,16 @@ export default function DirectoryPage({
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search by skills, expertise..."
-              className="w-full pl-16 pr-6 py-6 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              className="w-full pl-16 pr-14 py-6 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
             />
+            <button
+              onClick={() => loadProfiles(undefined, false, true)}
+              disabled={refreshing}
+              className="absolute inset-y-0 right-4 flex items-center text-bfl-muted hover:text-white transition-all"
+              title="Refresh profiles"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            </button>
           </div>
           <button
             onClick={handleSearch}
@@ -239,7 +237,7 @@ export default function DirectoryPage({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-bfl-black/60 to-transparent md:hidden" />
                   <div className="absolute bottom-4 left-4 md:hidden">
-                    <span className="font-mono text-[9px] text-bfl-green uppercase tracking-widest font-bold">Verified Node</span>
+                    <span className="font-mono text-[9px] text-bfl-green uppercase tracking-widest font-bold">Verified Profile</span>
                   </div>
                 </div>
 
@@ -264,11 +262,11 @@ export default function DirectoryPage({
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="space-y-2">
-                      <h4 className="font-mono text-[9px] font-bold text-bfl-muted uppercase tracking-[0.3em]">Value Offering</h4>
+                      <h4 className="font-mono text-[9px] font-bold text-bfl-muted uppercase tracking-[0.3em]">What I Offer</h4>
                       <p className="text-sm text-white/80 leading-relaxed font-medium line-clamp-3">{profile.whatIOffer}</p>
                     </div>
                     <div className="space-y-2 border-l border-white/5 pl-4">
-                      <h4 className="font-mono text-[9px] font-bold text-bfl-muted uppercase tracking-[0.3em]">Strategic Need</h4>
+                      <h4 className="font-mono text-[9px] font-bold text-bfl-muted uppercase tracking-[0.3em]">What I'm Looking For</h4>
                       <p className="text-sm text-white/80 leading-relaxed font-medium line-clamp-3">{profile.whatImLookingFor}</p>
                     </div>
                   </div>

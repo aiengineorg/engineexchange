@@ -121,7 +121,7 @@ export default function ProfileDetailPage({
 
       <div className="bg-white/[0.02] subtle-border p-10 space-y-12">
         <div className="relative pt-8 border-t border-white/10">
-          <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">01 / Strategic Value</span>
+          <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">01 / What I Offer</span>
           <h4 className="text-2xl font-bold text-white italic mb-6">"I am currently offering..."</h4>
           <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
             {profile.whatIOffer}
@@ -130,7 +130,7 @@ export default function ProfileDetailPage({
 
         <div className="relative pt-8 border-t border-white/10">
           <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / Search Parameters</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">"I'm searching for nodes with..."</h4>
+          <h4 className="text-2xl font-bold text-white italic mb-6">"I'm looking for..."</h4>
           <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
             {profile.whatImLookingFor}
           </p>

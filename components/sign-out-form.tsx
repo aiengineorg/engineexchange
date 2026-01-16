@@ -12,7 +12,7 @@ export const SignOutForm = () => {
         className="flex items-center gap-4 px-4 py-2 w-full text-bfl-muted hover:text-white transition-colors"
       >
         <LogOut size={16} />
-        <span className="text-[10px] font-bold uppercase tracking-widest">Terminate Session</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest">Logout</span>
       </button>
     </Form>
   );

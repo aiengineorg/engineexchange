@@ -150,7 +150,7 @@ export default function MatchesPage({
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-bfl-black/60 to-transparent md:hidden" />
                 <div className="absolute bottom-4 left-4 md:hidden">
-                  <span className="font-mono text-[9px] text-bfl-green uppercase tracking-widest font-bold">Verified Node</span>
+                  <span className="font-mono text-[9px] text-bfl-green uppercase tracking-widest font-bold">Verified Profile</span>
                 </div>
               </div>
 

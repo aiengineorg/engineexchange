@@ -146,21 +146,20 @@ export default function InterestedPage({
 
   return (
     <div className="px-6 py-12 md:px-12 max-w-5xl mx-auto flex flex-col min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-bfl-green" />
-            <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">People Who Like You</span>
-          </div>
-          <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Interested In You</h2>
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px w-8 bg-bfl-green" />
+          <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">People Who Like You</span>
         </div>
+        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Interested In You</h2>
         <button
           onClick={() => loadProfiles(true)}
           disabled={refreshing}
-          className="flex items-center gap-3 px-6 py-3 border border-white/10 text-bfl-muted font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white hover:bg-white/5 transition-all"
+          className="flex items-center gap-2 mt-4 text-bfl-muted hover:text-white transition-all"
+          title="Refresh"
         >
-          <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-          Refresh
+          <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} />
+          <span className="font-mono text-[10px] uppercase tracking-widest">Refresh</span>
         </button>
       </div>
 

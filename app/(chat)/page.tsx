@@ -81,7 +81,7 @@ export default async function LandingPage() {
                   <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-glow transition-all uppercase tracking-tighter">{s.name}</h3>
                   <div className="flex items-center gap-3 text-bfl-muted font-mono text-[10px] tracking-widest uppercase">
                     <Users size={12} />
-                    {s.profileCount} Verified Nodes
+                    {s.profileCount} Verified Profiles
                   </div>
                 </div>
                 <div className="absolute bottom-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">

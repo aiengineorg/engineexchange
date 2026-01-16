@@ -141,7 +141,7 @@ export default function EditProfilePage({
           </div>
 
           <div className="relative pt-8 border-t border-white/10">
-            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / Strategic Value</span>
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / What I Offer</span>
             <label htmlFor="whatIOffer" className="text-2xl font-bold text-white italic mb-6 block">"I am currently offering..." *</label>
             <textarea
               id="whatIOffer"
@@ -162,7 +162,7 @@ export default function EditProfilePage({
 
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">03 / Search Parameters</span>
-            <label htmlFor="whatImLookingFor" className="text-2xl font-bold text-white italic mb-6 block">"I'm searching for nodes with..." *</label>
+            <label htmlFor="whatImLookingFor" className="text-2xl font-bold text-white italic mb-6 block">"I'm looking for..." *</label>
             <textarea
               id="whatImLookingFor"
               placeholder="Describe the skills and expertise you're looking for in collaborators..."

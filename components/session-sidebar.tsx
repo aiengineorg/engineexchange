@@ -2,7 +2,7 @@
 
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Heart, MessageCircle, Sparkles, User, Home, Users, PlusCircle, ShieldCheck, LogOut } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, User, Home, Users, PlusCircle, ShieldCheck, LogOut, ArrowLeftRight } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -89,7 +89,7 @@ export function SessionSidebar() {
       description: "Browse all profiles",
     },
     {
-      title: "Node Identity",
+      title: "My Profile",
       href: `/sessions/${sessionId}/profile`,
       icon: User,
       description: "Edit your profile",
@@ -121,8 +121,8 @@ export function SessionSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild className="flex items-center gap-5 px-5 py-4 transition-all duration-300 text-bfl-muted hover:text-white hover:bg-white/[0.02]">
                 <Link href="/">
-                  <Home className="h-[18px] w-[18px] text-white/20" />
-                  <span className="text-xs font-bold uppercase tracking-[0.2em]">Overview</span>
+                  <ArrowLeftRight className="h-[18px] w-[18px] text-white/20" />
+                  <span className="text-xs font-bold uppercase tracking-[0.2em]">Switch Event</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, RefreshCw, X, Zap, Linkedin, ExternalLink, ArrowRight, Share2 } from "lucide-react";
+import { Search, RefreshCw, X, Zap } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -23,55 +23,6 @@ interface Profile {
   searchedField?: "what_i_offer" | "what_im_looking_for";
   images?: string[];
 }
-
-// Sample profiles for testing
-const MOCK_PROFILES: Profile[] = [
-  {
-    id: 'NODE-991',
-    displayName: 'Elena Vance',
-    whatIOffer: 'Deep expertise in React Native and performance optimization for mobile apps. I specialize in building mission-critical interfaces that maintain 60fps under extreme data loads.',
-    whatImLookingFor: 'A backend architect who treats infrastructure as an art form. Specifically looking for Rust or Go expertise to collaborate on a decentralized communication layer.',
-    similarity: 0.94,
-    matchReason: 'Structural alignment detected in high-performance architectures and real-time messaging protocols. Both nodes prioritize low-latency execution and memory safety.',
-    images: ['https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800&h=1200'],
-  },
-  {
-    id: 'NODE-742',
-    displayName: 'Marcus Thorne',
-    whatIOffer: 'Computational geometry and WebGL optimization. I translate high-level spatial concepts into performant browser-based 3D environments using Three.js and custom shaders.',
-    whatImLookingFor: 'Creative UX Designers who are bored with 2D screens. I need visionaries to help define the interface language for the next generation of spatial computing.',
-    similarity: 0.88,
-    matchReason: 'Cross-functional synergy between Marcus\'s specialized 3D stack and your product vision. High potential for zero-to-one innovation in AR/VR spaces.',
-    images: ['https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800&h=1200'],
-  },
-  {
-    id: 'NODE-112',
-    displayName: 'Sarah Jenkins',
-    whatIOffer: 'Strategic Product Management for AI-first B2B SaaS. I excel at converting complex vector-space capabilities into intuitive features that enterprise customers actually pay for.',
-    whatImLookingFor: 'LLM researchers and engineers who want to see their models deployed in the wild. Looking for partners to build robust business intelligence tools.',
-    similarity: 0.76,
-    matchReason: 'Complementary skillsets for scaling AI-first applications within enterprise ecosystems. Your technical depth perfectly offsets Sarah\'s market-facing strategy.',
-    images: ['https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=800&h=1200'],
-  },
-  {
-    id: 'NODE-445',
-    displayName: 'Alex Chen',
-    whatIOffer: 'Full-stack development with expertise in distributed systems, microservices architecture, and cloud infrastructure. Specialized in building scalable backend systems using Node.js, Python, and Kubernetes.',
-    whatImLookingFor: 'Frontend engineers passionate about creating beautiful, performant user experiences. Looking for someone to collaborate on building the next generation of web applications.',
-    similarity: 0.82,
-    matchReason: 'Strong technical alignment in modern web development stack. Both nodes demonstrate expertise in building production-ready applications.',
-    images: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800&h=1200'],
-  },
-  {
-    id: 'NODE-223',
-    displayName: 'Jordan Taylor',
-    whatIOffer: 'Data science and machine learning engineering. I build predictive models and data pipelines that help businesses make data-driven decisions. Expertise in Python, TensorFlow, and cloud ML platforms.',
-    whatImLookingFor: 'Software engineers who understand the full stack and can help deploy ML models into production. Looking for someone to bridge the gap between data science and engineering.',
-    similarity: 0.79,
-    matchReason: 'Complementary skills in data engineering and software development. High potential for building end-to-end ML systems.',
-    images: ['https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=800&h=1200'],
-  },
-];
 
 export default function DiscoverPage({
   params,
@@ -86,8 +37,7 @@ export default function DiscoverPage({
   const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchField, setSearchField] = useState<"offers" | "looking_for">("offers");
-  const [useMockData, setUseMockData] = useState(false);
+  const [searchField, setSearchField] = useState<"offers" | "looking_for">("looking_for");
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
   const loadProfiles = async (customQuery?: string, isSearch = false, isRefresh = false) => {
@@ -117,20 +67,10 @@ export default function DiscoverPage({
       }
 
       const data = await response.json();
-      // If no profiles returned, use mock data for testing
-      if (data.length === 0 && !customQuery) {
-        setProfiles(MOCK_PROFILES);
-        setUseMockData(true);
-      } else {
-        setProfiles(data);
-        setUseMockData(false);
-      }
+      setProfiles(data);
     } catch (err) {
-      // On error, use mock data for testing
-      console.warn("Failed to load profiles, using mock data:", err);
-      setProfiles(MOCK_PROFILES);
-      setUseMockData(true);
-      setError("");
+      console.error("Failed to load profiles:", err);
+      setError(err instanceof Error ? err.message : "Failed to load profiles");
     } finally {
       if (isRefresh) {
         setRefreshing(false);
@@ -170,15 +110,6 @@ export default function DiscoverPage({
   }, [sessionId, router]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
-    // If using mock data, just remove the card from the stack
-    if (useMockData) {
-      setProfiles((prev) => prev.filter((p) => p.id !== profileId));
-      if (decision === "yes") {
-        console.log("Mock match with:", profileId);
-      }
-      return;
-    }
-
     try {
       const response = await fetch("/api/swipe", {
         method: "POST",
@@ -316,7 +247,7 @@ export default function DiscoverPage({
           <div className="px-6 space-y-16">
             <div className="relative pt-8 border-t border-white/10">
               <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-                01 / Strategic Value
+                01 / What I Offer
               </span>
               <h4 className="text-2xl font-bold text-white italic mb-6">"I am currently offering..."</h4>
               <p className="text-xl text-bfl-muted leading-relaxed font-light italic">{profile.whatIOffer}</p>
@@ -326,7 +257,7 @@ export default function DiscoverPage({
               <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
                 02 / Search Parameters
               </span>
-              <h4 className="text-2xl font-bold text-white italic mb-6">"I'm searching for nodes with..."</h4>
+              <h4 className="text-2xl font-bold text-white italic mb-6">"I'm looking for..."</h4>
               <p className="text-xl text-bfl-muted leading-relaxed font-light italic">{profile.whatImLookingFor}</p>
             </div>
 
@@ -369,7 +300,7 @@ export default function DiscoverPage({
               }}
               className="flex-1 py-5 border border-red-500/20 text-red-500 font-black text-xs uppercase tracking-[0.4em] hover:bg-red-500/10 transition-all italic rounded-sm"
             >
-              Decline Node
+              Skip
             </button>
             <button
               onClick={() => {
@@ -388,33 +319,12 @@ export default function DiscoverPage({
 
   return (
     <div className="px-6 py-12 md:px-12 max-w-5xl mx-auto flex flex-col min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-bfl-green" />
-            <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Find People</span>
-          </div>
-          <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Discover</h2>
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-px w-8 bg-bfl-green" />
+          <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Find People</span>
         </div>
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => {
-              setProfiles(MOCK_PROFILES);
-              setUseMockData(true);
-            }}
-            className="flex items-center gap-3 px-6 py-3 border border-bfl-green/50 text-bfl-green font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white hover:bg-bfl-green/10 transition-all"
-          >
-            Load Sample Cards
-          </button>
-          <button 
-            onClick={() => loadProfiles(undefined, false, true)}
-            disabled={refreshing}
-            className="flex items-center gap-3 px-6 py-3 border border-white/10 text-bfl-muted font-bold text-[10px] uppercase tracking-[0.2em] hover:text-white hover:bg-white/5 transition-all"
-          >
-            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-            Reset Registry Stack
-          </button>
-        </div>
+        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Discover</h2>
       </div>
 
       <div className="mb-20">
@@ -438,8 +348,16 @@ export default function DiscoverPage({
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search by skills, expertise..."
-              className="w-full pl-16 pr-6 py-6 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              className="w-full pl-16 pr-14 py-6 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
             />
+            <button
+              onClick={() => loadProfiles(undefined, false, true)}
+              disabled={refreshing}
+              className="absolute inset-y-0 right-4 flex items-center text-bfl-muted hover:text-white transition-all"
+              title="Refresh profiles"
+            >
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            </button>
           </div>
           <button
             onClick={handleSearch}
