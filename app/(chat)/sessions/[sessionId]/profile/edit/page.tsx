@@ -141,31 +141,11 @@ export default function EditProfilePage({
           </div>
 
           <div className="relative pt-8 border-t border-white/10">
-            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / What I Offer</span>
-            <label htmlFor="whatIOffer" className="text-2xl font-bold text-white italic mb-6 block">"I am currently offering..." *</label>
-            <textarea
-              id="whatIOffer"
-              placeholder="Describe your skills, expertise, and what value you bring..."
-              value={formData.whatIOffer}
-              onChange={(e) => setFormData({ ...formData, whatIOffer: e.target.value })}
-              required
-              minLength={10}
-              maxLength={1000}
-              disabled={loading}
-              rows={5}
-              className="w-full px-6 py-5 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none disabled:opacity-50"
-            />
-            <p className="font-mono text-[10px] text-bfl-muted mt-2 tracking-widest">
-              {formData.whatIOffer.length}/1000 characters (min 10)
-            </p>
-          </div>
-
-          <div className="relative pt-8 border-t border-white/10">
-            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">03 / Search Parameters</span>
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / What I'm Looking For</span>
             <label htmlFor="whatImLookingFor" className="text-2xl font-bold text-white italic mb-6 block">"I'm looking for..." *</label>
             <textarea
               id="whatImLookingFor"
-              placeholder="Describe the skills and expertise you're looking for in collaborators..."
+              placeholder="Describe the qualities, interests, and values you're looking for in a match..."
               value={formData.whatImLookingFor}
               onChange={(e) => setFormData({ ...formData, whatImLookingFor: e.target.value })}
               required
@@ -177,6 +157,26 @@ export default function EditProfilePage({
             />
             <p className="font-mono text-[10px] text-bfl-muted mt-2 tracking-widest">
               {formData.whatImLookingFor.length}/1000 characters (min 10)
+            </p>
+          </div>
+
+          <div className="relative pt-8 border-t border-white/10">
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">03 / What I Offer</span>
+            <label htmlFor="whatIOffer" className="text-2xl font-bold text-white italic mb-6 block">"I am currently offering..." *</label>
+            <textarea
+              id="whatIOffer"
+              placeholder="Describe yourself, your interests, values, and what you bring to a connection..."
+              value={formData.whatIOffer}
+              onChange={(e) => setFormData({ ...formData, whatIOffer: e.target.value })}
+              required
+              minLength={10}
+              maxLength={1000}
+              disabled={loading}
+              rows={5}
+              className="w-full px-6 py-5 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none disabled:opacity-50"
+            />
+            <p className="font-mono text-[10px] text-bfl-muted mt-2 tracking-widest">
+              {formData.whatIOffer.length}/1000 characters (min 10)
             </p>
           </div>
 

@@ -128,46 +128,11 @@ export default function NewProfilePage({
           </div>
         </div>
 
-        {/* What I Offer Section */}
-        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
-          <div className="relative pt-8 border-t border-white/10">
-            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-              02 / What I Offer
-            </span>
-            <div className="flex items-center gap-3 mb-4">
-              <Sparkles className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">What I Offer</h2>
-            </div>
-            <p className="text-sm text-bfl-muted mb-6">
-              Describe yourself, your interests, values, and what you bring to a connection.
-            </p>
-            <textarea
-              id="whatIOffer"
-              placeholder="I'm passionate about..."
-              value={formData.whatIOffer}
-              onChange={(e) =>
-                setFormData({ ...formData, whatIOffer: e.target.value })
-              }
-              required
-              minLength={10}
-              maxLength={1000}
-              rows={5}
-              className="w-full px-6 py-4 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
-            />
-            <div className="flex justify-between mt-3">
-              <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
-              <p className="text-xs text-bfl-muted font-mono">
-                {formData.whatIOffer.length}/1000
-              </p>
-            </div>
-          </div>
-        </div>
-
         {/* What I'm Looking For Section */}
         <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-              03 / Search Parameters
+              02 / What I'm Looking For
             </span>
             <div className="flex items-center gap-3 mb-4">
               <Search className="text-bfl-green" size={20} />
@@ -196,6 +161,41 @@ export default function NewProfilePage({
               <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
               <p className="text-xs text-bfl-muted font-mono">
                 {formData.whatImLookingFor.length}/1000
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* What I Offer Section */}
+        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+          <div className="relative pt-8 border-t border-white/10">
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
+              03 / What I Offer
+            </span>
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="text-bfl-green" size={20} />
+              <h2 className="text-xl font-bold text-white italic">What I Offer</h2>
+            </div>
+            <p className="text-sm text-bfl-muted mb-6">
+              Describe yourself, your interests, values, and what you bring to a connection.
+            </p>
+            <textarea
+              id="whatIOffer"
+              placeholder="I'm passionate about..."
+              value={formData.whatIOffer}
+              onChange={(e) =>
+                setFormData({ ...formData, whatIOffer: e.target.value })
+              }
+              required
+              minLength={10}
+              maxLength={1000}
+              rows={5}
+              className="w-full px-6 py-4 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+            />
+            <div className="flex justify-between mt-3">
+              <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
+              <p className="text-xs text-bfl-muted font-mono">
+                {formData.whatIOffer.length}/1000
               </p>
             </div>
           </div>
