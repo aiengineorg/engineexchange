@@ -82,17 +82,27 @@ export async function POST(request: Request) {
     const redisKey = `swipes:${sessionId}:${user1}:${user2}`;
 
     // Lua script for atomic read-modify-write
+    // TTL: 30 days (2592000 seconds)
     const luaScript = `
       redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
-      redis.call('EXPIRE', KEYS[1], 86400)
+      redis.call('EXPIRE', KEYS[1], 2592000)
       return redis.call('HGET', KEYS[1], ARGV[3])
     `;
 
     // Execute atomic operation
-    const theirDecision = await redis.eval(luaScript, {
+    let theirDecision = await redis.eval(luaScript, {
       keys: [redisKey],
       arguments: [`${myProfile.id}_swipe`, decision, `${targetUserId}_swipe`],
     });
+
+    // Postgres fallback: if Redis doesn't have their swipe, check database
+    if (theirDecision === null && decision === "yes") {
+      const theirSwipe = await getSwipe({
+        swipingUserId: targetUserId,
+        targetUserId: myProfile.id,
+      });
+      theirDecision = theirSwipe?.decision ?? null;
+    }
 
     let matchId: string | null = null;
 

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, RefreshCw, X, Zap } from "lucide-react";
+import { Search, RefreshCw, X, Zap, Briefcase, GraduationCap, Linkedin, Github, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -22,6 +22,12 @@ interface Profile {
   matchReason?: string;
   searchedField?: "what_i_offer" | "what_im_looking_for";
   images?: string[];
+  currentRole?: string;
+  currentCompany?: string;
+  university?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  githubUrl?: string;
 }
 
 export default function DiscoverPage({
@@ -40,6 +46,14 @@ export default function DiscoverPage({
   const [searchField, setSearchField] = useState<"offers" | "looking_for">("looking_for");
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
 
+  // Check for test mode from URL
+  const [testMode, setTestMode] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setTestMode(params.get("test") === "true");
+  }, []);
+
   const loadProfiles = async (customQuery?: string, isSearch = false, isRefresh = false) => {
     if (isRefresh) {
       setRefreshing(true);
@@ -53,6 +67,9 @@ export default function DiscoverPage({
     try {
       const url = new URL("/api/feed/discover", window.location.origin);
       url.searchParams.set("sessionId", sessionId);
+      if (testMode === true) {
+        url.searchParams.set("test", "true");
+      }
       if (customQuery) {
         url.searchParams.set("query", customQuery);
         url.searchParams.set("searchField", searchField);
@@ -82,22 +99,31 @@ export default function DiscoverPage({
     }
   };
 
-  // Check if profile exists on mount
+  // Check if profile exists on mount (skip in test mode)
   useEffect(() => {
+    // Wait for testMode to be determined
+    if (testMode === null) return;
+
     const checkProfile = async () => {
+      // In test mode, skip profile check and load test cards directly
+      if (testMode) {
+        loadProfiles();
+        return;
+      }
+
       try {
         const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
-        
+
         if (response.status === 404) {
           // Profile doesn't exist, redirect to profile creation
           router.push(`/sessions/${sessionId}/profile/new`);
           return;
         }
-        
+
         if (!response.ok) {
           throw new Error("Failed to check profile");
         }
-        
+
         // Profile exists, load profiles
         loadProfiles();
       } catch (err) {
@@ -105,11 +131,17 @@ export default function DiscoverPage({
         setLoading(false);
       }
     };
-    
+
     checkProfile();
-  }, [sessionId, router]);
+  }, [sessionId, router, testMode]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
+    // In test mode, just remove from local state without API call
+    if (testMode) {
+      setProfiles((prev) => prev.filter((p) => p.id !== profileId));
+      return;
+    }
+
     try {
       const response = await fetch("/api/swipe", {
         method: "POST",
@@ -201,116 +233,195 @@ export default function DiscoverPage({
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="fixed inset-0 z-[100] bg-bfl-black flex flex-col overflow-y-auto"
       >
-        {/* Fixed Technical Header */}
-        <div className="sticky top-0 z-50 glass border-b border-white/10 p-6 flex justify-between items-center">
-          <div className="flex flex-col">
-            <span className="font-mono text-[9px] text-bfl-green uppercase tracking-[0.4em]">Neural Sync View</span>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <h2 className="text-white font-black tracking-widest text-sm uppercase italic">{profile.displayName}</h2>
+        {/* Fixed Header */}
+        <div className="sticky top-0 z-50 glass border-b border-white/10 px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onClose}
+              className="p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors text-white"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex flex-col">
+              <span className="font-mono text-[8px] text-bfl-green uppercase tracking-[0.3em]">Profile Details</span>
+              <h2 className="text-white font-bold text-sm uppercase italic">{profile.displayName}</h2>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-3 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors text-white"
-          >
-            <X size={20} />
-          </button>
+          {profile.similarity !== undefined && (
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-2 rounded-full bg-bfl-green animate-pulse" />
+              <span className="font-mono text-sm text-bfl-green font-bold">
+                {Math.round(profile.similarity * 100)}% Match
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="max-w-3xl mx-auto w-full pb-32">
-          {/* Immersive Hero Image */}
-          <div className="relative h-[60vh] w-full mb-12">
+        <div className="max-w-2xl mx-auto w-full pb-32">
+          {/* Hero Image */}
+          <div className="relative h-[50vh] w-full">
             {profile.images?.[0] ? (
               <img
                 src={profile.images[0]}
-                className="w-full h-full object-cover grayscale-[0.1]"
+                className="w-full h-full object-cover object-[center_20%]"
                 alt={profile.displayName}
               />
             ) : (
-              <div className="w-full h-full bg-bfl-dark" />
+              <div className="w-full h-full bg-gradient-to-br from-bfl-dark to-bfl-black flex items-center justify-center">
+                <div className="text-white/20 text-8xl font-bold">{profile.displayName.charAt(0)}</div>
+              </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-bfl-black via-transparent to-transparent" />
-            <div className="absolute bottom-10 left-10">
-              <h1 className="text-7xl font-black text-white italic tracking-tighter uppercase mb-2 text-glow">
+            <div className="absolute inset-0 bg-gradient-to-t from-bfl-black via-bfl-black/20 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white italic tracking-tight uppercase mb-2">
                 {profile.displayName}
               </h1>
-              <div className="flex items-center gap-4">
-                <span className="font-mono text-xs text-bfl-green font-bold uppercase tracking-[0.3em]">
-                  {profile.id} / SYNCHRONIZED
-                </span>
+            </div>
+          </div>
+
+          {/* Profile Details Section */}
+          <div className="px-6 py-4 border-b border-white/10">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="space-y-2">
+                {/* Role & Company */}
+                <div className="flex items-center gap-2 text-white/80">
+                  <Briefcase size={14} className="text-bfl-muted flex-shrink-0" />
+                  <span className="text-sm font-medium">
+                    {profile.currentRole || "Role"} at {profile.currentCompany || "Company"}
+                  </span>
+                </div>
+                {/* University */}
+                <div className="flex items-center gap-2 text-white/60">
+                  <GraduationCap size={14} className="text-bfl-muted flex-shrink-0" />
+                  <span className="text-sm">
+                    {profile.university || "University"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Social Links */}
+              <div className="flex items-center gap-2">
+                <a
+                  href={profile.linkedinUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                >
+                  <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
+                </a>
+                <a
+                  href={profile.twitterUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                >
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-white/60 hover:text-white fill-current">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </a>
+                <a
+                  href={profile.githubUrl || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                >
+                  <Github size={16} className="text-white/60 hover:text-white" />
+                </a>
               </div>
             </div>
           </div>
 
-          {/* Technical Sections */}
-          <div className="px-6 space-y-16">
-            <div className="relative pt-8 border-t border-white/10">
-              <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-                01 / What I Offer
-              </span>
-              <h4 className="text-2xl font-bold text-white italic mb-6">"I am currently offering..."</h4>
-              <p className="text-xl text-bfl-muted leading-relaxed font-light italic">{profile.whatIOffer}</p>
-            </div>
-
-            <div className="relative pt-8 border-t border-white/10">
-              <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-                02 / Search Parameters
-              </span>
-              <h4 className="text-2xl font-bold text-white italic mb-6">"I'm looking for..."</h4>
-              <p className="text-xl text-bfl-muted leading-relaxed font-light italic">{profile.whatImLookingFor}</p>
-            </div>
-
-            {profile.similarity !== undefined && (
-              <div className="relative pt-8 border-t border-white/10">
-                <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-                  03 / AI Synergy Analysis
-                </span>
-                <div className="bg-white/[0.02] subtle-border p-8 rounded-lg relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-bfl-green" />
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                      <Zap className="text-bfl-green" size={20} fill="currentColor" />
-                      <span className="font-mono text-sm font-bold text-white uppercase tracking-widest">
-                        Similarity: {Math.round(profile.similarity * 100)}%
-                      </span>
-                    </div>
-                    <div className="px-3 py-1 bg-bfl-green/20 border border-bfl-green/50 text-[10px] text-bfl-green font-black uppercase tracking-widest rounded">
-                      Validated
-                    </div>
-                  </div>
-                  {profile.matchReason && (
-                    <p className="text-sm text-bfl-muted leading-relaxed italic border-l border-white/10 pl-6 py-2">
-                      {profile.matchReason}
-                    </p>
-                  )}
+          {/* Two Column Layout */}
+          <div className="px-6 py-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* What I Offer */}
+              <div className="space-y-3 p-4 bg-white/[0.02] rounded-lg border border-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="h-px w-4 bg-bfl-green" />
+                  <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.15em]">What I Offer</h4>
                 </div>
+                <p className="text-sm text-white leading-relaxed">
+                  {profile.whatIOffer}
+                </p>
+              </div>
+
+              {/* What I'm Looking For */}
+              <div className="space-y-3 p-4 bg-white/[0.02] rounded-lg border border-white/5">
+                <div className="flex items-center gap-2">
+                  <div className="h-px w-4 bg-bfl-muted" />
+                  <h4 className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.15em]">Looking For</h4>
+                </div>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  {profile.whatImLookingFor}
+                </p>
+              </div>
+            </div>
+
+            {/* Match Reason */}
+            {profile.matchReason && (
+              <div className="mt-6 p-4 bg-bfl-green/5 rounded-lg border border-bfl-green/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="text-bfl-green" size={14} fill="currentColor" />
+                  <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.15em]">Why You Match</h4>
+                </div>
+                <p className="text-sm text-bfl-green/90 leading-relaxed italic">
+                  {profile.matchReason}
+                </p>
               </div>
             )}
           </div>
         </div>
 
         {/* Persistent Action Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 p-8 glass border-t border-white/10">
-          <div className="max-w-xl mx-auto flex gap-6">
-            <button
-              onClick={() => {
-                onSwipe("left");
-                onClose();
-              }}
-              className="flex-1 py-5 border border-red-500/20 text-red-500 font-black text-xs uppercase tracking-[0.4em] hover:bg-red-500/10 transition-all italic rounded-sm"
-            >
-              Skip
-            </button>
-            <button
-              onClick={() => {
-                onSwipe("right");
-                onClose();
-              }}
-              className="flex-2 px-12 py-5 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.4em] hover:bg-bfl-offwhite transition-all italic rounded-sm"
-            >
-              Initiate Connection
-            </button>
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-6 glass border-t border-white/10">
+          <div className="max-w-2xl mx-auto">
+            {/* Swipe Hint */}
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="flex items-center gap-1 text-red-500/60">
+                <ChevronLeft size={14} />
+                <span className="font-mono text-[9px] uppercase tracking-wider">Skip</span>
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-8 h-0.5 bg-white/20 rounded-full" />
+                  <div className="w-2 h-2 border border-white/30 rounded-full" />
+                  <div className="w-8 h-0.5 bg-white/20 rounded-full" />
+                </div>
+              </div>
+              <div className="flex items-center gap-1 text-green-500/60">
+                <span className="font-mono text-[9px] uppercase tracking-wider">Connect</span>
+                <ChevronRight size={14} />
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => {
+                  onSwipe("left");
+                  onClose();
+                }}
+                className="w-16 h-16 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center hover:bg-red-500/20 transition-all active:scale-95"
+                aria-label="Skip"
+              >
+                <span className="text-red-500 text-2xl font-bold">✕</span>
+              </button>
+
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-mono text-[10px] text-white/30 uppercase tracking-[0.2em]">swipe or tap</span>
+              </div>
+
+              <button
+                onClick={() => {
+                  onSwipe("right");
+                  onClose();
+                }}
+                className="w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center hover:bg-green-500/20 transition-all active:scale-95"
+                aria-label="Connect"
+              >
+                <span className="text-green-500 text-2xl font-bold">✓</span>
+              </button>
+            </div>
           </div>
         </div>
       </motion.div>

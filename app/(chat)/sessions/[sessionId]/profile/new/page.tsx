@@ -1,9 +1,11 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Sparkles, Search } from "lucide-react";
+import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X } from "lucide-react";
+
+const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
 
 export default function NewProfilePage({
   params,
@@ -21,6 +23,19 @@ export default function NewProfilePage({
     whatImLookingFor: "",
   });
 
+  // Image upload and generation state
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Image selection and prompt state
+  const [selectedImageType, setSelectedImageType] = useState<"uploaded" | "generated" | null>(null);
+  const DEFAULT_PROMPT = "camping in a forest by a campfire, high quality, professional lighting, warm natural atmosphere";
+  const [imagePrompt, setImagePrompt] = useState(DEFAULT_PROMPT);
+
   // Pre-fill display name with Discord username if available
   useEffect(() => {
     if (session?.user?.discordUsername && !formData.displayName) {
@@ -31,19 +46,154 @@ export default function NewProfilePage({
     }
   }, [session?.user?.discordUsername, formData.displayName]);
 
+  // Handle image file selection
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        setImageError("Please upload an image file");
+        return;
+      }
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setImageError("Image must be less than 10MB");
+        return;
+      }
+      setUploadedImage(file);
+      setImageError(null);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setUploadedImagePreview(previewUrl);
+      // Auto-select uploaded image
+      setSelectedImageType("uploaded");
+    }
+  };
+
+  // Clear uploaded image
+  const clearUploadedImage = () => {
+    setUploadedImage(null);
+    setUploadedImagePreview(null);
+    setImageError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    // If uploaded was selected, switch to generated if available
+    if (selectedImageType === "uploaded") {
+      setSelectedImageType(generatedImage ? "generated" : null);
+    }
+  };
+
+  // Generate AI image using the uploaded image
+  const generateAIImage = async () => {
+    if (!uploadedImage) {
+      setImageError("Please upload an image first");
+      return;
+    }
+
+    const userEmail = session?.user?.email;
+    if (!userEmail) {
+      setImageError("Please sign in to generate an image");
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    setImageError(null);
+
+    try {
+      const userName = session?.user?.name || formData.displayName || "person";
+      const apiFormData = new FormData();
+      apiFormData.append("image", uploadedImage);
+      apiFormData.append("userEmail", userEmail);
+      apiFormData.append(
+        "prompt",
+        `Professional headshot of ${userName} ${imagePrompt}`
+      );
+
+      const response = await fetch(`${AI_ENGINE_API_URL}/api/images/generate`, {
+        method: "POST",
+        body: apiFormData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.imageURL) {
+        // Store the Runware URL for preview - will upload to blob on profile creation
+        setGeneratedImage(result.imageURL);
+        // Auto-select generated image
+        setSelectedImageType("generated");
+      } else {
+        throw new Error(result.error || "Failed to generate image");
+      }
+    } catch (err) {
+      console.error("AI generation failed:", err);
+      const errorMessage = err instanceof Error ? err.message : "Failed to generate AI image";
+
+      if (errorMessage.includes("Rate limit exceeded")) {
+        setImageError("Daily generation limit reached. Try again tomorrow.");
+      } else if (errorMessage.includes("User not found")) {
+        setImageError("User not found. Please ensure you're signed in.");
+      } else {
+        setImageError(errorMessage);
+      }
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
+      // Upload selected image to blob storage
+      let images: string[] = [];
+
+      if (selectedImageType === "generated" && generatedImage) {
+        // Upload generated image from URL
+        const uploadResponse = await fetch("/api/images/upload-from-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: generatedImage }),
+        });
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          images = [uploadResult.url];
+        } else {
+          console.error("Failed to upload generated image to blob storage");
+        }
+      } else if (selectedImageType === "uploaded" && uploadedImage) {
+        // Upload the original file directly
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", uploadedImage);
+
+        const uploadResponse = await fetch("/api/images/upload", {
+          method: "POST",
+          body: uploadFormData,
+        });
+
+        if (uploadResponse.ok) {
+          const uploadResult = await uploadResponse.json();
+          images = [uploadResult.url];
+        } else {
+          console.error("Failed to upload image to blob storage");
+        }
+      }
+
       const response = await fetch("/api/profiles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId,
           displayName: formData.displayName,
-          images: [],
+          images,
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
         }),
@@ -197,6 +347,176 @@ export default function NewProfilePage({
               <p className="text-xs text-bfl-muted font-mono">
                 {formData.whatIOffer.length}/1000
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Image Section */}
+        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+          <div className="relative pt-8 border-t border-white/10">
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
+              04 / Profile Image
+            </span>
+            <div className="flex items-center gap-3 mb-4">
+              <ImageIcon className="text-bfl-green" size={20} />
+              <h2 className="text-xl font-bold text-white italic">Profile Image</h2>
+            </div>
+            <p className="text-sm text-bfl-muted mb-6">
+              Upload a photo and optionally generate an AI-enhanced version. Click on an image to select it for your profile.
+            </p>
+
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              className="hidden"
+            />
+
+            <div className="space-y-6">
+              {/* Upload area */}
+              {!uploadedImagePreview ? (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-48 border-2 border-dashed border-white/20 rounded-sm flex flex-col items-center justify-center gap-3 hover:border-bfl-green/50 hover:bg-white/[0.02] transition-all"
+                >
+                  <Upload className="text-bfl-muted" size={32} />
+                  <span className="text-sm text-bfl-muted font-mono">Click to upload an image</span>
+                  <span className="text-xs text-bfl-muted/60">PNG, JPG up to 10MB</span>
+                </button>
+              ) : (
+                <div className="space-y-6">
+                  {/* Image preview grid with selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Uploaded image - selectable */}
+                    <div className="text-left">
+                      <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
+                        Uploaded
+                        {selectedImageType === "uploaded" && (
+                          <span className="text-bfl-green">• Selected</span>
+                        )}
+                      </p>
+                      <div
+                        onClick={() => setSelectedImageType("uploaded")}
+                        className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden transition-all cursor-pointer ${
+                          selectedImageType === "uploaded"
+                            ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
+                            : "hover:ring-1 hover:ring-white/30"
+                        }`}
+                      >
+                        <img
+                          src={uploadedImagePreview}
+                          alt="Uploaded preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearUploadedImage();
+                          }}
+                          className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full hover:bg-black/80 transition-colors"
+                        >
+                          <X size={14} className="text-white" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Generated image - selectable */}
+                    <button
+                      type="button"
+                      onClick={() => generatedImage && setSelectedImageType("generated")}
+                      className={`text-left ${!generatedImage ? "cursor-default" : ""}`}
+                      disabled={!generatedImage}
+                    >
+                      <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
+                        AI Generated
+                        {selectedImageType === "generated" && (
+                          <span className="text-bfl-green">• Selected</span>
+                        )}
+                      </p>
+                      <div
+                        className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden flex items-center justify-center transition-all ${
+                          selectedImageType === "generated"
+                            ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
+                            : generatedImage
+                            ? "hover:ring-1 hover:ring-white/30"
+                            : ""
+                        }`}
+                      >
+                        {isGeneratingImage ? (
+                          <div className="text-center space-y-2">
+                            <Loader2 className="w-8 h-8 mx-auto text-bfl-green animate-spin" />
+                            <p className="text-xs text-bfl-muted">Generating...</p>
+                          </div>
+                        ) : generatedImage ? (
+                          <img
+                            src={generatedImage}
+                            alt="AI Generated"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-center p-4">
+                            <Sparkles className="w-8 h-8 mx-auto text-bfl-muted/40 mb-2" />
+                            <p className="text-xs text-bfl-muted/60">Generate an AI image below</p>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* AI Generation Controls */}
+                  <div className="space-y-4 p-4 bg-white/[0.02] rounded-sm border border-white/10">
+                    <p className="text-xs text-bfl-muted font-mono uppercase tracking-wider">AI Image Prompt</p>
+                    <textarea
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      placeholder="Describe the style for your AI image..."
+                      rows={2}
+                      className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+                    />
+                    <p className="text-xs text-bfl-muted/60">
+                      Your image will be generated as: "Professional headshot of [name] {imagePrompt.substring(0, 50)}..."
+                    </p>
+
+                    {/* Generate button */}
+                    <button
+                      type="button"
+                      onClick={generateAIImage}
+                      disabled={isGeneratingImage || !uploadedImage}
+                      className="w-full px-6 py-4 bg-bfl-green/10 border border-bfl-green/30 text-bfl-green font-bold text-xs uppercase tracking-[0.2em] hover:bg-bfl-green/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-2"
+                    >
+                      {isGeneratingImage ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={16} />
+                          Generate AI Image
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Selection hint */}
+                  {!selectedImageType && (uploadedImagePreview || generatedImage) && (
+                    <p className="text-xs text-amber-400 font-mono text-center">
+                      Click on an image above to select it for your profile
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Image error message */}
+              {imageError && (
+                <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-sm">
+                  <p className="text-red-400 text-xs font-mono">{imageError}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

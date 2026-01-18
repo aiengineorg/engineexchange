@@ -18,10 +18,6 @@ interface Match {
     searchedField?: "what_i_offer" | "what_im_looking_for";
   };
   otherUserDiscordId: string | null;
-  lastMessage: {
-    content: string;
-    createdAt: string;
-  } | null;
 }
 
 export default function MatchesPage({
@@ -159,9 +155,7 @@ export default function MatchesPage({
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <span className="font-mono text-[9px] text-bfl-muted uppercase tracking-[0.3em]">{m.otherProfile.id}</span>
-                      <div className="w-1 h-1 rounded-full bg-bfl-green" />
-                      <span className="font-mono text-[9px] text-bfl-muted uppercase tracking-[0.3em]">{m.lastMessage?.createdAt ? new Date(m.lastMessage.createdAt).toLocaleTimeString() : 'N/A'}</span>
+                      <span className="font-mono text-[9px] text-bfl-muted uppercase tracking-[0.3em]">Matched {new Date(m.match.createdAt).toLocaleDateString()}</span>
                     </div>
                     <h3 className="text-3xl font-bold text-white uppercase tracking-tighter italic group-hover:text-glow transition-all">
                       {m.otherProfile.displayName}
@@ -181,14 +175,6 @@ export default function MatchesPage({
                   </div>
                 )}
                 
-                {m.lastMessage && (
-                  <div className="relative mb-8">
-                    <div className="absolute left-0 top-0 bottom-0 w-px bg-bfl-green/30" />
-                    <p className="text-bfl-muted text-sm pl-6 leading-relaxed italic font-light">
-                      "{m.lastMessage.content}"
-                    </p>
-                  </div>
-                )}
 
                 <div className="mt-auto pt-6 border-t border-white/5 flex flex-wrap gap-4 items-center">
                   <button 

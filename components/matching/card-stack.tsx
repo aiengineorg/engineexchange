@@ -9,6 +9,15 @@ interface Profile {
   whatIOffer: string;
   whatImLookingFor: string;
   similarity?: number;
+  matchReason?: string;
+  searchedField?: "what_i_offer" | "what_im_looking_for";
+  images?: string[];
+  currentRole?: string;
+  currentCompany?: string;
+  university?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  githubUrl?: string;
 }
 
 interface CardStackProps {

@@ -6,12 +6,10 @@ import postgres from "postgres";
 import { nanoid } from "nanoid";
 import {
   type Match,
-  type MatchMessage,
   type MatchingSession,
   type Profile,
   type Swipe,
   type User,
-  matchMessages,
   matches,
   matchingSessions,
   profiles,
@@ -505,7 +503,6 @@ export async function getMatchesByProfile(profileId: string): Promise<
     match: Match;
     otherProfile: Profile;
     otherUserDiscordId: string | null;
-    lastMessage: MatchMessage | null;
   }>
 > {
   try {
@@ -516,7 +513,7 @@ export async function getMatchesByProfile(profileId: string): Promise<
       .where(or(eq(matches.user1Id, profileId), eq(matches.user2Id, profileId)))
       .orderBy(desc(matches.createdAt));
 
-    // For each match, get the other profile, user's Discord ID, and last message
+    // For each match, get the other profile and user's Discord ID
     const results = await Promise.all(
       userMatches.map(async (match) => {
         const otherProfileId =
@@ -535,18 +532,10 @@ export async function getMatchesByProfile(profileId: string): Promise<
           .where(eq(user.id, otherProfile.userId))
           .limit(1);
 
-        const [lastMessage] = await db
-          .select()
-          .from(matchMessages)
-          .where(eq(matchMessages.matchId, match.id))
-          .orderBy(desc(matchMessages.createdAt))
-          .limit(1);
-
         return {
           match,
           otherProfile,
           otherUserDiscordId: otherUser?.discordId || null,
-          lastMessage: lastMessage || null,
         };
       })
     );
@@ -645,33 +634,3 @@ export async function createMatch(data: {
   }
 }
 
-// ==========================================
-// MESSAGE QUERIES
-// ==========================================
-
-export async function getMessagesByMatch(matchId: string): Promise<MatchMessage[]> {
-  try {
-    return await db
-      .select()
-      .from(matchMessages)
-      .where(eq(matchMessages.matchId, matchId))
-      .orderBy(desc(matchMessages.createdAt));
-  } catch (error) {
-    console.error("Failed to get messages by match:", error);
-    throw new Error("Failed to get messages by match");
-  }
-}
-
-export async function createMessage(data: {
-  matchId: string;
-  senderId: string;
-  content: string;
-}): Promise<MatchMessage> {
-  try {
-    const [message] = await db.insert(matchMessages).values(data).returning();
-    return message;
-  } catch (error) {
-    console.error("Failed to create message:", error);
-    throw new Error("Failed to create message");
-  }
-}
