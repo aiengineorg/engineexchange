@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "AI Exchange",
     images: [
       {
-        url: "/images/thumbnail.png",
+        url: "/images/thumbnail.jpg",
         width: 1200,
         height: 630,
         alt: "AI Exchange",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "AI Exchange",
     description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
-    images: ["/images/thumbnail.png"],
+    images: ["/images/thumbnail.jpg"],
   },
 };
 
