@@ -29,7 +29,7 @@ export default async function LandingPage() {
             <span className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.4em]">Exchange Intelligence Platform 2.5</span>
           </div>
           
-          <h1 className="text-6xl md:text-9xl font-extrabold text-white tracking-tighter mb-8 leading-[0.9] text-glow italic">
+          <h1 className="text-6xl md:text-9xl font-normal text-white tracking-tighter mb-8 leading-[0.9] text-glow">
             WELCOME TO <br />
             <span className="text-bfl-green not-italic">AI ENGINE EXCHANGE.</span>
           </h1>
@@ -41,7 +41,7 @@ export default async function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-6">
             <Link 
               href="/sessions/new"
-              className="px-10 py-5 bg-white text-bfl-black rounded-sm font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-bfl-offwhite transition-all transform hover:translate-y-[-2px]"
+              className="px-10 py-5 bg-white text-bfl-black rounded-sm font-medium text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-bfl-offwhite transition-all transform hover:translate-y-[-2px]"
             >
               <span className="text-bfl-black">Initialize Session</span>
               <Plus size={16} strokeWidth={3} className="text-bfl-black" />
@@ -78,7 +78,7 @@ export default async function LandingPage() {
                     <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.3em]">Code: {s.code}</span>
                     <Zap size={14} className="text-bfl-green/50" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-glow transition-all uppercase tracking-tighter">{s.name}</h3>
+                  <h3 className="text-2xl font-normal text-white mb-2 group-hover:text-glow transition-all uppercase tracking-tighter">{s.name}</h3>
                   <div className="flex items-center gap-3 text-bfl-muted font-mono text-[10px] tracking-widest uppercase">
                     <Users size={12} />
                     {s.profileCount} Verified Profiles
@@ -101,7 +101,7 @@ export default async function LandingPage() {
 
           <div className="bg-white/[0.02] subtle-border p-10 space-y-12">
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-white font-bold uppercase tracking-widest text-sm italic">
+              <div className="flex items-center gap-3 text-white font-normal uppercase tracking-widest text-sm">
                 <Sparkles size={18} className="text-bfl-green" />
                 Vector Intelligence
               </div>
@@ -109,7 +109,7 @@ export default async function LandingPage() {
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center gap-3 text-white font-bold uppercase tracking-widest text-sm italic">
+              <div className="flex items-center gap-3 text-white font-normal uppercase tracking-widest text-sm">
                 <Shield size={18} className="text-bfl-green" />
                 E2E Protocol
               </div>

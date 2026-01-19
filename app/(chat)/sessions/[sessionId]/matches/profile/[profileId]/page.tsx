@@ -63,7 +63,7 @@ export default function ProfileDetailPage({
               <User className="text-bfl-green" size={24} />
             </div>
           </div>
-          <p className="font-mono text-xs font-bold text-white uppercase tracking-[0.5em]">Loading Profile</p>
+          <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em]">Loading Profile</p>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function ProfileDetailPage({
           <p className="text-red-400 mb-4 font-mono text-sm">{error}</p>
           <button
             onClick={() => router.push(`/sessions/${sessionId}/matches`)}
-            className="px-8 py-3 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all"
+            className="px-8 py-3 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all"
           >
             Back to Matches
           </button>
@@ -100,7 +100,7 @@ export default function ProfileDetailPage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Profile</span>
         </div>
-        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">{profile.displayName}</h2>
+        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase">{profile.displayName}</h2>
       </div>
 
       {/* Profile Image */}
@@ -122,16 +122,16 @@ export default function ProfileDetailPage({
       <div className="bg-white/[0.02] subtle-border p-10 space-y-12">
         <div className="relative pt-8 border-t border-white/10">
           <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">01 / What I Offer</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">"I am currently offering..."</h4>
-          <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
+          <h4 className="text-2xl font-normal text-white mb-6">"I am currently offering..."</h4>
+          <p className="text-xl text-bfl-muted leading-relaxed font-light whitespace-pre-wrap">
             {profile.whatIOffer}
           </p>
         </div>
 
         <div className="relative pt-8 border-t border-white/10">
           <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / Search Parameters</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">"I'm looking for..."</h4>
-          <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
+          <h4 className="text-2xl font-normal text-white mb-6">"I'm looking for..."</h4>
+          <p className="text-xl text-bfl-muted leading-relaxed font-light whitespace-pre-wrap">
             {profile.whatImLookingFor}
           </p>
         </div>
@@ -139,8 +139,8 @@ export default function ProfileDetailPage({
         {profile.linkedinEnrichmentSummary && (
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">03 / AI Summary</span>
-            <h4 className="text-2xl font-bold text-white italic mb-6">LinkedIn Intelligence</h4>
-            <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
+            <h4 className="text-2xl font-normal text-white mb-6">LinkedIn Intelligence</h4>
+            <p className="text-xl text-bfl-muted leading-relaxed font-light whitespace-pre-wrap">
               {profile.linkedinEnrichmentSummary}
             </p>
           </div>
@@ -149,7 +149,7 @@ export default function ProfileDetailPage({
         <div className="pt-8 border-t border-white/5 flex flex-wrap gap-4">
           <button
             onClick={() => router.push(`/sessions/${sessionId}/matches`)}
-            className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
+            className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
           >
             <ArrowLeft size={14} />
             Back to Matches
@@ -157,7 +157,7 @@ export default function ProfileDetailPage({
           {discordDmUrl && (
             <button
               onClick={() => window.open(discordDmUrl, "_blank", "noopener,noreferrer")}
-              className="flex items-center gap-3 px-6 py-3 bg-white text-bfl-black font-black text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-none"
+              className="flex items-center gap-3 px-6 py-3 bg-white text-bfl-black font-medium text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-none"
             >
               <ExternalLink size={14} />
               Open Discord
@@ -168,7 +168,7 @@ export default function ProfileDetailPage({
               href={profile.linkedinUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
+              className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
             >
               <ExternalLink size={14} />
               LinkedIn

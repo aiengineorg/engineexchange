@@ -61,7 +61,7 @@ export default function ProfilePage({
               <User className="text-bfl-green" size={24} />
             </div>
           </div>
-          <p className="font-mono text-xs font-bold text-white uppercase tracking-[0.5em]">Loading Profile</p>
+          <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em]">Loading Profile</p>
         </div>
       </div>
     );
@@ -89,21 +89,21 @@ export default function ProfilePage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Your Info</span>
         </div>
-        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">My Profile</h2>
+        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase">My Profile</h2>
       </div>
 
       {/* Action Buttons - Top */}
       <div className="flex gap-3 mb-8">
         <button
           onClick={() => router.push(`/sessions/${sessionId}/discover`)}
-          className="flex items-center gap-2 px-5 py-3 border border-white/10 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-lg"
+          className="flex items-center gap-2 px-5 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-lg"
         >
           <ArrowLeft size={14} />
           Back to Discover
         </button>
         <button
           onClick={() => router.push(`/sessions/${sessionId}/profile/edit`)}
-          className="flex items-center gap-2 px-5 py-3 bg-white text-bfl-black font-black text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-lg"
+          className="flex items-center gap-2 px-5 py-3 bg-white text-bfl-black font-medium text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-lg"
         >
           <Pencil size={14} />
           Edit Profile
@@ -131,7 +131,7 @@ export default function ProfilePage({
 
           {/* Name overlay at bottom of image */}
           <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h3 className="text-3xl font-extrabold text-white tracking-tight italic drop-shadow-lg uppercase">
+            <h3 className="text-3xl font-normal text-white tracking-tight drop-shadow-lg uppercase">
               {profile.displayName}
             </h3>
           </div>

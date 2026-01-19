@@ -44,7 +44,7 @@ export default function CreateSessionPage() {
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">New Event</span>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tighter italic uppercase mb-4">
+        <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
           Create Event
         </h1>
         <p className="text-bfl-muted font-medium">
@@ -60,7 +60,7 @@ export default function CreateSessionPage() {
             </span>
             <div className="flex items-center gap-3 mb-6">
               <Sparkles className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">Event Name</h2>
+              <h2 className="text-xl font-normal text-white">Event Name</h2>
             </div>
             <input
               type="text"
@@ -93,7 +93,7 @@ export default function CreateSessionPage() {
           <button
             type="submit"
             disabled={loading || !name.trim()}
-            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-3"
+            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-3"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Creating..." : "Create Event"}

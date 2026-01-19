@@ -200,7 +200,7 @@ export default function DiscoverPage({
               <Search className="text-bfl-green" size={24} />
             </div>
           </div>
-          <p className="font-mono text-xs font-bold text-white uppercase tracking-[0.5em]">Loading Profiles</p>
+          <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em]">Loading Profiles</p>
         </div>
       </div>
     );
@@ -216,7 +216,7 @@ export default function DiscoverPage({
           </p>
           <button 
             onClick={() => loadProfiles()} 
-            className="px-8 py-3 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all"
+            className="px-8 py-3 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all"
           >
             Try Again
           </button>
@@ -244,7 +244,7 @@ export default function DiscoverPage({
             </button>
             <div className="flex flex-col">
               <span className="font-mono text-[8px] text-bfl-green uppercase tracking-[0.3em]">Profile Details</span>
-              <h2 className="text-white font-bold text-sm uppercase italic">{profile.displayName}</h2>
+              <h2 className="text-white font-normal text-sm uppercase">{profile.displayName}</h2>
             </div>
           </div>
           {profile.similarity !== undefined && (
@@ -273,7 +273,7 @@ export default function DiscoverPage({
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-bfl-black via-bfl-black/20 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">
-              <h1 className="text-4xl md:text-5xl font-extrabold text-white italic tracking-tight uppercase mb-2">
+              <h1 className="text-4xl md:text-5xl font-normal text-white tracking-tight uppercase mb-2">
                 {profile.displayName}
               </h1>
             </div>
@@ -364,7 +364,7 @@ export default function DiscoverPage({
                   <Zap className="text-bfl-green" size={14} fill="currentColor" />
                   <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.15em]">Why You Match</h4>
                 </div>
-                <p className="text-sm text-bfl-green/90 leading-relaxed italic">
+                <p className="text-sm text-bfl-green/90 leading-relaxed">
                   {profile.matchReason}
                 </p>
               </div>
@@ -435,7 +435,7 @@ export default function DiscoverPage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Find People</span>
         </div>
-        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">Discover</h2>
+        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase">Discover</h2>
       </div>
 
       <div className="mb-20">
@@ -473,7 +473,7 @@ export default function DiscoverPage({
           <button
             onClick={handleSearch}
             disabled={!searchQuery.trim() || searching}
-            className="px-10 py-6 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-50 rounded-sm whitespace-nowrap"
+            className="px-10 py-6 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-50 rounded-sm whitespace-nowrap"
           >
             Search
           </button>
@@ -484,13 +484,13 @@ export default function DiscoverPage({
         {profiles.length === 0 && !loading ? (
           <div className="text-center py-32 px-12 bg-white/[0.02] border border-white/5 rounded-sm w-full max-w-2xl">
             <div className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.6em] mb-8">All Caught Up</div>
-            <h3 className="text-5xl font-extrabold text-white mb-6 italic tracking-tighter">NO MORE FOR NOW!</h3>
+            <h3 className="text-5xl font-normal text-white mb-6 tracking-tighter">NO MORE FOR NOW!</h3>
             <p className="text-bfl-muted mb-12 font-medium max-w-md mx-auto leading-relaxed">
               You've seen everyone for today. Check back later for new people or try adjusting your search.
             </p>
             <button
               onClick={() => loadProfiles()}
-              className="px-12 py-5 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all"
+              className="px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all"
             >
               Refresh
             </button>
@@ -512,7 +512,7 @@ export default function DiscoverPage({
                     <Search className="text-bfl-green" size={32} />
                   </div>
                 </div>
-                <p className="font-mono text-xs font-bold text-white uppercase tracking-[0.5em]">Computing Embeddings</p>
+                <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em]">Computing Embeddings</p>
               </div>
             )}
           </div>

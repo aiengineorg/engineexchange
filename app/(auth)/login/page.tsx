@@ -41,7 +41,7 @@ export default function Page() {
               <span className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.4em]">Exchange Intelligence Platform 2.5</span>
             </div>
             
-            <h1 className="text-6xl md:text-9xl font-extrabold text-white tracking-tighter mb-8 leading-[0.9] text-glow italic">
+            <h1 className="text-6xl md:text-9xl font-normal text-white tracking-tighter mb-8 leading-[0.9] text-glow">
               WELCOME TO <br />
               <span className="text-bfl-green not-italic">AI ENGINE EXCHANGE.</span>
             </h1>
@@ -65,7 +65,7 @@ export default function Page() {
               type="button"
               onClick={handleDiscordSignIn}
               disabled={!consentAccepted}
-              className="w-full px-10 py-5 bg-white text-bfl-black rounded-sm font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-bfl-offwhite transition-all transform hover:translate-y-[-2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full px-10 py-5 bg-white text-bfl-black rounded-sm font-medium text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-bfl-offwhite transition-all transform hover:translate-y-[-2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <svg
                 className="h-5 w-5"

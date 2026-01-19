@@ -72,7 +72,7 @@ export default function JoinSessionPage() {
             <div className="h-px w-8 bg-bfl-green" />
             <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Almost There</span>
           </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tighter italic uppercase mb-4">
+          <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
             Complete Setup
           </h1>
           <p className="text-bfl-muted font-medium max-w-lg">
@@ -90,7 +90,7 @@ export default function JoinSessionPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <MessageCircle className="text-bfl-green" size={20} />
-                  <h2 className="text-xl font-bold text-white italic">Join Discord</h2>
+                  <h2 className="text-xl font-normal text-white">Join Discord</h2>
                 </div>
                 {discordJoined && (
                   <span className="flex items-center gap-1 px-2 py-1 bg-green-500/20 border border-green-500/30 text-green-400 text-[10px] font-mono uppercase tracking-widest">
@@ -109,7 +109,7 @@ export default function JoinSessionPage() {
               >
                 <button
                   disabled={discordJoined}
-                  className="w-full px-8 py-4 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-8 py-4 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {discordJoined ? "Joined Discord" : "Join Discord Server"}
                 </button>
@@ -126,7 +126,7 @@ export default function JoinSessionPage() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <Users className="text-bfl-green" size={20} />
-                  <h2 className="text-xl font-bold text-white italic">Create Profile</h2>
+                  <h2 className="text-xl font-normal text-white">Create Profile</h2>
                 </div>
                 {!discordJoined && (
                   <span className="flex items-center gap-1 px-2 py-1 bg-white/5 border border-white/10 text-bfl-muted text-[10px] font-mono uppercase tracking-widest">
@@ -143,7 +143,7 @@ export default function JoinSessionPage() {
               <button
                 onClick={handleContinueToProfile}
                 disabled={!discordJoined}
-                className="w-full px-8 py-4 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-full px-8 py-4 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 {discordJoined ? "Create Profile" : "Join Discord First"}
               </button>
@@ -161,7 +161,7 @@ export default function JoinSessionPage() {
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Access Code</span>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tighter italic uppercase mb-4">
+        <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
           Join Event
         </h1>
         <p className="text-bfl-muted font-medium">
@@ -177,7 +177,7 @@ export default function JoinSessionPage() {
             </span>
             <div className="flex items-center gap-3 mb-6">
               <KeyRound className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">Enter Code</h2>
+              <h2 className="text-xl font-normal text-white">Enter Code</h2>
             </div>
             <input
               type="text"
@@ -213,7 +213,7 @@ export default function JoinSessionPage() {
           <button
             type="submit"
             disabled={loading || code.length !== 6}
-            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-3"
+            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-3"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Joining..." : "Join Event"}
