@@ -33,8 +33,10 @@ export default function NewProfilePage({
 
   // Image selection and prompt state
   const [selectedImageType, setSelectedImageType] = useState<"uploaded" | "generated" | null>(null);
-  const DEFAULT_PROMPT = "camping in a forest by a campfire, high quality, professional lighting, warm natural atmosphere";
-  const [imagePrompt, setImagePrompt] = useState(DEFAULT_PROMPT);
+  const [generationMode, setGenerationMode] = useState<"enhance" | "create">("enhance");
+  const DEFAULT_ENHANCE_PROMPT = "reimagined in the black forest, surrounded by tall pine trees, mystical fog, and soft ethereal lighting";
+  const DEFAULT_CREATE_PROMPT = "a whimsical forest creature made of code and pixels, sitting by a glowing campfire in the black forest, magical and playful";
+  const [imagePrompt, setImagePrompt] = useState(DEFAULT_ENHANCE_PROMPT);
 
   // Pre-fill display name with Discord username if available
   useEffect(() => {
@@ -84,13 +86,8 @@ export default function NewProfilePage({
     }
   };
 
-  // Generate AI image using the uploaded image
+  // Generate AI image - either enhance uploaded image or create from prompt
   const generateAIImage = async () => {
-    if (!uploadedImage) {
-      setImageError("Please upload an image first");
-      return;
-    }
-
     const userEmail = session?.user?.email;
     if (!userEmail) {
       setImageError("Please sign in to generate an image");
@@ -103,12 +100,22 @@ export default function NewProfilePage({
     try {
       const userName = session?.user?.name || formData.displayName || "person";
       const apiFormData = new FormData();
-      apiFormData.append("image", uploadedImage);
       apiFormData.append("userEmail", userEmail);
-      apiFormData.append(
-        "prompt",
-        `Professional headshot of ${userName} ${imagePrompt}`
-      );
+
+      if (generationMode === "enhance" && uploadedImage) {
+        // Image-to-image: enhance the uploaded photo
+        apiFormData.append("image", uploadedImage);
+        apiFormData.append(
+          "prompt",
+          `Professional portrait of ${userName} ${imagePrompt}`
+        );
+      } else {
+        // Text-to-image: generate from prompt only
+        apiFormData.append(
+          "prompt",
+          imagePrompt
+        );
+      }
 
       const response = await fetch(`${AI_ENGINE_API_URL}/api/images/generate`, {
         method: "POST",
@@ -223,7 +230,7 @@ export default function NewProfilePage({
               <Sparkles className="text-bfl-green" size={24} />
             </div>
           </div>
-          <p className="font-mono text-xs font-bold text-white uppercase tracking-[0.5em] mb-2">Creating Profile</p>
+          <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em] mb-2">Creating Profile</p>
           <p className="text-sm text-bfl-muted">Generating AI embeddings...</p>
         </div>
       </div>
@@ -238,7 +245,7 @@ export default function NewProfilePage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Get Started</span>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tighter italic uppercase mb-4">
+        <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
           Create Profile
         </h1>
         <p className="text-bfl-muted font-medium max-w-lg">
@@ -256,7 +263,7 @@ export default function NewProfilePage({
             </span>
             <div className="flex items-center gap-3 mb-6">
               <User className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">Display Name</h2>
+              <h2 className="text-xl font-normal text-white">Display Name</h2>
             </div>
             <input
               type="text"
@@ -286,7 +293,7 @@ export default function NewProfilePage({
             </span>
             <div className="flex items-center gap-3 mb-4">
               <Search className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">What I'm Looking For</h2>
+              <h2 className="text-xl font-normal text-white">What I'm Looking For</h2>
             </div>
             <p className="text-sm text-bfl-muted mb-6">
               Describe the qualities, interests, and values you're looking for in a match.
@@ -324,7 +331,7 @@ export default function NewProfilePage({
             </span>
             <div className="flex items-center gap-3 mb-4">
               <Sparkles className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">What I Offer</h2>
+              <h2 className="text-xl font-normal text-white">What I Offer</h2>
             </div>
             <p className="text-sm text-bfl-muted mb-6">
               Describe yourself, your interests, values, and what you bring to a connection.
@@ -359,10 +366,10 @@ export default function NewProfilePage({
             </span>
             <div className="flex items-center gap-3 mb-4">
               <ImageIcon className="text-bfl-green" size={20} />
-              <h2 className="text-xl font-bold text-white italic">Profile Image</h2>
+              <h2 className="text-xl font-normal text-white">Profile Image</h2>
             </div>
             <p className="text-sm text-bfl-muted mb-6">
-              Upload a photo and optionally generate an AI-enhanced version. Click on an image to select it for your profile.
+              It's a generative media hackathon, so of course you'll have a fun profile photo. Upload your own photo to reimagine yourself in the black forest (labs), or prompt something completely out of the ordinary.
             </p>
 
             {/* Hidden file input */}
@@ -375,140 +382,228 @@ export default function NewProfilePage({
             />
 
             <div className="space-y-6">
-              {/* Upload area */}
-              {!uploadedImagePreview ? (
+              {/* Mode toggle */}
+              <div className="flex gap-2 p-1 bg-white/[0.02] rounded-sm border border-white/10">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-48 border-2 border-dashed border-white/20 rounded-sm flex flex-col items-center justify-center gap-3 hover:border-bfl-green/50 hover:bg-white/[0.02] transition-all"
+                  onClick={() => {
+                    setGenerationMode("enhance");
+                    setImagePrompt(DEFAULT_ENHANCE_PROMPT);
+                  }}
+                  className={`flex-1 px-4 py-3 text-xs font-mono uppercase tracking-wider transition-all rounded-sm ${
+                    generationMode === "enhance"
+                      ? "bg-bfl-green/20 text-bfl-green border border-bfl-green/30"
+                      : "text-bfl-muted hover:text-white hover:bg-white/[0.02]"
+                  }`}
                 >
-                  <Upload className="text-bfl-muted" size={32} />
-                  <span className="text-sm text-bfl-muted font-mono">Click to upload an image</span>
-                  <span className="text-xs text-bfl-muted/60">PNG, JPG up to 10MB</span>
+                  <Upload size={14} className="inline mr-2" />
+                  Upload & Enhance
                 </button>
-              ) : (
-                <div className="space-y-6">
-                  {/* Image preview grid with selection */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Uploaded image - selectable */}
-                    <div className="text-left">
-                      <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
-                        Uploaded
-                        {selectedImageType === "uploaded" && (
-                          <span className="text-bfl-green">• Selected</span>
-                        )}
-                      </p>
-                      <div
-                        onClick={() => setSelectedImageType("uploaded")}
-                        className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden transition-all cursor-pointer ${
-                          selectedImageType === "uploaded"
-                            ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
-                            : "hover:ring-1 hover:ring-white/30"
-                        }`}
-                      >
-                        <img
-                          src={uploadedImagePreview}
-                          alt="Uploaded preview"
-                          className="w-full h-full object-cover"
-                        />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGenerationMode("create");
+                    setImagePrompt(DEFAULT_CREATE_PROMPT);
+                  }}
+                  className={`flex-1 px-4 py-3 text-xs font-mono uppercase tracking-wider transition-all rounded-sm ${
+                    generationMode === "create"
+                      ? "bg-bfl-green/20 text-bfl-green border border-bfl-green/30"
+                      : "text-bfl-muted hover:text-white hover:bg-white/[0.02]"
+                  }`}
+                >
+                  <Sparkles size={14} className="inline mr-2" />
+                  Generate from Scratch
+                </button>
+              </div>
+
+              {/* Enhance mode - Upload area */}
+              {generationMode === "enhance" && (
+                <>
+                  {!uploadedImagePreview ? (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-full h-48 border-2 border-dashed border-white/20 rounded-sm flex flex-col items-center justify-center gap-3 hover:border-bfl-green/50 hover:bg-white/[0.02] transition-all"
+                    >
+                      <Upload className="text-bfl-muted" size={32} />
+                      <span className="text-sm text-bfl-muted font-mono">Upload your photo to transform</span>
+                      <span className="text-xs text-bfl-muted/60">PNG, JPG up to 10MB</span>
+                    </button>
+                  ) : (
+                    <div className="space-y-6">
+                      {/* Image preview grid with selection */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Uploaded image - selectable */}
+                        <div className="text-left">
+                          <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
+                            Original
+                            {selectedImageType === "uploaded" && (
+                              <span className="text-bfl-green">• Selected</span>
+                            )}
+                          </p>
+                          <div
+                            onClick={() => setSelectedImageType("uploaded")}
+                            className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden transition-all cursor-pointer ${
+                              selectedImageType === "uploaded"
+                                ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
+                                : "hover:ring-1 hover:ring-white/30"
+                            }`}
+                          >
+                            <img
+                              src={uploadedImagePreview}
+                              alt="Uploaded preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                clearUploadedImage();
+                              }}
+                              className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full hover:bg-black/80 transition-colors"
+                            >
+                              <X size={14} className="text-white" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Generated image - selectable */}
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            clearUploadedImage();
-                          }}
-                          className="absolute top-2 right-2 p-1.5 bg-black/60 rounded-full hover:bg-black/80 transition-colors"
+                          onClick={() => generatedImage && setSelectedImageType("generated")}
+                          className={`text-left ${!generatedImage ? "cursor-default" : ""}`}
+                          disabled={!generatedImage}
                         >
-                          <X size={14} className="text-white" />
+                          <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
+                            AI Enhanced
+                            {selectedImageType === "generated" && (
+                              <span className="text-bfl-green">• Selected</span>
+                            )}
+                          </p>
+                          <div
+                            className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden flex items-center justify-center transition-all ${
+                              selectedImageType === "generated"
+                                ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
+                                : generatedImage
+                                ? "hover:ring-1 hover:ring-white/30"
+                                : ""
+                            }`}
+                          >
+                            {isGeneratingImage ? (
+                              <div className="text-center space-y-2">
+                                <Loader2 className="w-8 h-8 mx-auto text-bfl-green animate-spin" />
+                                <p className="text-xs text-bfl-muted">Creating magic...</p>
+                              </div>
+                            ) : generatedImage ? (
+                              <img
+                                src={generatedImage}
+                                alt="AI Generated"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-center p-4">
+                                <Sparkles className="w-8 h-8 mx-auto text-bfl-muted/40 mb-2" />
+                                <p className="text-xs text-bfl-muted/60">Your enhanced photo will appear here</p>
+                              </div>
+                            )}
+                          </div>
                         </button>
                       </div>
                     </div>
+                  )}
+                </>
+              )}
 
-                    {/* Generated image - selectable */}
-                    <button
-                      type="button"
-                      onClick={() => generatedImage && setSelectedImageType("generated")}
-                      className={`text-left ${!generatedImage ? "cursor-default" : ""}`}
-                      disabled={!generatedImage}
-                    >
-                      <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
-                        AI Generated
-                        {selectedImageType === "generated" && (
-                          <span className="text-bfl-green">• Selected</span>
-                        )}
-                      </p>
-                      <div
-                        className={`relative aspect-square bg-white/[0.02] rounded-sm overflow-hidden flex items-center justify-center transition-all ${
-                          selectedImageType === "generated"
-                            ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
-                            : generatedImage
-                            ? "hover:ring-1 hover:ring-white/30"
-                            : ""
-                        }`}
-                      >
-                        {isGeneratingImage ? (
-                          <div className="text-center space-y-2">
-                            <Loader2 className="w-8 h-8 mx-auto text-bfl-green animate-spin" />
-                            <p className="text-xs text-bfl-muted">Generating...</p>
-                          </div>
-                        ) : generatedImage ? (
-                          <img
-                            src={generatedImage}
-                            alt="AI Generated"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="text-center p-4">
-                            <Sparkles className="w-8 h-8 mx-auto text-bfl-muted/40 mb-2" />
-                            <p className="text-xs text-bfl-muted/60">Generate an AI image below</p>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* AI Generation Controls */}
-                  <div className="space-y-4 p-4 bg-white/[0.02] rounded-sm border border-white/10">
-                    <p className="text-xs text-bfl-muted font-mono uppercase tracking-wider">AI Image Prompt</p>
-                    <textarea
-                      value={imagePrompt}
-                      onChange={(e) => setImagePrompt(e.target.value)}
-                      placeholder="Describe the style for your AI image..."
-                      rows={2}
-                      className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
-                    />
-                    <p className="text-xs text-bfl-muted/60">
-                      Your image will be generated as: "Professional headshot of [name] {imagePrompt.substring(0, 50)}..."
-                    </p>
-
-                    {/* Generate button */}
-                    <button
-                      type="button"
-                      onClick={generateAIImage}
-                      disabled={isGeneratingImage || !uploadedImage}
-                      className="w-full px-6 py-4 bg-bfl-green/10 border border-bfl-green/30 text-bfl-green font-bold text-xs uppercase tracking-[0.2em] hover:bg-bfl-green/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-2"
-                    >
-                      {isGeneratingImage ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles size={16} />
-                          Generate AI Image
-                        </>
+              {/* Create mode - Generated image preview */}
+              {generationMode === "create" && generatedImage && (
+                <div className="space-y-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedImageType("generated")}
+                    className="text-left w-full"
+                  >
+                    <p className="text-xs text-bfl-muted font-mono mb-2 uppercase tracking-wider flex items-center gap-2">
+                      AI Generated
+                      {selectedImageType === "generated" && (
+                        <span className="text-bfl-green">• Selected</span>
                       )}
-                    </button>
-                  </div>
+                    </p>
+                    <div
+                      className={`relative w-48 h-48 bg-white/[0.02] rounded-sm overflow-hidden transition-all ${
+                        selectedImageType === "generated"
+                          ? "ring-2 ring-bfl-green ring-offset-2 ring-offset-black"
+                          : "hover:ring-1 hover:ring-white/30"
+                      }`}
+                    >
+                      <img
+                        src={generatedImage}
+                        alt="AI Generated"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </button>
+                </div>
+              )}
 
-                  {/* Selection hint */}
-                  {!selectedImageType && (uploadedImagePreview || generatedImage) && (
-                    <p className="text-xs text-amber-400 font-mono text-center">
-                      Click on an image above to select it for your profile
+              {/* AI Generation Controls - Show for create mode always, or enhance mode with uploaded image */}
+              {(generationMode === "create" || (generationMode === "enhance" && uploadedImagePreview)) && (
+                <div className="space-y-4 p-4 bg-white/[0.02] rounded-sm border border-white/10">
+                  <p className="text-xs text-bfl-muted font-mono uppercase tracking-wider">
+                    {generationMode === "enhance" ? "Transformation Style" : "What would you like to create?"}
+                  </p>
+                  <textarea
+                    value={imagePrompt}
+                    onChange={(e) => setImagePrompt(e.target.value)}
+                    placeholder={generationMode === "enhance"
+                      ? "Describe how you want to transform your photo..."
+                      : "Describe the image you want to create..."
+                    }
+                    rows={2}
+                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+                  />
+                  {generationMode === "enhance" && (
+                    <p className="text-xs text-bfl-muted/60">
+                      Your photo will be transformed: "{imagePrompt.substring(0, 60)}..."
                     </p>
                   )}
+
+                  {/* Generate button */}
+                  <button
+                    type="button"
+                    onClick={generateAIImage}
+                    disabled={isGeneratingImage || (generationMode === "enhance" && !uploadedImage)}
+                    className="w-full px-6 py-4 bg-bfl-green/10 border border-bfl-green/30 text-bfl-green font-bold text-xs uppercase tracking-[0.2em] hover:bg-bfl-green/20 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm flex items-center justify-center gap-2"
+                  >
+                    {isGeneratingImage ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Creating magic...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={16} />
+                        {generationMode === "enhance" ? "Transform Photo" : "Generate Image"}
+                      </>
+                    )}
+                  </button>
                 </div>
+              )}
+
+              {/* Loading state for create mode */}
+              {generationMode === "create" && isGeneratingImage && !generatedImage && (
+                <div className="w-48 h-48 bg-white/[0.02] rounded-sm flex items-center justify-center">
+                  <div className="text-center space-y-2">
+                    <Loader2 className="w-8 h-8 mx-auto text-bfl-green animate-spin" />
+                    <p className="text-xs text-bfl-muted">Creating magic...</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Selection hint */}
+              {!selectedImageType && (uploadedImagePreview || generatedImage) && (
+                <p className="text-xs text-amber-400 font-mono text-center">
+                  Click on an image above to select it for your profile
+                </p>
               )}
 
               {/* Image error message */}
@@ -544,7 +639,7 @@ export default function NewProfilePage({
               formData.whatIOffer.length < 10 ||
               formData.whatImLookingFor.length < 10
             }
-            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-black text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm"
+            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm"
           >
             Create Profile
           </button>
