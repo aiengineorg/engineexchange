@@ -9,7 +9,7 @@ import { BackgroundProvider } from "@/components/background-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aiengine.exchange"),
+  metadataBase: new URL("https://www.aiengine.exchange"),
   title: "AI Exchange",
   description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
   icons: {
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AI Exchange",
     description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
-    url: "https://aiengine.exchange",
+    url: "https://www.aiengine.exchange",
     siteName: "AI Exchange",
     images: [
       {
