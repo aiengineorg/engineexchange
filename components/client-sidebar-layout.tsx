@@ -18,7 +18,7 @@ function MobileHeader() {
         >
           <Menu size={20} />
         </button>
-        <span className="text-xs font-black tracking-[0.15em] text-white italic">AI EXCHANGE</span>
+        <span className="text-xs font-normal tracking-[0.15em] text-white">AI EXCHANGE</span>
       </div>
     </div>
   );
@@ -32,7 +32,7 @@ export function ClientSidebarLayout({
   defaultOpen: boolean;
 }) {
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen font-sans">
       <MobileHeader />
       <BFLSidebar />
       <main className="md:ml-72 relative min-h-screen pt-12 md:pt-0">

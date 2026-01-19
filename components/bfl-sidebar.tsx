@@ -2,7 +2,7 @@
 
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Heart, MessageCircle, Compass, User, Home, PlusCircle, ShieldCheck, X, Users, ArrowLeftRight } from "lucide-react";
+import { Heart, MessageCircle, Compass, User, Home, ShieldCheck, X, Users, ArrowLeftRight } from "lucide-react";
 import { SignOutForm } from "@/components/sign-out-form";
 import { useSidebar } from "@/components/sidebar-context";
 
@@ -42,10 +42,7 @@ export function BFLSidebar() {
           <div className="p-8 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 border border-white/20 flex items-center justify-center bg-white/5">
-                  <PlusCircle className="text-white w-6 h-6" />
-                </div>
-                <h1 className="text-lg font-black tracking-[0.2em] text-white italic">AI EXCHANGE</h1>
+                <h1 className="text-lg font-normal tracking-[0.2em] text-white">AI EXCHANGE</h1>
               </div>
               <button
                 onClick={close}
