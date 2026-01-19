@@ -9,11 +9,33 @@ import { BackgroundProvider } from "@/components/background-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://chat.vercel.ai"),
-  title: "AI Engine Exchange",
+  metadataBase: new URL("https://aiengine.exchange"),
+  title: "AI Exchange",
   description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
   icons: {
     icon: "/icon.svg",
+  },
+  openGraph: {
+    title: "AI Exchange",
+    description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
+    url: "https://aiengine.exchange",
+    siteName: "AI Exchange",
+    images: [
+      {
+        url: "/images/thumbnail.png",
+        width: 1200,
+        height: 630,
+        alt: "AI Exchange",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Exchange",
+    description: "Fast matching through intelligent exchange - AI-powered connections using vector embeddings.",
+    images: ["/images/thumbnail.png"],
   },
 };
 
