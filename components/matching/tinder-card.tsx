@@ -31,16 +31,25 @@ interface TinderCardProps {
 export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-15, 15]);
-  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
   const likeOpacity = useTransform(x, [50, 150], [0, 1]);
   const nopeOpacity = useTransform(x, [-50, -150], [0, 1]);
 
   const handleDragEnd = (_: any, info: any) => {
     if (info.offset.x > 120) {
-      onSwipe('right');
+      // Animate card off screen to the right, then trigger swipe
+      animate(x, 500, {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }).then(() => onSwipe('right'));
     } else if (info.offset.x < -120) {
-      onSwipe('left');
+      // Animate card off screen to the left, then trigger swipe
+      animate(x, -500, {
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }).then(() => onSwipe('left'));
     } else {
       animate(x, 0, {
         type: "spring",
@@ -52,11 +61,12 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
 
   return (
     <motion.div
-      style={{ x, rotate, opacity, ...style }}
+      style={{ x, rotate, ...style }}
       drag="x"
       dragConstraints={{ left: -400, right: 400 }}
       onDragEnd={handleDragEnd}
       onClick={() => Math.abs(x.get()) < 5 && onClick?.(profile)}
+      exit={{ opacity: 0, transition: { duration: 0.15 } }}
       className="absolute w-full h-[700px] cursor-grab active:cursor-grabbing max-w-[420px] touch-pan-x"
     >
       <div className="relative h-full w-full bg-bfl-black rounded-[1rem] overflow-hidden subtle-border shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col group border-t border-white/20">
@@ -233,7 +243,11 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onSwipe('left');
+              animate(x, -500, {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              }).then(() => onSwipe('left'));
             }}
             className="w-14 h-14 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center hover:bg-red-500/20 transition-all active:scale-95"
             aria-label="Skip"
@@ -248,7 +262,11 @@ export function TinderCard({ profile, onSwipe, onClick, style }: TinderCardProps
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onSwipe('right');
+              animate(x, 500, {
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+              }).then(() => onSwipe('right'));
             }}
             className="w-14 h-14 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center hover:bg-green-500/20 transition-all active:scale-95"
             aria-label="Connect"

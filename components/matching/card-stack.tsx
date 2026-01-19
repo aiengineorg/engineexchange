@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { TinderCard } from "./tinder-card";
 
 interface Profile {
@@ -29,11 +30,12 @@ interface CardStackProps {
 }
 
 export function CardStack({ profiles, sessionId, onSwipe, onMatch, onCardClick }: CardStackProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
-  const currentProfile = profiles[currentIndex];
-  const hasMore = currentIndex < profiles.length;
+  // The top card is always the first profile in the array
+  // Parent is responsible for removing swiped profiles from the array
+  const currentProfile = profiles[0];
+  const hasMore = profiles.length > 0;
 
   const handleSwipe = async (direction: "left" | "right") => {
     if (isAnimating || !currentProfile) return;
@@ -43,7 +45,7 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch, onCardClick }
 
     try {
       await onSwipe(currentProfile.id, decision);
-      setCurrentIndex(currentIndex + 1);
+      // Parent will remove the profile from the array
     } catch (error) {
       console.error("Swipe failed:", error);
     } finally {
@@ -66,20 +68,26 @@ export function CardStack({ profiles, sessionId, onSwipe, onMatch, onCardClick }
   return (
     <div className="relative w-full flex justify-center">
       {/* Show next 2 cards in stack */}
-      {profiles.slice(currentIndex, currentIndex + 2).reverse().map((profile, index) => (
-        <TinderCard 
-          key={profile.id}
-          profile={profile}
-          onSwipe={index === 0 ? handleSwipe : () => {}}
-          onClick={onCardClick}
-          style={{
-            zIndex: 2 - index,
-            transform: `scale(${1 - index * 0.04}) translateY(${index * 20}px)`,
-            filter: index > 0 ? 'blur(2px) grayscale(1)' : 'none',
-            opacity: index > 0 ? 0.3 : 1
-          }}
-        />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {profiles.slice(0, 2).reverse().map((profile, index, arr) => {
+          const isTop = index === arr.length - 1;
+          return (
+            <TinderCard
+              key={profile.id}
+              profile={profile}
+              onSwipe={isTop ? handleSwipe : () => {}}
+              onClick={onCardClick}
+              style={{
+                zIndex: isTop ? 10 : 1,
+                transform: isTop ? undefined : `scale(0.96) translateY(20px)`,
+                filter: isTop ? 'none' : 'blur(2px) grayscale(1)',
+                opacity: isTop ? 1 : 0.3,
+                pointerEvents: isTop ? 'auto' : 'none',
+              }}
+            />
+          );
+        })}
+      </AnimatePresence>
     </div>
   );
 }

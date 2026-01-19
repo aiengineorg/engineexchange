@@ -136,6 +136,11 @@ export default function DiscoverPage({
   }, [sessionId, router, testMode]);
 
   const handleSwipe = async (profileId: string, decision: "yes" | "no") => {
+    // Clear selectedProfile if we're swiping that profile
+    if (selectedProfile?.id === profileId) {
+      setSelectedProfile(null);
+    }
+
     // In test mode, just remove from local state without API call
     if (testMode) {
       setProfiles((prev) => prev.filter((p) => p.id !== profileId));
@@ -160,6 +165,9 @@ export default function DiscoverPage({
 
       const result = await response.json();
 
+      // Remove swiped profile from array
+      setProfiles((prev) => prev.filter((p) => p.id !== profileId));
+
       // Show match modal if matched
       if (result.matched) {
         alert(`It's a Match! 🎉`); // TODO: Replace with proper match modal
@@ -167,7 +175,7 @@ export default function DiscoverPage({
       }
     } catch (err) {
       console.error("Swipe error:", err);
-      // On error, just remove from local state
+      // On error, still remove from local state to prevent stuck cards
       setProfiles((prev) => prev.filter((p) => p.id !== profileId));
     }
   };
@@ -184,8 +192,11 @@ export default function DiscoverPage({
 
   const handleSwipeFromDetail = (direction: "left" | "right") => {
     if (selectedProfile) {
+      const profileId = selectedProfile.id;
       const decision = direction === "right" ? "yes" : "no";
-      handleSwipe(selectedProfile.id, decision);
+      // Close dialog first, then swipe
+      setSelectedProfile(null);
+      handleSwipe(profileId, decision);
     }
   };
 
@@ -397,10 +408,7 @@ export default function DiscoverPage({
             {/* Action Buttons */}
             <div className="flex items-center justify-center gap-4">
               <button
-                onClick={() => {
-                  onSwipe("left");
-                  onClose();
-                }}
+                onClick={() => onSwipe("left")}
                 className="w-16 h-16 rounded-full bg-red-500/10 border-2 border-red-500/30 flex items-center justify-center hover:bg-red-500/20 transition-all active:scale-95"
                 aria-label="Skip"
               >
@@ -412,10 +420,7 @@ export default function DiscoverPage({
               </div>
 
               <button
-                onClick={() => {
-                  onSwipe("right");
-                  onClose();
-                }}
+                onClick={() => onSwipe("right")}
                 className="w-16 h-16 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center hover:bg-green-500/20 transition-all active:scale-95"
                 aria-label="Connect"
               >
