@@ -3,7 +3,7 @@
 import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X, Mail, CheckCircle } from "lucide-react";
+import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X, Mail, CheckCircle, Users, Linkedin, Globe } from "lucide-react";
 
 const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
 
@@ -21,6 +21,9 @@ export default function NewProfilePage({
     displayName: "",
     whatIOffer: "",
     whatImLookingFor: "",
+    linkedinUrl: "",
+    websiteOrGithub: "",
+    hasTeam: false,
   });
 
   // Image upload and generation state
@@ -45,6 +48,7 @@ export default function NewProfilePage({
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationError, setVerificationError] = useState("");
   const [participantName, setParticipantName] = useState("");
+  const [participantHasTeam, setParticipantHasTeam] = useState(false);
 
   // Pre-fill display name with Discord username if available
   useEffect(() => {
@@ -105,21 +109,18 @@ export default function NewProfilePage({
         throw new Error(data.error || "Failed to verify code");
       }
 
-      // Auto-fill the "What I Offer" field with profile summary
-      if (data.participant?.profileSummary) {
-        setFormData((prev) => ({
-          ...prev,
-          whatIOffer: data.participant.profileSummary,
-        }));
-      }
+      // Auto-fill form fields from participant data
+      setFormData((prev) => ({
+        ...prev,
+        whatIOffer: data.participant?.profileSummary || prev.whatIOffer,
+        displayName: data.participant?.name && !prev.displayName ? data.participant.name : prev.displayName,
+        linkedinUrl: data.participant?.linkedin || prev.linkedinUrl,
+        websiteOrGithub: data.participant?.websiteOrGithub || prev.websiteOrGithub,
+        hasTeam: data.participant?.hasTeam || false,
+      }));
 
-      // Update display name if available and not already set
-      if (data.participant?.name && !formData.displayName) {
-        setFormData((prev) => ({
-          ...prev,
-          displayName: data.participant.name,
-        }));
-      }
+      // Store team status for display
+      setParticipantHasTeam(data.participant?.hasTeam || false);
 
       setVerificationStep("verified");
     } catch (err) {
@@ -284,6 +285,9 @@ export default function NewProfilePage({
           images,
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
+          linkedinUrl: formData.linkedinUrl || undefined,
+          websiteOrGithub: formData.websiteOrGithub || undefined,
+          hasTeam: formData.hasTeam,
         }),
       });
 
@@ -558,11 +562,100 @@ export default function NewProfilePage({
           </div>
         </div>
 
+        {/* Team & Links Section - After Luma verification populates fields */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+          <div className="relative pt-8 border-t border-white/10">
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
+              04 / Team & Links
+            </span>
+            <div className="flex items-center gap-3 mb-6">
+              <Users className="text-bfl-green" size={20} />
+              <h2 className="text-xl font-normal text-white">Team & Links</h2>
+            </div>
+
+            {/* Team Status - Yes/No Buttons */}
+            <div className="mb-6">
+              <label className="block text-sm text-bfl-muted mb-3">
+                Do you already have a team for this hackathon?
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, hasTeam: true })}
+                  className={`flex-1 px-6 py-4 font-bold text-xs uppercase tracking-[0.15em] transition-all rounded-sm ${
+                    formData.hasTeam
+                      ? "bg-bfl-green text-black"
+                      : "bg-white/[0.06] border border-white/15 text-white/60 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, hasTeam: false })}
+                  className={`flex-1 px-6 py-4 font-bold text-xs uppercase tracking-[0.15em] transition-all rounded-sm ${
+                    !formData.hasTeam
+                      ? "bg-bfl-green text-black"
+                      : "bg-white/[0.06] border border-white/15 text-white/60 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  No
+                </button>
+              </div>
+              {participantHasTeam && verificationStep === "verified" && (
+                <p className="mt-2 text-xs text-bfl-green font-mono">
+                  ✓ Pre-filled from your Luma registration
+                </p>
+              )}
+            </div>
+
+            {/* LinkedIn URL */}
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Linkedin size={16} />
+                LinkedIn Profile
+              </label>
+              <input
+                type="url"
+                placeholder="https://linkedin.com/in/yourprofile"
+                value={formData.linkedinUrl}
+                onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              />
+              {formData.linkedinUrl && verificationStep === "verified" && (
+                <p className="mt-2 text-xs text-bfl-green font-mono">
+                  ✓ Pre-filled from your Luma registration
+                </p>
+              )}
+            </div>
+
+            {/* Website/GitHub URL */}
+            <div>
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Globe size={16} />
+                Website / GitHub
+              </label>
+              <input
+                type="url"
+                placeholder="https://github.com/yourusername"
+                value={formData.websiteOrGithub}
+                onChange={(e) => setFormData({ ...formData, websiteOrGithub: e.target.value })}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              />
+              {formData.websiteOrGithub && verificationStep === "verified" && (
+                <p className="mt-2 text-xs text-bfl-green font-mono">
+                  ✓ Pre-filled from your Luma registration
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Profile Image Section */}
         <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
-              04 / Profile Image
+              05 / Profile Image
             </span>
             <div className="flex items-center gap-3 mb-4">
               <ImageIcon className="text-bfl-green" size={20} />

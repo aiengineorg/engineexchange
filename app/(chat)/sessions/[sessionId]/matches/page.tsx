@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RefreshCw, ExternalLink, User, Maximize2, X, Briefcase, GraduationCap } from "lucide-react";
+import { RefreshCw, ExternalLink, User, Maximize2, X, Users, Linkedin, Globe } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface Match {
@@ -18,9 +18,9 @@ interface Match {
     images: string[];
     matchReason?: string;
     searchedField?: "what_i_offer" | "what_im_looking_for";
-    currentRole?: string;
-    currentCompany?: string;
-    university?: string;
+    linkedinUrl?: string | null;
+    websiteOrGithub?: string | null;
+    hasTeam?: boolean | null;
   };
   otherUserDiscordId: string | null;
 }
@@ -39,9 +39,9 @@ const TEST_MATCHES: Match[] = [
       whatImLookingFor: "Looking for a co-founder for a B2B SaaS startup. Need someone with sales/marketing experience who can help with go-to-market strategy.",
       images: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop"],
       matchReason: "Strong technical background matches your need for a technical co-founder. Their mentorship offering aligns with your interest in learning.",
-      currentRole: "Senior Software Engineer",
-      currentCompany: "Stripe",
-      university: "Stanford University",
+      linkedinUrl: "https://linkedin.com/in/alexchen",
+      websiteOrGithub: "https://github.com/alexchen",
+      hasTeam: true,
     },
     otherUserDiscordId: "123456789",
   },
@@ -57,9 +57,8 @@ const TEST_MATCHES: Match[] = [
       whatImLookingFor: "Technical co-founder for a consumer social app. Looking for someone who can build iOS/Android apps and has experience with real-time features.",
       images: ["https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop"],
       matchReason: "Her marketing expertise complements your technical skills perfectly for a startup partnership.",
-      currentRole: "Head of Growth",
-      currentCompany: "Notion",
-      university: "UC Berkeley",
+      linkedinUrl: "https://linkedin.com/in/sarahmiller",
+      hasTeam: false,
     },
     otherUserDiscordId: "987654321",
   },
@@ -75,9 +74,8 @@ const TEST_MATCHES: Match[] = [
       whatImLookingFor: "Looking to join an early-stage startup as a technical advisor or part-time contributor. Interested in healthcare or education tech.",
       images: ["https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop"],
       matchReason: "Their AI expertise could be valuable for building intelligent features in your product.",
-      currentRole: "ML Research Scientist",
-      currentCompany: "Google DeepMind",
-      university: "MIT",
+      websiteOrGithub: "https://jordanlee.ai",
+      hasTeam: false,
     },
     otherUserDiscordId: null,
   },
@@ -265,19 +263,44 @@ export default function MatchesPage({
 
                 {/* Content Area */}
                 <div className="p-4">
-                  {/* Role & Company */}
-                  <div className="mb-3 pb-3 border-b border-white/10">
-                    <div className="flex items-center gap-2 text-white/80 mb-1">
-                      <Briefcase size={11} className="text-bfl-muted flex-shrink-0" />
-                      <span className="text-[11px] font-medium truncate">
-                        {profile.currentRole || "Role"} at {profile.currentCompany || "Company"}
-                      </span>
+                  {/* Team Status & Social Links */}
+                  <div className="mb-3 pb-3 border-b border-white/10 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {profile.hasTeam ? (
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                          <Users size={10} className="text-bfl-green" />
+                          <span className="text-[9px] font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 border border-white/10 rounded-full">
+                          <User size={10} className="text-bfl-muted" />
+                          <span className="text-[9px] font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-white/60">
-                      <GraduationCap size={11} className="text-bfl-muted flex-shrink-0" />
-                      <span className="text-[11px] truncate">
-                        {profile.university || "University"}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      {profile.linkedinUrl && (
+                        <a
+                          href={profile.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                        >
+                          <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+                        </a>
+                      )}
+                      {profile.websiteOrGithub && (
+                        <a
+                          href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Globe size={12} className="text-white/60 hover:text-white" />
+                        </a>
+                      )}
                     </div>
                   </div>
 
@@ -393,19 +416,42 @@ export default function MatchesPage({
 
               {/* Content */}
               <div className="p-6">
-                {/* Role & Company */}
-                <div className="mb-4 pb-4 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <Briefcase size={14} className="text-bfl-muted" />
-                    <span className="text-sm font-medium">
-                      {expandedProfile.otherProfile.currentRole || "Role"} at {expandedProfile.otherProfile.currentCompany || "Company"}
-                    </span>
+                {/* Team Status & Social Links */}
+                <div className="mb-4 pb-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.otherProfile.hasTeam ? (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                        <Users size={14} className="text-bfl-green" />
+                        <span className="text-xs font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                        <User size={14} className="text-bfl-muted" />
+                        <span className="text-xs font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <GraduationCap size={14} className="text-bfl-muted" />
-                    <span className="text-sm">
-                      {expandedProfile.otherProfile.university || "University"}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.otherProfile.linkedinUrl && (
+                      <a
+                        href={expandedProfile.otherProfile.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                      >
+                        <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
+                      </a>
+                    )}
+                    {expandedProfile.otherProfile.websiteOrGithub && (
+                      <a
+                        href={expandedProfile.otherProfile.websiteOrGithub.startsWith("http") ? expandedProfile.otherProfile.websiteOrGithub : `https://${expandedProfile.otherProfile.websiteOrGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                      >
+                        <Globe size={16} className="text-white/60 hover:text-white" />
+                      </a>
+                    )}
                   </div>
                 </div>
 

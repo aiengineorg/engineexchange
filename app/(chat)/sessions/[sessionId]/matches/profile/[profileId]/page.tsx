@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, ArrowLeft, User, ExternalLink, Search } from "lucide-react";
+import { Loader2, ArrowLeft, User, ExternalLink, Search, Users, Linkedin, Globe } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -11,8 +11,10 @@ interface Profile {
   whatIOffer: string;
   whatImLookingFor: string;
   linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
   linkedinEnrichmentSummary?: string | null;
   discordId?: string | null;
+  hasTeam?: boolean | null;
 }
 
 export default function ProfileDetailPage({
@@ -100,7 +102,44 @@ export default function ProfileDetailPage({
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Profile</span>
         </div>
-        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase">{profile.displayName}</h2>
+        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase mb-6">{profile.displayName}</h2>
+
+        {/* Team Status & Social Links */}
+        <div className="flex items-center gap-4">
+          {profile.hasTeam ? (
+            <div className="flex items-center gap-2 px-4 py-2 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+              <Users size={16} className="text-bfl-green" />
+              <span className="text-sm font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+              <User size={16} className="text-bfl-muted" />
+              <span className="text-sm font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+              >
+                <Linkedin size={18} className="text-white/60 hover:text-[#0077b5]" />
+              </a>
+            )}
+            {profile.websiteOrGithub && (
+              <a
+                href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+              >
+                <Globe size={18} className="text-white/60 hover:text-white" />
+              </a>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Profile Image */}
@@ -170,8 +209,19 @@ export default function ProfileDetailPage({
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
             >
-              <ExternalLink size={14} />
+              <Linkedin size={14} />
               LinkedIn
+            </a>
+          )}
+          {profile.websiteOrGithub && (
+            <a
+              href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-6 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
+            >
+              <Globe size={14} />
+              Website
             </a>
           )}
         </div>

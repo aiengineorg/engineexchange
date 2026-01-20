@@ -13,12 +13,9 @@ interface Profile {
   matchReason?: string;
   searchedField?: "what_i_offer" | "what_im_looking_for";
   images?: string[];
-  currentRole?: string;
-  currentCompany?: string;
-  university?: string;
   linkedinUrl?: string;
-  twitterUrl?: string;
-  githubUrl?: string;
+  websiteOrGithub?: string;
+  hasTeam?: boolean;
 }
 
 interface CardStackProps {

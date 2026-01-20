@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, RefreshCw, ExternalLink, User, Maximize2, X, Briefcase, GraduationCap } from "lucide-react";
+import { Search, RefreshCw, ExternalLink, User, Maximize2, X, Users, Linkedin, Globe } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface DirectoryProfile {
@@ -21,9 +21,9 @@ interface DirectoryProfile {
   discordId: string | null;
   similarity?: number;
   searchedField?: "what_i_offer" | "what_im_looking_for";
-  currentRole?: string;
-  currentCompany?: string;
-  university?: string;
+  linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean | null;
 }
 
 export default function DirectoryPage({
@@ -273,19 +273,44 @@ export default function DirectoryPage({
 
                 {/* Content Area */}
                 <div className="p-4">
-                  {/* Role & Company placeholder */}
-                  <div className="mb-3 pb-3 border-b border-white/10">
-                    <div className="flex items-center gap-2 text-white/80 mb-1">
-                      <Briefcase size={11} className="text-bfl-muted flex-shrink-0" />
-                      <span className="text-[11px] font-medium truncate">
-                        {profile.currentRole || "Role"} at {profile.currentCompany || "Company"}
-                      </span>
+                  {/* Team Status & Social Links */}
+                  <div className="mb-3 pb-3 border-b border-white/10 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {profile.hasTeam ? (
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                          <Users size={10} className="text-bfl-green" />
+                          <span className="text-[9px] font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 border border-white/10 rounded-full">
+                          <User size={10} className="text-bfl-muted" />
+                          <span className="text-[9px] font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-white/60">
-                      <GraduationCap size={11} className="text-bfl-muted flex-shrink-0" />
-                      <span className="text-[11px] truncate">
-                        {profile.university || "University"}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      {profile.linkedinUrl && (
+                        <a
+                          href={profile.linkedinUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                        >
+                          <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+                        </a>
+                      )}
+                      {profile.websiteOrGithub && (
+                        <a
+                          href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                        >
+                          <Globe size={12} className="text-white/60 hover:text-white" />
+                        </a>
+                      )}
                     </div>
                   </div>
 
@@ -402,19 +427,42 @@ export default function DirectoryPage({
 
               {/* Content */}
               <div className="p-6">
-                {/* Role & Company */}
-                <div className="mb-4 pb-4 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <Briefcase size={14} className="text-bfl-muted" />
-                    <span className="text-sm font-medium">
-                      {expandedProfile.currentRole || "Role"} at {expandedProfile.currentCompany || "Company"}
-                    </span>
+                {/* Team Status & Social Links */}
+                <div className="mb-4 pb-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.hasTeam ? (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                        <Users size={14} className="text-bfl-green" />
+                        <span className="text-xs font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                        <User size={14} className="text-bfl-muted" />
+                        <span className="text-xs font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <GraduationCap size={14} className="text-bfl-muted" />
-                    <span className="text-sm">
-                      {expandedProfile.university || "University"}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.linkedinUrl && (
+                      <a
+                        href={expandedProfile.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                      >
+                        <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
+                      </a>
+                    )}
+                    {expandedProfile.websiteOrGithub && (
+                      <a
+                        href={expandedProfile.websiteOrGithub.startsWith("http") ? expandedProfile.websiteOrGithub : `https://${expandedProfile.websiteOrGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                      >
+                        <Globe size={16} className="text-white/60 hover:text-white" />
+                      </a>
+                    )}
                   </div>
                 </div>
 

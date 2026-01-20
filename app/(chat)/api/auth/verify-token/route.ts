@@ -53,6 +53,7 @@ export async function POST(request: Request) {
         linkedin: result.participant.linkedin,
         websiteOrGithub: result.participant.websiteOrGithub,
         profileSummary: result.participant.profileSummary,
+        hasTeam: result.participant.hasTeam,
       },
     });
   } catch (error) {

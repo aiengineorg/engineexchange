@@ -324,6 +324,8 @@ export async function createProfile(data: {
   whatImLookingForEmbedding: number[];
   linkedinUrl?: string;
   linkedinEnrichmentSummary?: string;
+  websiteOrGithub?: string;
+  hasTeam?: boolean;
 }): Promise<Profile> {
   try {
     console.log("📝 Inserting profile into database with:", {
@@ -361,6 +363,8 @@ export async function updateProfile({
   whatImLookingForEmbedding,
   linkedinUrl,
   linkedinEnrichmentSummary,
+  websiteOrGithub,
+  hasTeam,
 }: {
   id: string;
   displayName: string;
@@ -371,6 +375,8 @@ export async function updateProfile({
   whatImLookingForEmbedding: number[];
   linkedinUrl?: string;
   linkedinEnrichmentSummary?: string;
+  websiteOrGithub?: string;
+  hasTeam?: boolean;
 }): Promise<Profile> {
   try {
     const updateData: {
@@ -383,6 +389,8 @@ export async function updateProfile({
       updatedAt: Date;
       linkedinUrl?: string;
       linkedinEnrichmentSummary?: string;
+      websiteOrGithub?: string;
+      hasTeam?: boolean;
     } = {
       displayName,
       images,
@@ -398,6 +406,12 @@ export async function updateProfile({
     }
     if (linkedinEnrichmentSummary !== undefined) {
       updateData.linkedinEnrichmentSummary = linkedinEnrichmentSummary;
+    }
+    if (websiteOrGithub !== undefined) {
+      updateData.websiteOrGithub = websiteOrGithub;
+    }
+    if (hasTeam !== undefined) {
+      updateData.hasTeam = hasTeam;
     }
 
     const [profile] = await db

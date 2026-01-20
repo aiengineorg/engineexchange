@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, RefreshCw, X, Zap, Briefcase, GraduationCap, Linkedin, Github, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, RefreshCw, Zap, Users, User, Linkedin, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -22,12 +22,9 @@ interface Profile {
   matchReason?: string;
   searchedField?: "what_i_offer" | "what_im_looking_for";
   images?: string[];
-  currentRole?: string;
-  currentCompany?: string;
-  university?: string;
   linkedinUrl?: string;
-  twitterUrl?: string;
-  githubUrl?: string;
+  websiteOrGithub?: string;
+  hasTeam?: boolean;
 }
 
 export default function DiscoverPage({
@@ -290,54 +287,46 @@ export default function DiscoverPage({
             </div>
           </div>
 
-          {/* Profile Details Section */}
+          {/* Profile Details Section - Team Status & Links */}
           <div className="px-6 py-4 border-b border-white/10">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="space-y-2">
-                {/* Role & Company */}
-                <div className="flex items-center gap-2 text-white/80">
-                  <Briefcase size={14} className="text-bfl-muted flex-shrink-0" />
-                  <span className="text-sm font-medium">
-                    {profile.currentRole || "Role"} at {profile.currentCompany || "Company"}
-                  </span>
-                </div>
-                {/* University */}
-                <div className="flex items-center gap-2 text-white/60">
-                  <GraduationCap size={14} className="text-bfl-muted flex-shrink-0" />
-                  <span className="text-sm">
-                    {profile.university || "University"}
-                  </span>
-                </div>
+              {/* Team Status Indicator */}
+              <div className="flex items-center gap-2">
+                {profile.hasTeam ? (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                    <Users size={14} className="text-bfl-green" />
+                    <span className="text-xs font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                    <User size={14} className="text-bfl-muted" />
+                    <span className="text-xs font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                  </div>
+                )}
               </div>
 
-              {/* Social Links */}
+              {/* Social Links - Only show if URL exists */}
               <div className="flex items-center gap-2">
-                <a
-                  href={profile.linkedinUrl || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-                >
-                  <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
-                </a>
-                <a
-                  href={profile.twitterUrl || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-                >
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-white/60 hover:text-white fill-current">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </a>
-                <a
-                  href={profile.githubUrl || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
-                >
-                  <Github size={16} className="text-white/60 hover:text-white" />
-                </a>
+                {profile.linkedinUrl && (
+                  <a
+                    href={profile.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                  >
+                    <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
+                  </a>
+                )}
+                {profile.websiteOrGithub && (
+                  <a
+                    href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                  >
+                    <Globe size={16} className="text-white/60 hover:text-white" />
+                  </a>
+                )}
               </div>
             </div>
           </div>

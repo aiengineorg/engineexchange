@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RefreshCw, Heart, ExternalLink, User, Maximize2, X, Briefcase, GraduationCap, Check, XIcon } from "lucide-react";
+import { RefreshCw, Heart, ExternalLink, User, Maximize2, X, Users, Linkedin, Globe, Check, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 interface Profile {
@@ -13,9 +13,9 @@ interface Profile {
   images?: string[];
   similarity?: number;
   matchReason?: string;
-  currentRole?: string;
-  currentCompany?: string;
-  university?: string;
+  linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean | null;
 }
 
 // Mock data for test mode
@@ -28,9 +28,9 @@ const TEST_PROFILES: Profile[] = [
     images: ["https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop"],
     similarity: 0.88,
     matchReason: "Your technical background in developer tools aligns perfectly with what she's looking for in a co-founder.",
-    currentRole: "Product Manager",
-    currentCompany: "Meta",
-    university: "Carnegie Mellon University",
+    linkedinUrl: "https://linkedin.com/in/emilyzhang",
+    websiteOrGithub: "https://emilyzhang.com",
+    hasTeam: true,
   },
   {
     id: "test-interested-2",
@@ -40,9 +40,8 @@ const TEST_PROFILES: Profile[] = [
     images: ["https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop"],
     similarity: 0.75,
     matchReason: "His mobile expertise complements your backend skills for building a full-stack product.",
-    currentRole: "iOS Lead",
-    currentCompany: "Peloton",
-    university: "Georgia Tech",
+    linkedinUrl: "https://linkedin.com/in/marcusjohnson",
+    hasTeam: false,
   },
   {
     id: "test-interested-3",
@@ -52,9 +51,8 @@ const TEST_PROFILES: Profile[] = [
     images: ["https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop"],
     similarity: 0.92,
     matchReason: "Her ML expertise could be invaluable for building intelligent features in your product.",
-    currentRole: "Senior Data Scientist",
-    currentCompany: "Spotify",
-    university: "Columbia University",
+    websiteOrGithub: "https://github.com/priyapatel",
+    hasTeam: false,
   },
   {
     id: "test-interested-4",
@@ -64,9 +62,9 @@ const TEST_PROFILES: Profile[] = [
     images: ["https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop"],
     similarity: 0.68,
     matchReason: "His experience as a founder and investor could provide valuable guidance for your startup journey.",
-    currentRole: "Partner",
-    currentCompany: "Sequoia Capital",
-    university: "Harvard Business School",
+    linkedinUrl: "https://linkedin.com/in/davidkim",
+    websiteOrGithub: "https://davidkim.vc",
+    hasTeam: true,
   },
 ];
 
@@ -336,19 +334,44 @@ export default function InterestedPage({
 
               {/* Content Area */}
               <div className="p-4">
-                {/* Role & Company */}
-                <div className="mb-3 pb-3 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <Briefcase size={11} className="text-bfl-muted flex-shrink-0" />
-                    <span className="text-[11px] font-medium truncate">
-                      {profile.currentRole || "Role"} at {profile.currentCompany || "Company"}
-                    </span>
+                {/* Team Status & Social Links */}
+                <div className="mb-3 pb-3 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {profile.hasTeam ? (
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                        <Users size={10} className="text-bfl-green" />
+                        <span className="text-[9px] font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-white/5 border border-white/10 rounded-full">
+                        <User size={10} className="text-bfl-muted" />
+                        <span className="text-[9px] font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <GraduationCap size={11} className="text-bfl-muted flex-shrink-0" />
-                    <span className="text-[11px] truncate">
-                      {profile.university || "University"}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    {profile.linkedinUrl && (
+                      <a
+                        href={profile.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                      >
+                        <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+                      </a>
+                    )}
+                    {profile.websiteOrGithub && (
+                      <a
+                        href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                      >
+                        <Globe size={12} className="text-white/60 hover:text-white" />
+                      </a>
+                    )}
                   </div>
                 </div>
 
@@ -471,19 +494,42 @@ export default function InterestedPage({
 
               {/* Content */}
               <div className="p-6">
-                {/* Role & Company */}
-                <div className="mb-4 pb-4 border-b border-white/10">
-                  <div className="flex items-center gap-2 text-white/80 mb-1">
-                    <Briefcase size={14} className="text-bfl-muted" />
-                    <span className="text-sm font-medium">
-                      {expandedProfile.currentRole || "Role"} at {expandedProfile.currentCompany || "Company"}
-                    </span>
+                {/* Team Status & Social Links */}
+                <div className="mb-4 pb-4 border-b border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.hasTeam ? (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                        <Users size={14} className="text-bfl-green" />
+                        <span className="text-xs font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                        <User size={14} className="text-bfl-muted" />
+                        <span className="text-xs font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 text-white/60">
-                    <GraduationCap size={14} className="text-bfl-muted" />
-                    <span className="text-sm">
-                      {expandedProfile.university || "University"}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    {expandedProfile.linkedinUrl && (
+                      <a
+                        href={expandedProfile.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                      >
+                        <Linkedin size={16} className="text-white/60 hover:text-[#0077b5]" />
+                      </a>
+                    )}
+                    {expandedProfile.websiteOrGithub && (
+                      <a
+                        href={expandedProfile.websiteOrGithub.startsWith("http") ? expandedProfile.websiteOrGithub : `https://${expandedProfile.websiteOrGithub}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                      >
+                        <Globe size={16} className="text-white/60 hover:text-white" />
+                      </a>
+                    )}
                   </div>
                 </div>
 

@@ -1,5 +1,5 @@
 import type { InferSelectModel } from "drizzle-orm";
-import { pgTable, timestamp, uuid, varchar, jsonb, text } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, jsonb, text, boolean } from "drizzle-orm/pg-core";
 
 // Hackathon participants table (pre-populated from final_profiles.json)
 export const hackathonParticipants = pgTable("hackathon_participants", {
@@ -10,6 +10,7 @@ export const hackathonParticipants = pgTable("hackathon_participants", {
   websiteOrGithub: varchar("website_or_github", { length: 512 }),
   lumaId: varchar("luma_id", { length: 64 }),
   profileSummary: text("profile_summary"),
+  hasTeam: boolean("has_team").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

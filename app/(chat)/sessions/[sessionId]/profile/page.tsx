@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, ArrowLeft, Pencil, Briefcase, GraduationCap, Linkedin, Github } from "lucide-react";
+import { User, ArrowLeft, Pencil, Users, Linkedin, Globe } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -10,6 +10,9 @@ interface Profile {
   images: string[];
   whatIOffer: string;
   whatImLookingFor: string;
+  linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean;
 }
 
 export default function ProfilePage({
@@ -137,47 +140,45 @@ export default function ProfilePage({
           </div>
         </div>
 
-        {/* Profile Details Section */}
+        {/* Profile Details Section - Team Status & Links */}
         <div className="px-4 py-2.5 border-b border-white/10 flex items-center justify-between gap-3">
-          <div className="flex-1 min-w-0 space-y-0.5">
-            {/* Role & Company */}
-            <div className="flex items-center gap-2 text-white/80">
-              <Briefcase size={11} className="text-bfl-muted flex-shrink-0" />
-              <span className="text-[11px] font-medium truncate">
-                Role at Company
-              </span>
-            </div>
-            {/* University */}
-            <div className="flex items-center gap-2 text-white/60">
-              <GraduationCap size={11} className="text-bfl-muted flex-shrink-0" />
-              <span className="text-[11px] truncate">
-                University
-              </span>
-            </div>
+          {/* Team Status Indicator */}
+          <div className="flex items-center gap-2">
+            {profile.hasTeam ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                <Users size={11} className="text-bfl-green" />
+                <span className="text-[10px] font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 rounded-full">
+                <User size={11} className="text-bfl-muted" />
+                <span className="text-[10px] font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+              </div>
+            )}
           </div>
 
-          {/* Social Links */}
+          {/* Social Links - Only show if URL exists */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <a
-              href="#"
-              className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <Linkedin size={11} className="text-white/50 hover:text-[#0077b5]" />
-            </a>
-            <a
-              href="#"
-              className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <svg viewBox="0 0 24 24" className="w-[11px] h-[11px] text-white/50 hover:text-white fill-current">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a
-              href="#"
-              className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors"
-            >
-              <Github size={11} className="text-white/50 hover:text-white" />
-            </a>
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+              >
+                <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+              </a>
+            )}
+            {profile.websiteOrGithub && (
+              <a
+                href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+              >
+                <Globe size={12} className="text-white/60 hover:text-white" />
+              </a>
+            )}
           </div>
         </div>
 

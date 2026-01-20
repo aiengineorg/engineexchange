@@ -3,7 +3,7 @@
 import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Loader2, Upload, Image as ImageIcon, Sparkles, X } from "lucide-react";
+import { User, Loader2, Upload, Image as ImageIcon, Sparkles, X, Users, Linkedin, Globe } from "lucide-react";
 
 const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
 
@@ -14,6 +14,8 @@ interface Profile {
   whatIOffer: string;
   whatImLookingFor: string;
   linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean;
 }
 
 export default function EditProfilePage({
@@ -31,6 +33,9 @@ export default function EditProfilePage({
     displayName: "",
     whatIOffer: "",
     whatImLookingFor: "",
+    linkedinUrl: "",
+    websiteOrGithub: "",
+    hasTeam: false,
   });
 
   // Image state
@@ -64,6 +69,9 @@ export default function EditProfilePage({
           displayName: profile.displayName,
           whatIOffer: profile.whatIOffer,
           whatImLookingFor: profile.whatImLookingFor,
+          linkedinUrl: profile.linkedinUrl || "",
+          websiteOrGithub: profile.websiteOrGithub || "",
+          hasTeam: profile.hasTeam || false,
         });
 
         // Load current image if exists
@@ -236,6 +244,9 @@ export default function EditProfilePage({
           images,
           whatIOffer: formData.whatIOffer,
           whatImLookingFor: formData.whatImLookingFor,
+          linkedinUrl: formData.linkedinUrl || undefined,
+          websiteOrGithub: formData.websiteOrGithub || undefined,
+          hasTeam: formData.hasTeam,
         }),
       });
 
@@ -615,6 +626,80 @@ export default function EditProfilePage({
             <p className="font-mono text-[10px] text-bfl-muted mt-2 tracking-widest">
               {formData.whatIOffer.length}/1000 characters (min 10)
             </p>
+          </div>
+
+          {/* Team & Links Section */}
+          <div className="relative pt-8 border-t border-white/10">
+            <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">05 / Team & Links</span>
+            <div className="flex items-center gap-3 mb-6">
+              <Users className="text-bfl-green" size={20} />
+              <h4 className="text-2xl font-normal text-white">Team & Links</h4>
+            </div>
+
+            {/* Team Status - Yes/No Buttons */}
+            <div className="mb-6">
+              <label className="block text-sm text-bfl-muted mb-3">
+                Do you already have a team for this hackathon?
+              </label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, hasTeam: true })}
+                  disabled={loading}
+                  className={`flex-1 px-6 py-4 font-bold text-xs uppercase tracking-[0.15em] transition-all rounded-sm ${
+                    formData.hasTeam
+                      ? "bg-bfl-green text-black"
+                      : "bg-white/[0.06] border border-white/15 text-white/60 hover:text-white hover:bg-white/10"
+                  } disabled:opacity-50`}
+                >
+                  Yes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, hasTeam: false })}
+                  disabled={loading}
+                  className={`flex-1 px-6 py-4 font-bold text-xs uppercase tracking-[0.15em] transition-all rounded-sm ${
+                    !formData.hasTeam
+                      ? "bg-bfl-green text-black"
+                      : "bg-white/[0.06] border border-white/15 text-white/60 hover:text-white hover:bg-white/10"
+                  } disabled:opacity-50`}
+                >
+                  No
+                </button>
+              </div>
+            </div>
+
+            {/* LinkedIn URL */}
+            <div className="mb-4">
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Linkedin size={16} />
+                LinkedIn Profile
+              </label>
+              <input
+                type="url"
+                placeholder="https://linkedin.com/in/yourprofile"
+                value={formData.linkedinUrl}
+                onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                disabled={loading}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all disabled:opacity-50"
+              />
+            </div>
+
+            {/* Website/GitHub URL */}
+            <div>
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Globe size={16} />
+                Website / GitHub
+              </label>
+              <input
+                type="url"
+                placeholder="https://github.com/yourusername"
+                value={formData.websiteOrGithub}
+                onChange={(e) => setFormData({ ...formData, websiteOrGithub: e.target.value })}
+                disabled={loading}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all disabled:opacity-50"
+              />
+            </div>
           </div>
 
           {error && (
