@@ -3,7 +3,7 @@
 import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X } from "lucide-react";
+import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X, Mail, CheckCircle } from "lucide-react";
 
 const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
 
@@ -38,6 +38,14 @@ export default function NewProfilePage({
   const DEFAULT_CREATE_PROMPT = "a whimsical forest creature made of code and pixels, sitting by a glowing campfire in the black forest, magical and playful";
   const [imagePrompt, setImagePrompt] = useState(DEFAULT_ENHANCE_PROMPT);
 
+  // Email verification state
+  const [lumaEmail, setLumaEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [verificationStep, setVerificationStep] = useState<"email" | "code" | "verified">("email");
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [verificationError, setVerificationError] = useState("");
+  const [participantName, setParticipantName] = useState("");
+
   // Pre-fill display name with Discord username if available
   useEffect(() => {
     if (session?.user?.discordUsername && !formData.displayName) {
@@ -47,6 +55,79 @@ export default function NewProfilePage({
       }));
     }
   }, [session?.user?.discordUsername, formData.displayName]);
+
+  // Send verification code to email
+  const handleSendVerification = async () => {
+    if (!lumaEmail) return;
+
+    setVerificationLoading(true);
+    setVerificationError("");
+
+    try {
+      const response = await fetch("/api/auth/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: lumaEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send verification code");
+      }
+
+      setParticipantName(data.participantName || "");
+      setVerificationStep("code");
+    } catch (err) {
+      setVerificationError(err instanceof Error ? err.message : "Failed to send code");
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
+
+  // Verify the code and get participant data
+  const handleVerifyCode = async () => {
+    if (verificationCode.length !== 6) return;
+
+    setVerificationLoading(true);
+    setVerificationError("");
+
+    try {
+      const response = await fetch("/api/auth/verify-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: verificationCode }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to verify code");
+      }
+
+      // Auto-fill the "What I Offer" field with profile summary
+      if (data.participant?.profileSummary) {
+        setFormData((prev) => ({
+          ...prev,
+          whatIOffer: data.participant.profileSummary,
+        }));
+      }
+
+      // Update display name if available and not already set
+      if (data.participant?.name && !formData.displayName) {
+        setFormData((prev) => ({
+          ...prev,
+          displayName: data.participant.name,
+        }));
+      }
+
+      setVerificationStep("verified");
+    } catch (err) {
+      setVerificationError(err instanceof Error ? err.message : "Failed to verify");
+    } finally {
+      setVerificationLoading(false);
+    }
+  };
 
   // Handle image file selection
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -256,7 +337,7 @@ export default function NewProfilePage({
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Display Name Section */}
-        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               01 / Identity
@@ -275,7 +356,7 @@ export default function NewProfilePage({
               }
               required
               maxLength={50}
-              className="w-full px-6 py-4 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
             />
             {session?.user?.discordUsername && (
               <p className="mt-3 text-xs text-bfl-muted font-mono">
@@ -286,7 +367,7 @@ export default function NewProfilePage({
         </div>
 
         {/* What I'm Looking For Section */}
-        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               02 / What I'm Looking For
@@ -312,7 +393,7 @@ export default function NewProfilePage({
               minLength={10}
               maxLength={1000}
               rows={5}
-              className="w-full px-6 py-4 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+              className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
             />
             <div className="flex justify-between mt-3">
               <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
@@ -323,8 +404,8 @@ export default function NewProfilePage({
           </div>
         </div>
 
-        {/* What I Offer Section */}
-        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+        {/* What I Offer Section - Combined with Luma Verification */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               03 / What I Offer
@@ -333,33 +414,152 @@ export default function NewProfilePage({
               <Sparkles className="text-bfl-green" size={20} />
               <h2 className="text-xl font-normal text-white">What I Offer</h2>
             </div>
-            <p className="text-sm text-bfl-muted mb-6">
-              Describe yourself, your interests, values, and what you bring to a connection.
-            </p>
-            <textarea
-              id="whatIOffer"
-              placeholder="I'm passionate about..."
-              value={formData.whatIOffer}
-              onChange={(e) =>
-                setFormData({ ...formData, whatIOffer: e.target.value })
-              }
-              required
-              minLength={10}
-              maxLength={1000}
-              rows={5}
-              className="w-full px-6 py-4 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
-            />
-            <div className="flex justify-between mt-3">
-              <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
-              <p className="text-xs text-bfl-muted font-mono">
-                {formData.whatIOffer.length}/1000
+
+            {/* Luma Auto-fill Card - Show when not verified */}
+            {verificationStep !== "verified" && (
+              <div className="mb-6 p-6 bg-gradient-to-br from-bfl-green/10 to-bfl-green/5 border-2 border-dashed border-bfl-green/40 rounded-lg">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-bfl-green/20 rounded-lg">
+                    <Mail className="text-bfl-green" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium mb-1">Auto-fill from your Luma registration</h3>
+                    <p className="text-sm text-bfl-muted mb-4">
+                      We have your profile summary from when you registered. Verify your email to auto-fill this section.
+                    </p>
+
+                    {verificationStep === "email" && (
+                      <div className="space-y-3">
+                        <input
+                          type="email"
+                          placeholder="Enter your Luma registration email"
+                          value={lumaEmail}
+                          onChange={(e) => setLumaEmail(e.target.value)}
+                          className="w-full px-4 py-3 bg-black/30 border border-bfl-green/30 rounded-md text-white placeholder-white/30 font-mono text-sm focus:ring-2 focus:ring-bfl-green/50 outline-none transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSendVerification}
+                          disabled={!lumaEmail || verificationLoading}
+                          className="w-full px-6 py-3 bg-bfl-green text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-bfl-green/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-md flex items-center justify-center gap-2"
+                        >
+                          {verificationLoading ? (
+                            <>
+                              <Loader2 size={16} className="animate-spin" />
+                              Sending Code...
+                            </>
+                          ) : (
+                            <>
+                              <Mail size={16} />
+                              Send Verification Code
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+
+                    {verificationStep === "code" && (
+                      <div className="space-y-3">
+                        <p className="text-sm text-bfl-green font-medium">
+                          Code sent to {lumaEmail}
+                          {participantName && <span className="text-bfl-muted font-normal"> - Found: {participantName}</span>}
+                        </p>
+                        <input
+                          type="text"
+                          placeholder="000000"
+                          value={verificationCode}
+                          onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                          maxLength={6}
+                          className="w-full px-4 py-4 bg-black/30 border border-bfl-green/30 rounded-md text-white placeholder-white/20 font-mono text-3xl tracking-[0.8em] text-center focus:ring-2 focus:ring-bfl-green/50 outline-none transition-all"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVerificationStep("email");
+                              setVerificationCode("");
+                              setVerificationError("");
+                            }}
+                            className="px-4 py-3 border border-white/20 text-bfl-muted font-bold text-xs uppercase tracking-[0.15em] hover:text-white hover:bg-white/5 transition-all rounded-md"
+                          >
+                            Back
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleVerifyCode}
+                            disabled={verificationCode.length !== 6 || verificationLoading}
+                            className="flex-1 px-6 py-3 bg-bfl-green text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-bfl-green/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-md flex items-center justify-center gap-2"
+                          >
+                            {verificationLoading ? (
+                              <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Verifying...
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle size={16} />
+                                Verify & Auto-fill
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {verificationError && (
+                      <div className="mt-3 bg-red-500/20 border border-red-500/30 p-3 rounded-md">
+                        <p className="text-red-400 text-sm">{verificationError}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Verified Success Message */}
+            {verificationStep === "verified" && (
+              <div className="mb-6 flex items-center gap-3 p-4 bg-bfl-green/15 border border-bfl-green/40 rounded-lg">
+                <CheckCircle className="text-bfl-green flex-shrink-0" size={24} />
+                <div>
+                  <p className="text-bfl-green font-medium">Profile auto-filled from Luma!</p>
+                  <p className="text-sm text-bfl-muted">Feel free to edit the text below.</p>
+                </div>
+              </div>
+            )}
+
+            {/* Textarea - more prominent when verified or has content */}
+            <div className={verificationStep === "email" && !formData.whatIOffer ? "opacity-50" : ""}>
+              <p className="text-sm text-bfl-muted mb-4">
+                {verificationStep === "verified"
+                  ? "Your profile summary from Luma registration:"
+                  : "Or write your own description of yourself, your interests, and what you bring to a connection."
+                }
               </p>
+              <textarea
+                id="whatIOffer"
+                placeholder="I'm passionate about..."
+                value={formData.whatIOffer}
+                onChange={(e) =>
+                  setFormData({ ...formData, whatIOffer: e.target.value })
+                }
+                required
+                minLength={10}
+                maxLength={1000}
+                rows={5}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+              />
+              <div className="flex justify-between mt-3">
+                <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
+                <p className="text-xs text-bfl-muted font-mono">
+                  {formData.whatIOffer.length}/1000
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Profile Image Section */}
-        <div className="bg-white/[0.02] subtle-border p-8 md:p-10">
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               04 / Profile Image
@@ -559,7 +759,7 @@ export default function NewProfilePage({
                       : "Describe the image you want to create..."
                     }
                     rows={2}
-                    className="w-full px-4 py-3 bg-white/[0.02] border border-white/10 rounded-sm text-white placeholder-white/20 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
                   />
                   {generationMode === "enhance" && (
                     <p className="text-xs text-bfl-muted/60">

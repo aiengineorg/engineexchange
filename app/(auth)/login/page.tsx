@@ -20,7 +20,7 @@ export default function Page() {
 
     try {
       await nextAuthSignIn("discord", {
-        callbackUrl: "/",
+        callbackUrl: "/sessions/1784d222-27f9-4fed-a28f-f454444e760f/discover",
       });
     } catch (error) {
       toast({

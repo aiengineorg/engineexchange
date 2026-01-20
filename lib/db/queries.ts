@@ -10,11 +10,13 @@ import {
   type Profile,
   type Swipe,
   type User,
+  type HackathonParticipant,
   matches,
   matchingSessions,
   profiles,
   swipes,
   user,
+  hackathonParticipants,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -65,6 +67,26 @@ export async function updateUserDiscordId(userId: string, discordId: string) {
   } catch (error) {
     console.error("Failed to update user Discord ID:", error);
     throw new Error("Failed to update user Discord ID");
+  }
+}
+
+export async function getUserById(userId: string): Promise<User | null> {
+  try {
+    const [foundUser] = await db.select().from(user).where(eq(user.id, userId));
+    return foundUser || null;
+  } catch (error) {
+    console.error("Failed to get user by ID:", error);
+    return null;
+  }
+}
+
+export async function getUserByDiscordId(discordId: string): Promise<User | null> {
+  try {
+    const [foundUser] = await db.select().from(user).where(eq(user.discordId, discordId));
+    return foundUser || null;
+  } catch (error) {
+    console.error("Failed to get user by Discord ID:", error);
+    return null;
   }
 }
 
@@ -631,6 +653,152 @@ export async function createMatch(data: {
     // Other errors
     console.error("Failed to create match:", error);
     throw new Error("Failed to create match");
+  }
+}
+
+// ==========================================
+// HACKATHON PARTICIPANT QUERIES
+// ==========================================
+
+/**
+ * Get hackathon participant by email (case-insensitive)
+ */
+export async function getHackathonParticipantByEmail(
+  email: string
+): Promise<HackathonParticipant | null> {
+  try {
+    const [participant] = await db
+      .select()
+      .from(hackathonParticipants)
+      .where(eq(hackathonParticipants.email, email.toLowerCase()))
+      .limit(1);
+
+    return participant || null;
+  } catch (error) {
+    console.error("Failed to get hackathon participant by email:", error);
+    return null;
+  }
+}
+
+/**
+ * Save email verification token for a user
+ */
+export async function saveEmailVerificationToken(
+  userId: string,
+  lumaEmail: string,
+  token: string,
+  expiresAt: Date
+): Promise<void> {
+  try {
+    await db
+      .update(user)
+      .set({
+        emailToVerify: lumaEmail.toLowerCase(),
+        emailVerificationToken: token,
+        emailVerificationExpiresAt: expiresAt,
+      })
+      .where(eq(user.id, userId));
+  } catch (error) {
+    console.error("Failed to save email verification token:", error);
+    throw new Error("Failed to save email verification token");
+  }
+}
+
+/**
+ * Verify email token and return the participant if valid
+ */
+export async function verifyEmailToken(
+  userId: string,
+  token: string
+): Promise<{ success: boolean; participant?: HackathonParticipant; error?: string }> {
+  try {
+    // Get user with verification data
+    const [foundUser] = await db
+      .select()
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+
+    if (!foundUser) {
+      return { success: false, error: "User not found" };
+    }
+
+    if (!foundUser.emailVerificationToken || !foundUser.emailToVerify) {
+      return { success: false, error: "No verification pending" };
+    }
+
+    if (foundUser.emailVerificationToken !== token) {
+      return { success: false, error: "Invalid token" };
+    }
+
+    if (foundUser.emailVerificationExpiresAt && foundUser.emailVerificationExpiresAt < new Date()) {
+      return { success: false, error: "Token expired" };
+    }
+
+    // Token is valid, get the participant
+    const participant = await getHackathonParticipantByEmail(foundUser.emailToVerify);
+
+    if (!participant) {
+      return { success: false, error: "Participant not found" };
+    }
+
+    return { success: true, participant };
+  } catch (error) {
+    console.error("Failed to verify email token:", error);
+    return { success: false, error: "Verification failed" };
+  }
+}
+
+/**
+ * Link verified participant to user and clear verification token
+ */
+export async function linkParticipantToUser(
+  userId: string,
+  participantId: string
+): Promise<void> {
+  try {
+    await db
+      .update(user)
+      .set({
+        verifiedParticipantId: participantId,
+        emailVerificationToken: null,
+        emailToVerify: null,
+        emailVerificationExpiresAt: null,
+      })
+      .where(eq(user.id, userId));
+  } catch (error) {
+    console.error("Failed to link participant to user:", error);
+    throw new Error("Failed to link participant to user");
+  }
+}
+
+/**
+ * Get user's verified participant data
+ */
+export async function getUserVerifiedParticipant(
+  userId: string
+): Promise<HackathonParticipant | null> {
+  try {
+    const [foundUser] = await db
+      .select({ verifiedParticipantId: user.verifiedParticipantId })
+      .from(user)
+      .where(eq(user.id, userId))
+      .limit(1);
+
+    if (!foundUser?.verifiedParticipantId) {
+      return null;
+    }
+
+    const [participant] = await db
+      .select()
+      .from(hackathonParticipants)
+      .where(eq(hackathonParticipants.id, foundUser.verifiedParticipantId))
+      .limit(1);
+
+    return participant || null;
+  } catch (error) {
+    console.error("Failed to get user verified participant:", error);
+    return null;
   }
 }
 

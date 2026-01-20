@@ -2,7 +2,7 @@
 
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Heart, MessageCircle, Compass, User, Home, ShieldCheck, X, Users, ArrowLeftRight } from "lucide-react";
+import { Heart, MessageCircle, Compass, User, Home, ShieldCheck, X, Users } from "lucide-react";
 import { SignOutForm } from "@/components/sign-out-form";
 import { useSidebar } from "@/components/sidebar-context";
 
@@ -14,7 +14,6 @@ export function BFLSidebar() {
 
   const menuItems = sessionId
     ? [
-        { icon: ArrowLeftRight, label: "Switch Event", path: "/" },
         { icon: Compass, label: "Discover", path: `/sessions/${sessionId}/discover` },
         { icon: Heart, label: "Interested In You", path: `/sessions/${sessionId}/interested` },
         { icon: MessageCircle, label: "Matches", path: `/sessions/${sessionId}/matches` },

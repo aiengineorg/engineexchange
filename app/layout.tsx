@@ -104,7 +104,9 @@ export default function RootLayout({
           <BackgroundProvider>
             <Toaster position="top-center" />
             <SidebarProvider>
-              <ClientSessionProvider>{children}</ClientSessionProvider>
+              <ClientSessionProvider>
+                {children}
+              </ClientSessionProvider>
             </SidebarProvider>
           </BackgroundProvider>
         </ThemeProvider>
