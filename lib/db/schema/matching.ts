@@ -1,5 +1,6 @@
 import type { InferSelectModel } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgTable,
@@ -43,6 +44,10 @@ export const profiles = pgTable(
     // LinkedIn Enrichment (via Clay)
     linkedinUrl: text("linkedin_url"),
     linkedinEnrichmentSummary: text("linkedin_enrichment_summary"),
+
+    // Additional profile fields
+    websiteOrGithub: text("website_or_github"),
+    hasTeam: boolean("has_team").default(false),
 
     // Vector Embedding Fields (Core Feature!)
     whatIOffer: text("what_i_offer").notNull(),

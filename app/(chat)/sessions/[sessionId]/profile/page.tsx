@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { User, ArrowLeft, Pencil, Users, Linkedin, Globe } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -10,6 +10,9 @@ interface Profile {
   images: string[];
   whatIOffer: string;
   whatImLookingFor: string;
+  linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean;
 }
 
 export default function ProfilePage({
@@ -27,7 +30,7 @@ export default function ProfilePage({
     const loadProfile = async () => {
       try {
         const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
-        
+
         if (response.status === 404) {
           // No profile, redirect to create
           router.push(`/sessions/${sessionId}/profile/new`);
@@ -53,7 +56,16 @@ export default function ProfilePage({
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <div className="text-center">
+          <div className="relative w-16 h-16 mb-6 mx-auto">
+            <div className="absolute inset-0 border-2 border-bfl-green/20 rounded-full" />
+            <div className="absolute inset-0 border-t-2 border-bfl-green rounded-full animate-spin" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <User className="text-bfl-green" size={24} />
+            </div>
+          </div>
+          <p className="font-mono text-xs font-normal text-white uppercase tracking-[0.5em]">Loading Profile</p>
+        </div>
       </div>
     );
   }
@@ -73,55 +85,127 @@ export default function ProfilePage({
   }
 
   return (
-    <div className="px-6 py-12 md:px-12 max-w-4xl mx-auto">
-      <div className="mb-16">
+    <div className="px-6 py-12 md:px-12 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-px w-8 bg-bfl-green" />
           <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">Your Info</span>
         </div>
-        <h2 className="text-6xl font-extrabold text-white tracking-tighter italic uppercase">My Profile</h2>
+        <h2 className="text-6xl font-normal text-white tracking-tighter uppercase">My Profile</h2>
       </div>
 
-      <div className="bg-white/[0.02] subtle-border p-10 space-y-12">
-        <div className="relative pt-8 border-t border-white/10">
-          <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">01 / Name</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">Display Name</h4>
-          <p className="text-xl text-bfl-muted leading-relaxed font-light italic">
-            {profile.displayName}
-          </p>
+      {/* Action Buttons - Top */}
+      <div className="flex gap-3 mb-8">
+        <button
+          onClick={() => router.push(`/sessions/${sessionId}/discover`)}
+          className="flex items-center gap-2 px-5 py-3 border border-white/10 text-white font-normal text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-lg"
+        >
+          <ArrowLeft size={14} />
+          Back to Discover
+        </button>
+        <button
+          onClick={() => router.push(`/sessions/${sessionId}/profile/edit`)}
+          className="flex items-center gap-2 px-5 py-3 bg-white text-bfl-black font-medium text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-lg"
+        >
+          <Pencil size={14} />
+          Edit Profile
+        </button>
+      </div>
+
+      {/* Profile Card - Same dimensions as Discover Card */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-[420px] h-[700px] bg-bfl-black rounded-[1rem] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 border-t-white/20 flex flex-col">
+        {/* Hero Image Section */}
+        <div className="relative h-[350px] w-full flex-shrink-0">
+          {profile.images?.[0] ? (
+            <img
+              src={profile.images[0]}
+              className="w-full h-full object-cover object-[center_20%]"
+              alt={profile.displayName}
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-bfl-dark to-bfl-black flex items-center justify-center">
+              <User className="text-white/20" size={80} />
+            </div>
+          )}
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-bfl-black via-bfl-black/20 to-transparent" />
+
+          {/* Name overlay at bottom of image */}
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h3 className="text-3xl font-normal text-white tracking-tight drop-shadow-lg uppercase">
+              {profile.displayName}
+            </h3>
+          </div>
         </div>
 
-        <div className="relative pt-8 border-t border-white/10">
-          <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">02 / What I Offer</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">"I am currently offering..."</h4>
-          <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
-            {profile.whatIOffer}
-          </p>
+        {/* Profile Details Section - Team Status & Links */}
+        <div className="px-4 py-2.5 border-b border-white/10 flex items-center justify-between gap-3">
+          {/* Team Status Indicator */}
+          <div className="flex items-center gap-2">
+            {profile.hasTeam ? (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
+                <Users size={11} className="text-bfl-green" />
+                <span className="text-[10px] font-bold text-bfl-green uppercase tracking-wider">Has Team</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/5 border border-white/10 rounded-full">
+                <User size={11} className="text-bfl-muted" />
+                <span className="text-[10px] font-medium text-bfl-muted uppercase tracking-wider">Looking for Team</span>
+              </div>
+            )}
+          </div>
+
+          {/* Social Links - Only show if URL exists */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+              >
+                <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+              </a>
+            )}
+            {profile.websiteOrGithub && (
+              <a
+                href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+              >
+                <Globe size={12} className="text-white/60 hover:text-white" />
+              </a>
+            )}
+          </div>
         </div>
 
-        <div className="relative pt-8 border-t border-white/10">
-          <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">03 / Search Parameters</span>
-          <h4 className="text-2xl font-bold text-white italic mb-6">"I'm looking for..."</h4>
-          <p className="text-xl text-bfl-muted leading-relaxed font-light italic whitespace-pre-wrap">
-            {profile.whatImLookingFor}
-          </p>
-        </div>
+        {/* Content Section - Stacked Layout */}
+        <div className="flex-1 px-4 py-3 overflow-y-auto flex flex-col gap-4">
+          {/* What I Offer */}
+          <div className="space-y-2 p-4 bg-white/[0.02] rounded-lg border border-white/5">
+            <div className="flex items-center gap-2">
+              <div className="h-px w-4 bg-bfl-green" />
+              <h4 className="font-mono text-[10px] font-bold text-bfl-green uppercase tracking-[0.15em]">What I Offer</h4>
+            </div>
+            <p className="text-sm text-white leading-relaxed">
+              {profile.whatIOffer}
+            </p>
+          </div>
 
-        <div className="pt-8 border-t border-white/5 flex gap-4">
-          <button
-            onClick={() => router.push(`/sessions/${sessionId}/discover`)}
-            className="flex-1 px-6 py-3 border border-white/10 text-white font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all rounded-none"
-          >
-            Back to Discover
-          </button>
-          <button
-            onClick={() => {
-              router.push(`/sessions/${sessionId}/profile/edit`);
-            }}
-            className="flex-2 px-12 py-3 bg-white text-bfl-black font-black text-[10px] uppercase tracking-[0.2em] hover:bg-bfl-offwhite transition-all rounded-none"
-          >
-            Edit Profile
-          </button>
+          {/* What I'm Looking For */}
+          <div className="space-y-2 p-4 bg-white/[0.02] rounded-lg border border-white/5">
+            <div className="flex items-center gap-2">
+              <div className="h-px w-4 bg-bfl-muted" />
+              <h4 className="font-mono text-[10px] font-bold text-bfl-muted uppercase tracking-[0.15em]">Looking For</h4>
+            </div>
+            <p className="text-sm text-white/80 leading-relaxed">
+              {profile.whatImLookingFor}
+            </p>
+          </div>
+        </div>
         </div>
       </div>
     </div>

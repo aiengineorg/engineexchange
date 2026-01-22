@@ -1,5 +1,5 @@
-/* Font Imports - AI Engine Theme */
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;700&display=swap");
+/* Font Imports - FluxHack Theme */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&family=Tomorrow:wght@300;400;500&display=swap");
 
 @import "tailwindcss";
 
@@ -13,126 +13,190 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
-/* DISCORD-LIKE THEME - Light Mode (fallback) */
+/* FLUXHACK THEME - Dark Mode (Default) */
 :root {
-  /* Discord-like Colors */
-  --background: hsl(220 13% 18%); /* Discord dark grey */
-  --foreground: hsl(0 0% 100%); /* White text */
-  
-  --card: hsl(220 13% 22%); /* Slightly lighter grey cards */
-  --card-foreground: hsl(0 0% 100%); /* White on cards */
-  
-  --popover: hsl(220 13% 22%);
-  --popover-foreground: hsl(0 0% 100%);
-  
-  --primary: hsl(235 85% 65%); /* Discord blurple */
-  --primary-foreground: hsl(0 0% 100%); /* White on blurple */
-  
-  --secondary: hsl(220 13% 25%); /* Dark grey secondary */
-  --secondary-foreground: hsl(0 0% 100%); /* White on grey */
-  
-  --muted: hsl(220 13% 25%); /* Dark grey muted */
-  --muted-foreground: hsl(220 9% 66%); /* Light grey text */
-  
-  --accent: hsl(235 85% 65%); /* Discord blurple accent */
-  --accent-foreground: hsl(0 0% 100%); /* White on accent */
-  
+  /* FluxHack Dark Mode Colors - Lightened */
+  --bfl-black: #162822;  /* Lighter base */
+  --bfl-dark-green: #1a302a;  /* Lighter dark green */
+  --bfl-green: #77957f;  /* User specified green */
+  --bfl-green-title: #b8c9ba;  /* Brighter title green */
+  --bfl-muted: #9caa9a;  /* Lighter muted */
+  --bfl-off-white: #FFFFFF;
+  --bfl-text-primary: #FFFFFF;
+  --bfl-border: rgba(255, 255, 255, 0.12);
+  --bfl-glass: rgba(22, 40, 34, 0.75);
+  --mist-overlay: rgba(22, 40, 34, 0.4);
+  --bfl-accent-purple: #C4B5D8;
+
+  /* Mapped to existing variable names for compatibility */
+  --background: #162822;  /* Lighter background */
+  --foreground: #FFFFFF;
+
+  --card: #1a302a;  /* Opaque card */
+  --card-foreground: #FFFFFF;
+
+  --popover: #1e3830;  /* Opaque popover/dropdown */
+  --popover-foreground: #FFFFFF;
+
+  --primary: #77957f;  /* User specified green */
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #1a302a;  /* Opaque secondary */
+  --secondary-foreground: #b8c9ba;
+
+  --muted: #1a302a;  /* Opaque muted */
+  --muted-foreground: #9caa9a;  /* Lighter muted text */
+
+  --accent: #b8c9ba;  /* Brighter accent */
+  --accent-foreground: #162822;
+
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
-  
-  --border: hsl(220 13% 30%); /* Dark grey border */
-  --input: hsl(220 13% 25%); /* Dark grey input */
-  --ring: hsl(235 85% 65%); /* Discord blurple focus ring */
-  
-  --chart-1: hsl(235 85% 65%);
-  --chart-2: hsl(142 76% 36%);
-  --chart-3: hsl(227 100% 30%);
-  --chart-4: hsl(349 94% 87%);
-  --chart-5: hsl(269 42% 69%);
-  
-  --sidebar-background: hsl(220 13% 15%); /* Darker sidebar */
-  --sidebar-foreground: hsl(0 0% 100%);
-  --sidebar-primary: hsl(235 85% 65%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(235 85% 65%);
-  --sidebar-accent-foreground: hsl(0 0% 100%);
-  --sidebar-border: hsl(220 13% 30%);
-  --sidebar-ring: hsl(235 85% 65%);
-  
-  /* Neon accent colors */
-  --neon-blue: hsl(200 100% 60%);
-  --neon-purple: hsl(280 100% 70%);
-  --neon-pink: hsl(330 100% 70%);
-  --neon-green: hsl(142 100% 50%);
-  
-  /* border radius unit */
-  --radius: 0.5rem; /* 8px rounded corners (Discord style) */
-  --sidebar: hsl(220 13% 15%);
+
+  --border: rgba(255, 255, 255, 0.12);
+  --input: #1a302a;  /* Opaque input */
+  --ring: #b8c9ba;
+
+  --chart-1: #77957f;
+  --chart-2: #b8c9ba;
+  --chart-3: #9caa9a;
+  --chart-4: #C4B5D8;
+  --chart-5: #162822;
+
+  --sidebar-background: #162822;  /* Opaque sidebar */
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #b8c9ba;
+  --sidebar-primary-foreground: #162822;
+  --sidebar-accent: #77957f;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #b8c9ba;
+
+  --radius: 0.125rem; /* Small border radius like FluxHack */
+  --sidebar: #162822;  /* Opaque sidebar */
 }
 
-/* DISCORD-LIKE THEME - Dark Mode */
+/* FLUXHACK THEME - Dark Mode */
 .dark {
-  --background: hsl(220 13% 18%); /* Discord dark grey */
-  --foreground: hsl(0 0% 100%); /* White text */
-  
-  --card: hsl(220 13% 22%); /* Slightly lighter grey cards */
-  --card-foreground: hsl(0 0% 100%); /* White on cards */
-  
-  --popover: hsl(220 13% 22%);
-  --popover-foreground: hsl(0 0% 100%);
-  
-  --primary: hsl(235 85% 65%); /* Discord blurple */
-  --primary-foreground: hsl(0 0% 100%); /* White on blurple */
-  
-  --secondary: hsl(220 13% 25%); /* Dark grey secondary */
-  --secondary-foreground: hsl(0 0% 100%); /* White on grey */
-  
-  --muted: hsl(220 13% 25%); /* Dark grey muted */
-  --muted-foreground: hsl(220 9% 66%); /* Light grey text */
-  
-  --accent: hsl(235 85% 65%); /* Discord blurple accent */
-  --accent-foreground: hsl(0 0% 100%); /* White on accent */
-  
+  --bfl-black: #162822;
+  --bfl-dark-green: #1a302a;
+  --bfl-green: #77957f;
+  --bfl-green-title: #b8c9ba;
+  --bfl-muted: #9caa9a;
+  --bfl-off-white: #FFFFFF;
+  --bfl-text-primary: #FFFFFF;
+  --bfl-border: rgba(255, 255, 255, 0.12);
+  --bfl-glass: rgba(22, 40, 34, 0.75);
+  --mist-overlay: rgba(22, 40, 34, 0.4);
+
+  --background: #162822;
+  --foreground: #FFFFFF;
+
+  --card: #1a302a;
+  --card-foreground: #FFFFFF;
+
+  --popover: #1e3830;
+  --popover-foreground: #FFFFFF;
+
+  --primary: #77957f;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #1a302a;
+  --secondary-foreground: #b8c9ba;
+
+  --muted: #1a302a;
+  --muted-foreground: #9caa9a;
+
+  --accent: #b8c9ba;
+  --accent-foreground: #162822;
+
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
-  
-  --border: hsl(220 13% 30%); /* Dark grey border */
-  --input: hsl(220 13% 25%); /* Dark grey input */
-  --ring: hsl(235 85% 65%); /* Discord blurple focus ring */
-  
-  --chart-1: hsl(235 85% 65%);
-  --chart-2: hsl(142 76% 36%);
-  --chart-3: hsl(227 100% 30%);
-  --chart-4: hsl(349 94% 87%);
-  --chart-5: hsl(269 42% 69%);
-  
-  --sidebar-background: hsl(220 13% 15%); /* Darker sidebar */
-  --sidebar-foreground: hsl(0 0% 100%);
-  --sidebar-primary: hsl(235 85% 65%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(235 85% 65%);
-  --sidebar-accent-foreground: hsl(0 0% 100%);
-  --sidebar-border: hsl(220 13% 30%);
-  --sidebar-ring: hsl(235 85% 65%);
-  --sidebar: hsl(220 13% 15%);
-  
-  /* Neon accent colors */
-  --neon-blue: hsl(200 100% 60%);
-  --neon-purple: hsl(280 100% 70%);
-  --neon-pink: hsl(330 100% 70%);
-  --neon-green: hsl(142 100% 50%);
+
+  --border: rgba(255, 255, 255, 0.12);
+  --input: #1a302a;
+  --ring: #b8c9ba;
+
+  --chart-1: #77957f;
+  --chart-2: #b8c9ba;
+  --chart-3: #9caa9a;
+  --chart-4: #C4B5D8;
+  --chart-5: #162822;
+
+  --sidebar-background: #162822;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #b8c9ba;
+  --sidebar-primary-foreground: #162822;
+  --sidebar-accent: #77957f;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #b8c9ba;
+  --sidebar: #162822;
+}
+
+/* FLUXHACK THEME - Light Mode */
+.light {
+  --bfl-black: #F8FAF8;
+  --bfl-dark-green: #EFF2EF;
+  --bfl-green: #3D4F44;
+  --bfl-green-title: #2D3D33;
+  --bfl-muted: #4A574D;
+  --bfl-off-white: #121212;
+  --bfl-text-primary: #121212;
+  --bfl-border: rgba(0, 0, 0, 0.12);
+  --bfl-glass: rgba(248, 250, 248, 0.9);
+  --mist-overlay: rgba(255, 255, 255, 0.1);
+
+  --background: #F8FAF8;
+  --foreground: #121212;
+
+  --card: #EFF2EF;
+  --card-foreground: #121212;
+
+  --popover: #EFF2EF;
+  --popover-foreground: #121212;
+
+  --primary: #3D4F44;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #F8FAF8;
+  --secondary-foreground: #2D3D33;
+
+  --muted: #EFF2EF;
+  --muted-foreground: #4A574D;
+
+  --accent: #3D4F44;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --border: rgba(0, 0, 0, 0.12);
+  --input: #EFF2EF;
+  --ring: #3D4F44;
+
+  --sidebar-background: #EFF2EF;
+  --sidebar-foreground: #121212;
+  --sidebar-primary: #3D4F44;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3D4F44;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(0, 0, 0, 0.12);
+  --sidebar-ring: #3D4F44;
+  --sidebar: #EFF2EF;
 }
 
 /* define theme */
 @theme {
-  --font-sans: var(--font-geist);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter), "Inter", sans-serif;
+  --font-mono: var(--font-inter), "Inter", sans-serif;  /* FluxHack uses Inter for everything */
+  --font-tomorrow: "Tomorrow", sans-serif;
 
   --breakpoint-toast-mobile: 600px;
 
   --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 1px);
+  --radius-sm: calc(var(--radius) - 2px);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -182,9 +246,6 @@
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
   looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
 */
 @layer base {
   *,
@@ -214,16 +275,16 @@
 
 @layer utilities {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 15, 33, 28;
+    --background-end-rgb: 7, 19, 14;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --foreground-rgb: 255, 255, 255;
-      --background-start-rgb: 0, 0, 0;
-      --background-end-rgb: 0, 0, 0;
+      --background-start-rgb: 15, 33, 28;
+      --background-end-rgb: 7, 19, 14;
     }
   }
 }
@@ -234,20 +295,44 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    @apply text-foreground;
+    background: transparent;
+    font-family: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     overflow-x: hidden;
     position: relative;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    @apply font-normal tracking-tighter;  /* FluxHack uses font-normal (400) with tight tracking */
+    font-family: "Tomorrow", var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   html {
     overflow-x: hidden;
+    background-color: #162822;
   }
+}
+
+/* FluxHack Selection Styling */
+::selection {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* FluxHack Fade-in Animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
 }
 
 .skeleton {
@@ -257,7 +342,7 @@
 
   *[class^="text-"] {
     color: transparent;
-    @apply rounded-md bg-foreground/20 select-none animate-pulse;
+    @apply rounded-sm bg-foreground/20 select-none animate-pulse;
   }
 
   .skeleton-bg {
@@ -275,13 +360,13 @@
 
 .cm-editor,
 .cm-gutters {
-  @apply bg-background! dark:bg-zinc-800! outline-hidden! selection:bg-zinc-900!;
+  @apply bg-background! dark:bg-[#07130e]! outline-hidden! selection:bg-[#697568]!;
 }
 
 .ͼo.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
 .ͼo.cm-selectionBackground,
 .ͼo.cm-content::selection {
-  @apply bg-zinc-200! dark:bg-zinc-900!;
+  @apply bg-[#697568]/30! dark:bg-[#697568]/30!;
 }
 
 .cm-activeLine,
@@ -306,27 +391,27 @@
 }
 
 .suggestion-highlight {
-  @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
+  @apply bg-[#697568]/30 hover:bg-[#697568]/50 dark:hover:bg-[#697568]/50 dark:text-white dark:bg-[#697568]/40;
 }
 
-/* minimal scrollbar styling */
+/* FluxHack Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--primary);
   border-radius: 3px;
   transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: --alpha(var(--muted-foreground) / 0.5);
+  background: var(--muted-foreground);
 }
 
 ::-webkit-scrollbar-corner {
@@ -336,7 +421,7 @@
 /* firefox scrollbar styling */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: var(--primary) var(--background);
 }
 
 @theme inline {
@@ -349,12 +434,15 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* BFL Custom Colors */
-  --color-bfl-black: hsl(220 13% 10%);
-  --color-bfl-dark: hsl(220 13% 15%);
-  --color-bfl-green: hsl(235 85% 65%);
-  --color-bfl-muted: hsl(220 9% 66%);
-  --color-bfl-offwhite: hsl(0 0% 95%);
+  /* FluxHack Custom Colors */
+  --color-bfl-black: var(--bfl-black);
+  --color-bfl-dark-green: var(--bfl-dark-green);
+  --color-bfl-green: var(--bfl-green);
+  --color-bfl-green-title: var(--bfl-green-title);
+  --color-bfl-muted: var(--bfl-muted);
+  --color-bfl-off-white: var(--bfl-off-white);
+  --color-bfl-text-primary: var(--bfl-text-primary);
+  --color-bfl-accent-purple: var(--bfl-accent-purple);
 }
 
 @layer base {
@@ -366,21 +454,29 @@
   }
 }
 
-/* BFL Utility Classes */
+/* FluxHack Glass Effect */
 .glass {
-  background: hsl(220 13% 10% / 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bfl-glass);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
 }
 
+/* FluxHack Subtle Border */
 .subtle-border {
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--border);
 }
 
+/* FluxHack Blueprint Line */
 .blueprint-line {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--border);
 }
 
+/* FluxHack Text Glow */
 .text-glow {
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 20px rgba(105, 117, 104, 0.3);
+}
+
+/* FluxHack Green Glow for Status Indicators */
+.green-glow {
+  box-shadow: 0 0 10px rgba(105, 117, 104, 0.5);
 }

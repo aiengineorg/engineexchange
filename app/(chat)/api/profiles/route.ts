@@ -19,6 +19,8 @@ const CreateProfileSchema = z.object({
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
   linkedinUrl: z.string().url().optional(),
+  websiteOrGithub: z.string().url().optional(),
+  hasTeam: z.boolean().optional(),
 });
 
 // POST /api/profiles - Create a new profile
@@ -47,6 +49,8 @@ export async function POST(request: Request) {
       whatIOffer,
       whatImLookingFor,
       linkedinUrl,
+      websiteOrGithub,
+      hasTeam,
     } = validation.data;
 
     // Verify session exists
@@ -122,6 +126,8 @@ export async function POST(request: Request) {
       whatImLookingForEmbedding: lookingForEmbedding,
       linkedinUrl,
       linkedinEnrichmentSummary,
+      websiteOrGithub,
+      hasTeam,
     });
     console.log("✅ Profile saved successfully with ID:", profile.id);
 

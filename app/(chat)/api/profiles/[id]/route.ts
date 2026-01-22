@@ -14,6 +14,8 @@ const UpdateProfileSchema = z.object({
   whatIOffer: z.string().min(10).max(1000),
   whatImLookingFor: z.string().min(10).max(1000),
   linkedinUrl: z.string().url().optional(),
+  websiteOrGithub: z.string().url().optional(),
+  hasTeam: z.boolean().optional(),
 });
 
 // GET /api/profiles/[id] - Get a profile by ID
@@ -95,6 +97,8 @@ export async function PATCH(
       whatIOffer,
       whatImLookingFor,
       linkedinUrl,
+      websiteOrGithub,
+      hasTeam,
     } = validation.data;
 
     // Enrich with Clay if LinkedIn URL is provided and different from existing
@@ -155,6 +159,8 @@ export async function PATCH(
       whatImLookingForEmbedding: lookingForEmbedding,
       linkedinUrl,
       linkedinEnrichmentSummary,
+      websiteOrGithub,
+      hasTeam,
     });
 
     // Exclude embeddings from response (they're not JSON serializable and not needed by client)

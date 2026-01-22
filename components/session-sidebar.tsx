@@ -2,14 +2,13 @@
 
 import { useParams, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Heart, MessageCircle, Sparkles, User, Home, Users, PlusCircle, ShieldCheck, LogOut, ArrowLeftRight } from "lucide-react";
+import { Heart, MessageCircle, Sparkles, User, Home, Users, PlusCircle, ShieldCheck } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -118,14 +117,6 @@ export function SessionSidebar() {
             <span className="font-mono text-[10px] text-white/20 uppercase tracking-[0.5em]">Nav Systems</span>
           </div>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild className="flex items-center gap-5 px-5 py-4 transition-all duration-300 text-bfl-muted hover:text-white hover:bg-white/[0.02]">
-                <Link href="/">
-                  <ArrowLeftRight className="h-[18px] w-[18px] text-white/20" />
-                  <span className="text-xs font-bold uppercase tracking-[0.2em]">Switch Event</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (

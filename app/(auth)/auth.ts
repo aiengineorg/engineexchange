@@ -4,7 +4,7 @@ import type { DefaultJWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
 import Discord from "next-auth/providers/discord";
 import { DUMMY_PASSWORD } from "@/lib/constants";
-import { getUser, createUser, updateUserDiscordId } from "@/lib/db/queries";
+import { getUser, createUser, updateUserDiscordId, getUserByDiscordId } from "@/lib/db/queries";
 import { authConfig } from "./auth.config";
 
 declare module "next-auth" {
@@ -157,9 +157,22 @@ export const {
 
       // For OAuth providers (Discord), fetch the user ID from the database
       if (account?.provider === "discord" && user?.email) {
-        const users = await getUser(user.email);
-        if (users.length > 0) {
-          token.id = users[0].id;
+        const discordProfile = profile as { id?: string } | undefined;
+        const discordId = discordProfile?.id;
+
+        // First try to find user by Discord ID
+        let dbUser = discordId ? await getUserByDiscordId(discordId) : null;
+
+        // Fall back to finding by email (normal flow)
+        if (!dbUser) {
+          const users = await getUser(user.email);
+          if (users.length > 0) {
+            dbUser = users[0];
+          }
+        }
+
+        if (dbUser) {
+          token.id = dbUser.id;
         }
 
         // Store Discord profile information
@@ -173,13 +186,13 @@ export const {
             image?: string;
             avatar?: string;
           };
-          
+
           // Use global_name (Discord display name) if available, otherwise username, otherwise name
           token.discordUsername = discordProfile.global_name || discordProfile.username || discordProfile.name || null;
           // NextAuth maps Discord avatar to image field
           token.discordAvatar = discordProfile.image || discordProfile.avatar || null;
         }
-        
+
         // Also check user object as NextAuth may have already mapped it
         if (user?.name) {
           token.discordUsername = token.discordUsername || user.name;
