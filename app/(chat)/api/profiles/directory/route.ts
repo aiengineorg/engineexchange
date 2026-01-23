@@ -54,6 +54,9 @@ export async function GET(request: Request) {
       images: string[];
       userId: string;
       discordId: string | null;
+      linkedinUrl?: string | null;
+      websiteOrGithub?: string | null;
+      hasTeam?: boolean | null;
       similarity?: number;
       searchedField?: "what_i_offer" | "what_im_looking_for";
     }>;
@@ -98,6 +101,9 @@ export async function GET(request: Request) {
         images: result.images || [],
         userId: result.userId,
         discordId: discordMap.get(result.userId) || null,
+        linkedinUrl: result.linkedinUrl,
+        websiteOrGithub: result.websiteOrGithub,
+        hasTeam: result.hasTeam,
         similarity: result.similarity,
         searchedField: result.searchedField,
       }));
@@ -111,6 +117,9 @@ export async function GET(request: Request) {
           whatImLookingFor: profiles.whatImLookingFor,
           images: profiles.images,
           userId: profiles.userId,
+          linkedinUrl: profiles.linkedinUrl,
+          websiteOrGithub: profiles.websiteOrGithub,
+          hasTeam: profiles.hasTeam,
         })
         .from(profiles)
         .where(
@@ -140,6 +149,9 @@ export async function GET(request: Request) {
         images: profile.images || [],
         userId: profile.userId,
         discordId: discordMap.get(profile.userId) || null,
+        linkedinUrl: profile.linkedinUrl,
+        websiteOrGithub: profile.websiteOrGithub,
+        hasTeam: profile.hasTeam,
       }));
     }
 

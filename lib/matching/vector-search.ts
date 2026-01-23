@@ -15,9 +15,92 @@ export interface VectorSearchParams {
   excludeProfileIds: string[];
   embedding?: number[];
   customQuery?: string;
+  userLookingFor?: string; // User's "what I'm looking for" text for better match reasons
   targetField?: "what_i_offer_embedding" | "what_im_looking_for_embedding" | "both";
   limit?: number;
   minSimilarity?: number;
+}
+
+// Common words to ignore when extracting skills
+const STOP_WORDS = new Set([
+  'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her',
+  'was', 'one', 'our', 'out', 'has', 'have', 'been', 'would', 'could', 'their',
+  'what', 'about', 'which', 'when', 'make', 'like', 'into', 'just', 'over',
+  'such', 'some', 'than', 'them', 'well', 'only', 'come', 'its', 'also', 'back',
+  'after', 'most', 'with', 'from', 'this', 'that', 'they', 'will', 'each',
+  'looking', 'looking for', 'someone', 'people', 'person', 'help', 'want',
+  'need', 'interested', 'experience', 'work', 'working', 'build', 'building',
+  'create', 'creating', 'develop', 'developing', 'learn', 'learning', 'who',
+  'how', 'years', 'year', 'more', 'other', 'very', 'good', 'great', 'best',
+]);
+
+/**
+ * Extract meaningful skills/concepts from text
+ */
+function extractSkills(text: string): string[] {
+  // Common tech/business skill patterns
+  const skillPatterns = [
+    /\b(react|vue|angular|svelte|next\.?js|nuxt)\b/gi,
+    /\b(node\.?js|express|fastify|nest\.?js)\b/gi,
+    /\b(python|java|go|rust|typescript|javascript|swift|kotlin)\b/gi,
+    /\b(aws|gcp|azure|cloud|devops|kubernetes|docker)\b/gi,
+    /\b(machine learning|ml|ai|deep learning|nlp|computer vision)\b/gi,
+    /\b(product management|pm|product design|ux|ui)\b/gi,
+    /\b(marketing|growth|sales|business development|bd)\b/gi,
+    /\b(data science|data engineering|analytics|sql)\b/gi,
+    /\b(mobile|ios|android|flutter|react native)\b/gi,
+    /\b(blockchain|web3|crypto|defi|smart contracts)\b/gi,
+    /\b(startup|founder|entrepreneur|vc|fundraising)\b/gi,
+    /\b(backend|frontend|full.?stack|api|microservices)\b/gi,
+    /\b(design|figma|sketch|branding|ui\/ux)\b/gi,
+    /\b(saas|b2b|b2c|e-?commerce|fintech|healthtech|edtech)\b/gi,
+  ];
+
+  const skills: Set<string> = new Set();
+
+  // Extract pattern matches
+  for (const pattern of skillPatterns) {
+    const matches = text.match(pattern);
+    if (matches) {
+      matches.forEach(m => skills.add(m.toLowerCase().trim()));
+    }
+  }
+
+  // Also extract capitalized words/phrases that might be skills
+  const words = text.split(/[\s,;]+/);
+  for (const word of words) {
+    const cleaned = word.replace(/[^\w\s.-]/g, '').trim();
+    if (cleaned.length > 2 &&
+        !STOP_WORDS.has(cleaned.toLowerCase()) &&
+        /^[A-Z]/.test(word)) { // Starts with capital
+      skills.add(cleaned);
+    }
+  }
+
+  return Array.from(skills).slice(0, 10);
+}
+
+/**
+ * Find overlapping concepts between two texts
+ */
+function findOverlappingConcepts(text1: string, text2: string): string[] {
+  const skills1 = extractSkills(text1);
+  const skills2 = extractSkills(text2);
+
+  const overlaps: string[] = [];
+
+  for (const skill1 of skills1) {
+    for (const skill2 of skills2) {
+      const s1 = skill1.toLowerCase();
+      const s2 = skill2.toLowerCase();
+      if (s1 === s2 || s1.includes(s2) || s2.includes(s1)) {
+        overlaps.push(skill1);
+        break;
+      }
+    }
+  }
+
+  return [...new Set(overlaps)].slice(0, 3);
 }
 
 export interface ProfileSearchResult {
@@ -27,6 +110,9 @@ export interface ProfileSearchResult {
   images: string[];
   whatIOffer: string;
   whatImLookingFor: string;
+  linkedinUrl?: string | null;
+  websiteOrGithub?: string | null;
+  hasTeam?: boolean | null;
   similarity: number;
   matchReason?: string;
   searchedField?: "what_i_offer" | "what_im_looking_for";
@@ -44,6 +130,7 @@ export async function searchProfilesByVector(
     excludeProfileIds,
     embedding: providedEmbedding,
     customQuery,
+    userLookingFor,
     targetField = "what_i_offer_embedding",
     limit = 50,
     minSimilarity = 0.5,
@@ -90,6 +177,9 @@ export async function searchProfilesByVector(
       p.images,
       p.what_i_offer as "whatIOffer",
       p.what_im_looking_for as "whatImLookingFor",
+      p.linkedin_url as "linkedinUrl",
+      p.website_or_github as "websiteOrGithub",
+      p.has_team as "hasTeam",
       1 - (p.${sql.raw(targetField)} <=> ${embeddingStr}::vector) as similarity
     FROM profiles p
     WHERE p.session_id = ${sessionId}
@@ -107,10 +197,29 @@ export async function searchProfilesByVector(
   console.log("✅ Vector search completed:", {
     resultsFound: rows.length,
     topProfile: rows[0] ? (rows[0] as Record<string, unknown>)?.displayName : 'none',
+    topRawSimilarity: rows[0] ? (rows[0] as Record<string, unknown>)?.similarity : 'none',
   });
 
   // Generate match reasons if custom query provided
   const cleanResults: ProfileSearchResult[] = rows.map((row: any) => {
+    // Normalize similarity score for more intuitive display
+    // Text embeddings typically cluster between 0.6-0.9 for related content
+    // Use a higher baseline and power curve to create meaningful differentiation
+    const rawSimilarity = row.similarity as number;
+
+    // Use 0.65 as the effective floor (typical "noise" level for embeddings)
+    // and apply a power curve to spread out the higher scores
+    const effectiveFloor = 0.65;
+    const effectiveCeiling = 0.95; // Very few matches exceed this
+
+    // First, map raw score to 0-1 range using the effective floor/ceiling
+    const linearNormalized = (rawSimilarity - effectiveFloor) / (effectiveCeiling - effectiveFloor);
+    const clampedLinear = Math.max(0, Math.min(1, linearNormalized));
+
+    // Apply square root to spread out lower scores (makes differences more visible)
+    // Then scale to a reasonable range (20-95%) - never show 0% for returned results
+    const normalizedSimilarity = 0.20 + (Math.sqrt(clampedLinear) * 0.75);
+
     const result: ProfileSearchResult = {
       id: row.id,
       userId: row.userId,
@@ -118,7 +227,10 @@ export async function searchProfilesByVector(
       images: row.images,
       whatIOffer: row.whatIOffer,
       whatImLookingFor: row.whatImLookingFor,
-      similarity: row.similarity,
+      linkedinUrl: row.linkedinUrl,
+      websiteOrGithub: row.websiteOrGithub,
+      hasTeam: row.hasTeam,
+      similarity: normalizedSimilarity,
     };
 
     // Store which field was searched against for card reordering
@@ -126,83 +238,78 @@ export async function searchProfilesByVector(
       ? "what_i_offer" 
       : "what_im_looking_for";
 
-    // Generate match reason
-    if (customQuery) {
-      const targetText = targetField === "what_i_offer_embedding" 
-        ? row.whatIOffer 
-        : row.whatImLookingFor;
-      
-      // Extract relevant phrases - improved keyword matching
-      // Normalize query: remove punctuation, split into words, filter meaningful words
-      const normalizedQuery = customQuery.toLowerCase()
-        .replace(/[^\w\s]/g, ' ')
-        .split(/\s+/)
-        .filter(w => w.length > 2); // Lower threshold to catch more words
-      
-      // Normalize target text and split into sentences
-      const sentences = targetText.split(/[.!?]\s+/);
-      
-      // Find sentences that contain query keywords (more flexible matching)
-      const relevantSentences = sentences.filter((sentence: string) => {
-        const normalizedSentence = sentence.toLowerCase().replace(/[^\w\s]/g, ' ');
-        const sentenceWords = normalizedSentence.split(/\s+/);
-        
-        // Check if any query word appears in the sentence (allowing partial matches)
-        return normalizedQuery.some(queryWord => {
-          // Exact word match
-          if (sentenceWords.includes(queryWord)) return true;
-          // Word contains query (for compound words)
-          if (sentenceWords.some(word => word.includes(queryWord) || queryWord.includes(word))) return true;
-          // Check if sentence contains the query word as substring
-          return normalizedSentence.includes(queryWord);
-        });
-      });
+    // Generate match reason - prioritize what they OFFER since that's what users care about
+    const searchText = customQuery || userLookingFor || "";
+    const theirOffers = row.whatIOffer || "";
+    const theirLookingFor = row.whatImLookingFor || "";
 
-      if (relevantSentences.length > 0) {
-        // Take the first relevant sentence
-        let matchText = relevantSentences[0].trim();
-        if (matchText.length > 150) {
-          matchText = matchText.substring(0, 150) + "...";
-        }
-        
-        // Set match reason based on what was searched
-        if (targetField === "what_i_offer_embedding") {
-          // Searched their "What I Offer" - so show what they offer
-          result.matchReason = `This person offers: "${matchText}"`;
-        } else {
-          // Searched their "What I'm Looking For" - so show what they're looking for
-          result.matchReason = `This person is looking for: "${matchText}"`;
-        }
-      } else {
-        // Fallback: show first sentence or first 150 chars of the matched field
-        let fallbackText = targetText.trim();
-        const firstSentence = fallbackText.split(/[.!?]\s+/)[0];
-        if (firstSentence && firstSentence.length > 20) {
-          fallbackText = firstSentence;
-        }
-        if (fallbackText.length > 150) {
-          fallbackText = fallbackText.substring(0, 150) + "...";
-        }
-        
-        if (targetField === "what_i_offer_embedding") {
-          result.matchReason = `This person offers: "${fallbackText}"`;
-        } else {
-          result.matchReason = `This person is looking for: "${fallbackText}"`;
-        }
-      }
+    // Extract skills from their profile
+    const theirSkills = extractSkills(theirOffers);
+    const theirNeeds = extractSkills(theirLookingFor);
+    const offersOverlap = findOverlappingConcepts(searchText, theirOffers);
+
+    // Build match reason - use profile ID hash for consistent but varied templates
+    const hash = row.id.split('').reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0);
+    let matchReason = "";
+
+    if (offersOverlap.length > 0) {
+      // Direct match: they offer what user is looking for
+      const skills = offersOverlap.slice(0, 2);
+      const directTemplates = [
+        `Their ${skills[0]} expertise aligns with your goals${skills[1] ? `, plus ${skills[1]} experience` : ""}.`,
+        `A match for your ${skills[0]} interests${skills[1] ? ` — also skilled in ${skills[1]}` : ""}.`,
+        `${skills[0]} specialist${skills[1] ? ` with ${skills[1]} background` : ""} that fits your needs.`,
+      ];
+      matchReason = directTemplates[hash % directTemplates.length];
+    } else if (theirSkills.length >= 2) {
+      const s1 = theirSkills[0];
+      const s2 = theirSkills[1];
+      const s3 = theirSkills[2];
+      const twoSkillTemplates = [
+        `${s1} professional with ${s2} expertise.`,
+        `Background in ${s1} and ${s2}.`,
+        `Works across ${s1} and ${s2}.`,
+        `${s1} focus, complemented by ${s2}.`,
+        `Skilled in both ${s1} and ${s2}.`,
+        s3 ? `${s1}, ${s2}, and ${s3} experience.` : `Combines ${s1} with ${s2}.`,
+      ];
+      matchReason = twoSkillTemplates[hash % twoSkillTemplates.length];
+    } else if (theirSkills.length === 1) {
+      const skill = theirSkills[0];
+      const oneSkillTemplates = [
+        `${skill} specialist.`,
+        `Focused on ${skill}.`,
+        `Deep ${skill} expertise.`,
+        `${skill} background.`,
+      ];
+      matchReason = oneSkillTemplates[hash % oneSkillTemplates.length];
     } else {
-      // Default mode: match my "looking for" against their "offers"
-      // Show first sentence from their "What I Offer"
-      let defaultText = row.whatIOffer.trim();
-      const firstSentence = defaultText.split(/[.!?]\s+/)[0];
-      if (firstSentence && firstSentence.length > 20) {
-        defaultText = firstSentence;
+      // No skills extracted - use first sentence of their offer
+      const firstSentence = theirOffers.split(/[.!?]/)[0]?.trim() || "";
+      if (firstSentence.length > 80) {
+        matchReason = firstSentence.substring(0, 80) + "...";
+      } else if (firstSentence) {
+        matchReason = firstSentence;
+        if (!matchReason.endsWith(".")) matchReason += ".";
+      } else {
+        matchReason = "Potential collaboration opportunity.";
       }
-      if (defaultText.length > 150) {
-        defaultText = defaultText.substring(0, 150) + "...";
-      }
-      result.matchReason = `This person offers: "${defaultText}"`;
     }
+
+    // Optionally append what they're seeking
+    if (theirNeeds.length > 0 && matchReason.length < 60) {
+      const need = theirNeeds[0];
+      if (!matchReason.toLowerCase().includes(need.toLowerCase())) {
+        const seekingTemplates = [
+          ` Looking for ${need} help.`,
+          ` Seeking ${need} collaborators.`,
+          ` Wants to connect on ${need}.`,
+        ];
+        matchReason = matchReason.replace(/\.$/, "") + seekingTemplates[hash % seekingTemplates.length];
+      }
+    }
+
+    result.matchReason = matchReason;
 
     return result;
   });
@@ -238,6 +345,9 @@ export async function getInterestedProfiles(params: {
       p.images,
       p.what_i_offer as "whatIOffer",
       p.what_im_looking_for as "whatImLookingFor",
+      p.linkedin_url as "linkedinUrl",
+      p.website_or_github as "websiteOrGithub",
+      p.has_team as "hasTeam",
       0.0 as similarity
     FROM profiles p
     INNER JOIN swipes s ON s.swiping_user_id = p.id
@@ -260,6 +370,9 @@ export async function getInterestedProfiles(params: {
     images: row.images,
     whatIOffer: row.whatIOffer,
     whatImLookingFor: row.whatImLookingFor,
+    linkedinUrl: row.linkedinUrl,
+    websiteOrGithub: row.websiteOrGithub,
+    hasTeam: row.hasTeam,
     similarity: row.similarity,
   }));
 

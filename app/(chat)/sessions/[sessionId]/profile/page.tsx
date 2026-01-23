@@ -158,15 +158,15 @@ export default function ProfilePage({
           </div>
 
           {/* Social Links - Only show if URL exists */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {profile.linkedinUrl && (
               <a
                 href={profile.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-md bg-white/5 hover:bg-[#0077b5]/20 transition-colors border border-white/10"
+                className="p-2.5 rounded-lg bg-[#0077b5]/30 hover:bg-[#0077b5]/50 transition-all border border-[#0077b5]/50 hover:scale-105"
               >
-                <Linkedin size={12} className="text-white/60 hover:text-[#0077b5]" />
+                <Linkedin size={18} className="text-[#0077b5]" />
               </a>
             )}
             {profile.websiteOrGithub && (
@@ -174,9 +174,9 @@ export default function ProfilePage({
                 href={profile.websiteOrGithub.startsWith("http") ? profile.websiteOrGithub : `https://${profile.websiteOrGithub}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/10"
+                className="p-2.5 rounded-lg bg-white/10 hover:bg-white/20 transition-all border border-white/20 hover:scale-105"
               >
-                <Globe size={12} className="text-white/60 hover:text-white" />
+                <Globe size={18} className="text-white/90" />
               </a>
             )}
           </div>

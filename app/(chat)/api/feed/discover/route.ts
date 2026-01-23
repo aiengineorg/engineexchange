@@ -202,6 +202,7 @@ export async function GET(request: Request) {
       excludeProfileIds,
       embedding,
       customQuery: customQuery || undefined,
+      userLookingFor: myProfile.whatImLookingFor || undefined,
       targetField,
       limit: 50,
       minSimilarity: 0.5,
