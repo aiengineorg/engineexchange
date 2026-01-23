@@ -16,6 +16,7 @@ const UpdateProfileSchema = z.object({
   linkedinUrl: z.string().url().optional(),
   websiteOrGithub: z.string().url().optional(),
   hasTeam: z.boolean().optional(),
+  contactEmail: z.string().email().optional(),
 });
 
 // GET /api/profiles/[id] - Get a profile by ID
@@ -99,6 +100,7 @@ export async function PATCH(
       linkedinUrl,
       websiteOrGithub,
       hasTeam,
+      contactEmail,
     } = validation.data;
 
     // Enrich with Clay if LinkedIn URL is provided and different from existing
@@ -161,6 +163,7 @@ export async function PATCH(
       linkedinEnrichmentSummary,
       websiteOrGithub,
       hasTeam,
+      contactEmail,
     });
 
     // Exclude embeddings from response (they're not JSON serializable and not needed by client)

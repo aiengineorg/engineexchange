@@ -11,12 +11,18 @@ import {
   type Swipe,
   type User,
   type HackathonParticipant,
+  type Team,
+  type TeamMember,
+  type Submission,
   matches,
   matchingSessions,
   profiles,
   swipes,
   user,
   hackathonParticipants,
+  teams,
+  teamMembers,
+  submissions,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -326,6 +332,7 @@ export async function createProfile(data: {
   linkedinEnrichmentSummary?: string;
   websiteOrGithub?: string;
   hasTeam?: boolean;
+  contactEmail?: string;
 }): Promise<Profile> {
   try {
     console.log("📝 Inserting profile into database with:", {
@@ -365,6 +372,7 @@ export async function updateProfile({
   linkedinEnrichmentSummary,
   websiteOrGithub,
   hasTeam,
+  contactEmail,
 }: {
   id: string;
   displayName: string;
@@ -377,6 +385,7 @@ export async function updateProfile({
   linkedinEnrichmentSummary?: string;
   websiteOrGithub?: string;
   hasTeam?: boolean;
+  contactEmail?: string;
 }): Promise<Profile> {
   try {
     const updateData: {
@@ -391,6 +400,7 @@ export async function updateProfile({
       linkedinEnrichmentSummary?: string;
       websiteOrGithub?: string;
       hasTeam?: boolean;
+      contactEmail?: string;
     } = {
       displayName,
       images,
@@ -412,6 +422,9 @@ export async function updateProfile({
     }
     if (hasTeam !== undefined) {
       updateData.hasTeam = hasTeam;
+    }
+    if (contactEmail !== undefined) {
+      updateData.contactEmail = contactEmail;
     }
 
     const [profile] = await db
@@ -813,6 +826,635 @@ export async function getUserVerifiedParticipant(
   } catch (error) {
     console.error("Failed to get user verified participant:", error);
     return null;
+  }
+}
+
+// ==========================================
+// TEAM QUERIES
+// ==========================================
+
+/**
+ * Check if user has a valid contact email in their profile for a session
+ */
+export async function hasValidContactEmail(
+  userId: string,
+  sessionId: string
+): Promise<boolean> {
+  try {
+    const [profile] = await db
+      .select({ contactEmail: profiles.contactEmail })
+      .from(profiles)
+      .where(and(eq(profiles.userId, userId), eq(profiles.sessionId, sessionId)))
+      .limit(1);
+
+    return !!(profile?.contactEmail && profile.contactEmail.includes("@"));
+  } catch (error) {
+    console.error("Failed to check contact email:", error);
+    return false;
+  }
+}
+
+/**
+ * Get profile contact email for a user in a session
+ */
+export async function getProfileContactEmail(
+  userId: string,
+  sessionId: string
+): Promise<string | null> {
+  try {
+    const [profile] = await db
+      .select({ contactEmail: profiles.contactEmail })
+      .from(profiles)
+      .where(and(eq(profiles.userId, userId), eq(profiles.sessionId, sessionId)))
+      .limit(1);
+
+    return profile?.contactEmail || null;
+  } catch (error) {
+    console.error("Failed to get contact email:", error);
+    return null;
+  }
+}
+
+/**
+ * Create a new team
+ */
+export async function createTeam(data: {
+  name: string;
+  teamNumber: string;
+  teamLeadId: string;
+  sessionId: string;
+}): Promise<Team> {
+  try {
+    const [team] = await db.insert(teams).values(data).returning();
+
+    // Also add team lead as a team member
+    await db.insert(teamMembers).values({
+      teamId: team.id,
+      userId: data.teamLeadId,
+    });
+
+    return team;
+  } catch (error) {
+    console.error("Failed to create team:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get team by ID
+ */
+export async function getTeamById(id: string): Promise<Team | null> {
+  try {
+    const [team] = await db
+      .select()
+      .from(teams)
+      .where(eq(teams.id, id))
+      .limit(1);
+
+    return team || null;
+  } catch (error) {
+    console.error("Failed to get team by id:", error);
+    return null;
+  }
+}
+
+/**
+ * Get team by team number within a session
+ */
+export async function getTeamByNumber(
+  teamNumber: string,
+  sessionId: string
+): Promise<Team | null> {
+  try {
+    const [team] = await db
+      .select()
+      .from(teams)
+      .where(
+        and(eq(teams.teamNumber, teamNumber), eq(teams.sessionId, sessionId))
+      )
+      .limit(1);
+
+    return team || null;
+  } catch (error) {
+    console.error("Failed to get team by number:", error);
+    return null;
+  }
+}
+
+/**
+ * Get team that a user belongs to
+ */
+export async function getTeamByUserId(userId: string): Promise<Team | null> {
+  try {
+    const [membership] = await db
+      .select({ teamId: teamMembers.teamId })
+      .from(teamMembers)
+      .where(eq(teamMembers.userId, userId))
+      .limit(1);
+
+    if (!membership) {
+      return null;
+    }
+
+    return getTeamById(membership.teamId);
+  } catch (error) {
+    console.error("Failed to get team by user id:", error);
+    return null;
+  }
+}
+
+/**
+ * Get all members of a team with their profile info
+ */
+export async function getTeamMembers(
+  teamId: string,
+  sessionId: string
+): Promise<
+  Array<{
+    id: string;
+    userId: string;
+    addedAt: Date;
+    profile: Profile | null;
+    isLead: boolean;
+  }>
+> {
+  try {
+    // Get team to know who the lead is
+    const team = await getTeamById(teamId);
+    if (!team) {
+      return [];
+    }
+
+    const members = await db
+      .select()
+      .from(teamMembers)
+      .where(eq(teamMembers.teamId, teamId));
+
+    // Get profiles for each member
+    const membersWithProfiles = await Promise.all(
+      members.map(async (member) => {
+        const [profile] = await db
+          .select()
+          .from(profiles)
+          .where(
+            and(
+              eq(profiles.userId, member.userId),
+              eq(profiles.sessionId, sessionId)
+            )
+          )
+          .limit(1);
+
+        return {
+          id: member.id,
+          userId: member.userId,
+          addedAt: member.addedAt,
+          profile: profile || null,
+          isLead: member.userId === team.teamLeadId,
+        };
+      })
+    );
+
+    return membersWithProfiles;
+  } catch (error) {
+    console.error("Failed to get team members:", error);
+    return [];
+  }
+}
+
+/**
+ * Get team with all its members
+ */
+export async function getTeamWithMembers(
+  teamId: string,
+  sessionId: string
+): Promise<{
+  team: Team;
+  members: Array<{
+    id: string;
+    userId: string;
+    addedAt: Date;
+    profile: Profile | null;
+    isLead: boolean;
+  }>;
+} | null> {
+  try {
+    const team = await getTeamById(teamId);
+    if (!team) {
+      return null;
+    }
+
+    const members = await getTeamMembers(teamId, sessionId);
+
+    return { team, members };
+  } catch (error) {
+    console.error("Failed to get team with members:", error);
+    return null;
+  }
+}
+
+/**
+ * Add a member to a team
+ */
+export async function addTeamMember(
+  teamId: string,
+  userId: string
+): Promise<TeamMember> {
+  try {
+    const [member] = await db
+      .insert(teamMembers)
+      .values({ teamId, userId })
+      .returning();
+
+    return member;
+  } catch (error) {
+    console.error("Failed to add team member:", error);
+    throw error;
+  }
+}
+
+/**
+ * Remove a member from a team
+ */
+export async function removeTeamMember(
+  teamId: string,
+  userId: string
+): Promise<void> {
+  try {
+    await db
+      .delete(teamMembers)
+      .where(
+        and(eq(teamMembers.teamId, teamId), eq(teamMembers.userId, userId))
+      );
+  } catch (error) {
+    console.error("Failed to remove team member:", error);
+    throw error;
+  }
+}
+
+/**
+ * Delete a team and all its members (cascade)
+ */
+export async function deleteTeam(teamId: string): Promise<void> {
+  try {
+    await db.delete(teams).where(eq(teams.id, teamId));
+  } catch (error) {
+    console.error("Failed to delete team:", error);
+    throw error;
+  }
+}
+
+/**
+ * Check if user is already in a team
+ */
+export async function isUserInTeam(userId: string): Promise<boolean> {
+  try {
+    const [membership] = await db
+      .select()
+      .from(teamMembers)
+      .where(eq(teamMembers.userId, userId))
+      .limit(1);
+
+    return !!membership;
+  } catch (error) {
+    console.error("Failed to check if user is in team:", error);
+    return false;
+  }
+}
+
+/**
+ * Search users by email who have valid contact email in their profile
+ * Returns users who can be added to teams
+ */
+export async function searchUsersByEmailWithContactEmail(
+  emailQuery: string,
+  sessionId: string
+): Promise<
+  Array<{
+    userId: string;
+    displayName: string;
+    contactEmail: string;
+    images: string[] | null;
+    isInTeam: boolean;
+  }>
+> {
+  try {
+    // Search profiles by contact email (case-insensitive partial match)
+    const matchingProfiles = await db
+      .select({
+        userId: profiles.userId,
+        displayName: profiles.displayName,
+        contactEmail: profiles.contactEmail,
+        images: profiles.images,
+      })
+      .from(profiles)
+      .where(
+        and(
+          eq(profiles.sessionId, sessionId),
+          sql`LOWER(${profiles.contactEmail}) LIKE LOWER(${"%" + emailQuery + "%"})`
+        )
+      )
+      .limit(10);
+
+    // Filter out profiles without valid email and check team membership
+    const results = await Promise.all(
+      matchingProfiles
+        .filter((p) => p.contactEmail && p.contactEmail.includes("@"))
+        .map(async (profile) => {
+          const inTeam = await isUserInTeam(profile.userId);
+          return {
+            userId: profile.userId,
+            displayName: profile.displayName,
+            contactEmail: profile.contactEmail!,
+            images: profile.images,
+            isInTeam: inTeam,
+          };
+        })
+    );
+
+    return results;
+  } catch (error) {
+    console.error("Failed to search users by email:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all teams with member count
+ */
+export async function getAllTeams(): Promise<
+  Array<Team & { memberCount: number }>
+> {
+  try {
+    const allTeams = await db.select().from(teams).orderBy(teams.teamNumber);
+
+    const teamsWithCount = await Promise.all(
+      allTeams.map(async (team) => {
+        const countResult = await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(teamMembers)
+          .where(eq(teamMembers.teamId, team.id));
+
+        return {
+          ...team,
+          memberCount: countResult[0]?.count || 0,
+        };
+      })
+    );
+
+    return teamsWithCount;
+  } catch (error) {
+    console.error("Failed to get all teams:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all teams in a session with member count and lead info
+ */
+export async function getTeamsBySessionId(
+  sessionId: string
+): Promise<
+  Array<
+    Team & {
+      memberCount: number;
+      leadProfile: { displayName: string; images: string[] | null } | null;
+    }
+  >
+> {
+  try {
+    const sessionTeams = await db
+      .select()
+      .from(teams)
+      .where(eq(teams.sessionId, sessionId))
+      .orderBy(teams.teamNumber);
+
+    const teamsWithDetails = await Promise.all(
+      sessionTeams.map(async (team) => {
+        // Get member count
+        const countResult = await db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(teamMembers)
+          .where(eq(teamMembers.teamId, team.id));
+
+        // Get lead profile
+        const leadProfile = await db
+          .select({
+            displayName: profiles.displayName,
+            images: profiles.images,
+          })
+          .from(profiles)
+          .where(
+            and(
+              eq(profiles.userId, team.teamLeadId),
+              eq(profiles.sessionId, sessionId)
+            )
+          )
+          .limit(1);
+
+        return {
+          ...team,
+          memberCount: countResult[0]?.count || 0,
+          leadProfile: leadProfile[0] || null,
+        };
+      })
+    );
+
+    return teamsWithDetails;
+  } catch (error) {
+    console.error("Failed to get teams by session:", error);
+    return [];
+  }
+}
+
+// ==========================================
+// SUBMISSION QUERIES
+// ==========================================
+
+/**
+ * Create a new submission
+ */
+export async function createSubmission(data: {
+  teamId: string;
+  projectName: string;
+  githubLink: string;
+  description: string;
+  demoLink?: string;
+  techStack: string;
+  problemStatement: string;
+  fileUploads?: string[];
+}): Promise<Submission> {
+  try {
+    const [submission] = await db
+      .insert(submissions)
+      .values({
+        ...data,
+        fileUploads: data.fileUploads || [],
+      })
+      .returning();
+
+    return submission;
+  } catch (error) {
+    console.error("Failed to create submission:", error);
+    throw error;
+  }
+}
+
+/**
+ * Update a submission
+ */
+export async function updateSubmission(
+  id: string,
+  data: {
+    projectName?: string;
+    githubLink?: string;
+    description?: string;
+    demoLink?: string;
+    techStack?: string;
+    problemStatement?: string;
+    fileUploads?: string[];
+  }
+): Promise<Submission> {
+  try {
+    const [submission] = await db
+      .update(submissions)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(submissions.id, id))
+      .returning();
+
+    return submission;
+  } catch (error) {
+    console.error("Failed to update submission:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get submission by team ID
+ */
+export async function getSubmissionByTeamId(
+  teamId: string
+): Promise<Submission | null> {
+  try {
+    const [submission] = await db
+      .select()
+      .from(submissions)
+      .where(eq(submissions.teamId, teamId))
+      .limit(1);
+
+    return submission || null;
+  } catch (error) {
+    console.error("Failed to get submission by team id:", error);
+    return null;
+  }
+}
+
+/**
+ * Get submission by ID
+ */
+export async function getSubmissionById(id: string): Promise<Submission | null> {
+  try {
+    const [submission] = await db
+      .select()
+      .from(submissions)
+      .where(eq(submissions.id, id))
+      .limit(1);
+
+    return submission || null;
+  } catch (error) {
+    console.error("Failed to get submission by id:", error);
+    return null;
+  }
+}
+
+/**
+ * Get all submissions with team info
+ */
+export async function getAllSubmissionsWithTeams(
+  sessionId: string
+): Promise<
+  Array<{
+    submission: Submission;
+    team: Team;
+    members: Array<{
+      userId: string;
+      displayName: string;
+      contactEmail: string | null;
+      images: string[] | null;
+      isLead: boolean;
+    }>;
+  }>
+> {
+  try {
+    const allSubmissions = await db
+      .select()
+      .from(submissions)
+      .orderBy(desc(submissions.submittedAt));
+
+    const submissionsWithTeams = await Promise.all(
+      allSubmissions.map(async (submission) => {
+        const team = await getTeamById(submission.teamId);
+        if (!team) {
+          return null;
+        }
+
+        // Get team members with profiles
+        const members = await db
+          .select()
+          .from(teamMembers)
+          .where(eq(teamMembers.teamId, team.id));
+
+        const membersWithProfiles = await Promise.all(
+          members.map(async (member) => {
+            const [profile] = await db
+              .select({
+                displayName: profiles.displayName,
+                contactEmail: profiles.contactEmail,
+                images: profiles.images,
+              })
+              .from(profiles)
+              .where(
+                and(
+                  eq(profiles.userId, member.userId),
+                  eq(profiles.sessionId, sessionId)
+                )
+              )
+              .limit(1);
+
+            return {
+              userId: member.userId,
+              displayName: profile?.displayName || "Unknown",
+              contactEmail: profile?.contactEmail || null,
+              images: profile?.images || null,
+              isLead: member.userId === team.teamLeadId,
+            };
+          })
+        );
+
+        return {
+          submission,
+          team,
+          members: membersWithProfiles,
+        };
+      })
+    );
+
+    return submissionsWithTeams.filter(Boolean) as Array<{
+      submission: Submission;
+      team: Team;
+      members: Array<{
+        userId: string;
+        displayName: string;
+        contactEmail: string | null;
+        images: string[] | null;
+        isLead: boolean;
+      }>;
+    }>;
+  } catch (error) {
+    console.error("Failed to get all submissions with teams:", error);
+    return [];
   }
 }
 

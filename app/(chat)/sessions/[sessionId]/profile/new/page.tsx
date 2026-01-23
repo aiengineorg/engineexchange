@@ -24,6 +24,7 @@ export default function NewProfilePage({
     linkedinUrl: "",
     websiteOrGithub: "",
     hasTeam: false,
+    contactEmail: "",
   });
 
   // Image upload and generation state
@@ -288,6 +289,7 @@ export default function NewProfilePage({
           linkedinUrl: formData.linkedinUrl || undefined,
           websiteOrGithub: formData.websiteOrGithub || undefined,
           hasTeam: formData.hasTeam,
+          contactEmail: formData.contactEmail || undefined,
         }),
       });
 
@@ -630,7 +632,7 @@ export default function NewProfilePage({
             </div>
 
             {/* Website/GitHub URL */}
-            <div>
+            <div className="mb-4">
               <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
                 <Globe size={16} />
                 Website / GitHub
@@ -647,6 +649,25 @@ export default function NewProfilePage({
                   ✓ Pre-filled from your Luma registration
                 </p>
               )}
+            </div>
+
+            {/* Contact Email for Teams/Submissions */}
+            <div>
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Mail size={16} />
+                Contact Email
+                <span className="text-xs text-amber-400">(Required for team participation)</span>
+              </label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={formData.contactEmail}
+                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              />
+              <p className="mt-2 text-xs text-bfl-muted">
+                This email will be used for team invites and project submissions. It will be visible to other participants.
+              </p>
             </div>
           </div>
         </div>

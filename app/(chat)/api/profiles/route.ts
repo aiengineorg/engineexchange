@@ -21,6 +21,7 @@ const CreateProfileSchema = z.object({
   linkedinUrl: z.string().url().optional(),
   websiteOrGithub: z.string().url().optional(),
   hasTeam: z.boolean().optional(),
+  contactEmail: z.string().email().optional(),
 });
 
 // POST /api/profiles - Create a new profile
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
       linkedinUrl,
       websiteOrGithub,
       hasTeam,
+      contactEmail,
     } = validation.data;
 
     // Verify session exists
@@ -128,6 +130,7 @@ export async function POST(request: Request) {
       linkedinEnrichmentSummary,
       websiteOrGithub,
       hasTeam,
+      contactEmail,
     });
     console.log("✅ Profile saved successfully with ID:", profile.id);
 

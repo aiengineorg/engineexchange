@@ -49,6 +49,9 @@ export const profiles = pgTable(
     websiteOrGithub: text("website_or_github"),
     hasTeam: boolean("has_team").default(false),
 
+    // Contact email for teams/submissions (not displayed in matching)
+    contactEmail: text("contact_email"),
+
     // Vector Embedding Fields (Core Feature!)
     whatIOffer: text("what_i_offer").notNull(),
     whatIOfferEmbedding: vector("what_i_offer_embedding", { dimensions: 1536 }),

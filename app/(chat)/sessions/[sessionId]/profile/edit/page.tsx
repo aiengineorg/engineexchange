@@ -3,7 +3,7 @@
 import { use, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { User, Loader2, Upload, Image as ImageIcon, Sparkles, X, Users, Linkedin, Globe } from "lucide-react";
+import { User, Loader2, Upload, Image as ImageIcon, Sparkles, X, Users, Linkedin, Globe, Mail } from "lucide-react";
 
 const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
 
@@ -16,6 +16,7 @@ interface Profile {
   linkedinUrl?: string | null;
   websiteOrGithub?: string | null;
   hasTeam?: boolean;
+  contactEmail?: string | null;
 }
 
 export default function EditProfilePage({
@@ -36,6 +37,7 @@ export default function EditProfilePage({
     linkedinUrl: "",
     websiteOrGithub: "",
     hasTeam: false,
+    contactEmail: "",
   });
 
   // Image state
@@ -72,6 +74,7 @@ export default function EditProfilePage({
           linkedinUrl: profile.linkedinUrl || "",
           websiteOrGithub: profile.websiteOrGithub || "",
           hasTeam: profile.hasTeam || false,
+          contactEmail: profile.contactEmail || "",
         });
 
         // Load current image if exists
@@ -247,6 +250,7 @@ export default function EditProfilePage({
           linkedinUrl: formData.linkedinUrl || undefined,
           websiteOrGithub: formData.websiteOrGithub || undefined,
           hasTeam: formData.hasTeam,
+          contactEmail: formData.contactEmail || undefined,
         }),
       });
 
@@ -686,7 +690,7 @@ export default function EditProfilePage({
             </div>
 
             {/* Website/GitHub URL */}
-            <div>
+            <div className="mb-4">
               <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
                 <Globe size={16} />
                 Website / GitHub
@@ -699,6 +703,26 @@ export default function EditProfilePage({
                 disabled={loading}
                 className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all disabled:opacity-50"
               />
+            </div>
+
+            {/* Contact Email for Teams/Submissions */}
+            <div>
+              <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
+                <Mail size={16} />
+                Contact Email
+                <span className="text-xs text-amber-400">(Required for team participation)</span>
+              </label>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={formData.contactEmail}
+                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                disabled={loading}
+                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all disabled:opacity-50"
+              />
+              <p className="mt-2 text-xs text-bfl-muted">
+                This email will be used for team invites and project submissions. It will be visible to other participants.
+              </p>
             </div>
           </div>
 

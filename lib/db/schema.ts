@@ -55,3 +55,7 @@ export type {
   MatchMessage,
   UserDetail,
 } from "./schema/matching";
+
+// Re-export teams tables
+export { teams, teamMembers, submissions } from "./schema/teams";
+export type { Team, TeamMember, Submission } from "./schema/teams";
