@@ -14,6 +14,8 @@ import {
   type Team,
   type TeamMember,
   type Submission,
+  type Judge,
+  type JudgingScore,
   matches,
   matchingSessions,
   profiles,
@@ -23,6 +25,8 @@ import {
   teams,
   teamMembers,
   submissions,
+  judges,
+  judgingScores,
 } from "./schema";
 import { generateHashedPassword } from "./utils";
 
@@ -1457,6 +1461,245 @@ export async function getAllSubmissionsWithTeams(
     }>;
   } catch (error) {
     console.error("Failed to get all submissions with teams:", error);
+    return [];
+  }
+}
+
+// ==========================================
+// JUDGING QUERIES
+// ==========================================
+
+/**
+ * Get all judges
+ */
+export async function getAllJudges(): Promise<Judge[]> {
+  try {
+    return await db.select().from(judges).orderBy(judges.name);
+  } catch (error) {
+    console.error("Failed to get judges:", error);
+    return [];
+  }
+}
+
+/**
+ * Create a new judge
+ */
+export async function createJudge(name: string): Promise<Judge> {
+  try {
+    const [judge] = await db
+      .insert(judges)
+      .values({ name })
+      .returning();
+    return judge;
+  } catch (error) {
+    console.error("Failed to create judge:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get judge by ID
+ */
+export async function getJudgeById(id: string): Promise<Judge | null> {
+  try {
+    const [judge] = await db
+      .select()
+      .from(judges)
+      .where(eq(judges.id, id))
+      .limit(1);
+    return judge || null;
+  } catch (error) {
+    console.error("Failed to get judge by id:", error);
+    return null;
+  }
+}
+
+/**
+ * Get judge by name
+ */
+export async function getJudgeByName(name: string): Promise<Judge | null> {
+  try {
+    const [judge] = await db
+      .select()
+      .from(judges)
+      .where(eq(judges.name, name))
+      .limit(1);
+    return judge || null;
+  } catch (error) {
+    console.error("Failed to get judge by name:", error);
+    return null;
+  }
+}
+
+/**
+ * Create or update a judging score
+ */
+export async function upsertJudgingScore(data: {
+  judgeId: string;
+  submissionId: string;
+  futurePotential: string;
+  demo: string;
+  creativity: string;
+  pitchingQuality: string;
+  bonusFlux?: string;
+  additionalComments?: string;
+}): Promise<JudgingScore> {
+  try {
+    // Check if score already exists
+    const [existing] = await db
+      .select()
+      .from(judgingScores)
+      .where(
+        and(
+          eq(judgingScores.judgeId, data.judgeId),
+          eq(judgingScores.submissionId, data.submissionId)
+        )
+      )
+      .limit(1);
+
+    if (existing) {
+      // Update existing score
+      const [score] = await db
+        .update(judgingScores)
+        .set({
+          ...data,
+          updatedAt: new Date(),
+        })
+        .where(eq(judgingScores.id, existing.id))
+        .returning();
+      return score;
+    } else {
+      // Create new score
+      const [score] = await db
+        .insert(judgingScores)
+        .values({
+          ...data,
+          bonusFlux: data.bonusFlux || "0",
+        })
+        .returning();
+      return score;
+    }
+  } catch (error) {
+    console.error("Failed to upsert judging score:", error);
+    throw error;
+  }
+}
+
+/**
+ * Get all scores by a judge
+ */
+export async function getScoresByJudge(judgeId: string): Promise<JudgingScore[]> {
+  try {
+    return await db
+      .select()
+      .from(judgingScores)
+      .where(eq(judgingScores.judgeId, judgeId))
+      .orderBy(desc(judgingScores.updatedAt));
+  } catch (error) {
+    console.error("Failed to get scores by judge:", error);
+    return [];
+  }
+}
+
+/**
+ * Get score for a specific submission by a judge
+ */
+export async function getScoreByJudgeAndSubmission(
+  judgeId: string,
+  submissionId: string
+): Promise<JudgingScore | null> {
+  try {
+    const [score] = await db
+      .select()
+      .from(judgingScores)
+      .where(
+        and(
+          eq(judgingScores.judgeId, judgeId),
+          eq(judgingScores.submissionId, submissionId)
+        )
+      )
+      .limit(1);
+    return score || null;
+  } catch (error) {
+    console.error("Failed to get score by judge and submission:", error);
+    return null;
+  }
+}
+
+/**
+ * Get all scores for a submission
+ */
+export async function getScoresBySubmission(submissionId: string): Promise<Array<JudgingScore & { judgeName: string }>> {
+  try {
+    const scores = await db
+      .select()
+      .from(judgingScores)
+      .where(eq(judgingScores.submissionId, submissionId));
+
+    const scoresWithJudges = await Promise.all(
+      scores.map(async (score) => {
+        const judge = await getJudgeById(score.judgeId);
+        return {
+          ...score,
+          judgeName: judge?.name || "Unknown",
+        };
+      })
+    );
+
+    return scoresWithJudges;
+  } catch (error) {
+    console.error("Failed to get scores by submission:", error);
+    return [];
+  }
+}
+
+/**
+ * Get all judging scores with submission and judge details
+ */
+export async function getAllJudgingScores(): Promise<
+  Array<{
+    score: JudgingScore;
+    judge: Judge;
+    submission: Submission;
+    team: Team;
+  }>
+> {
+  try {
+    const allScores = await db
+      .select()
+      .from(judgingScores)
+      .orderBy(desc(judgingScores.updatedAt));
+
+    const scoresWithDetails = await Promise.all(
+      allScores.map(async (score) => {
+        const judge = await getJudgeById(score.judgeId);
+        const submission = await getSubmissionById(score.submissionId);
+        let team = null;
+        if (submission) {
+          team = await getTeamById(submission.teamId);
+        }
+
+        if (!judge || !submission || !team) {
+          return null;
+        }
+
+        return {
+          score,
+          judge,
+          submission,
+          team,
+        };
+      })
+    );
+
+    return scoresWithDetails.filter(Boolean) as Array<{
+      score: JudgingScore;
+      judge: Judge;
+      submission: Submission;
+      team: Team;
+    }>;
+  } catch (error) {
+    console.error("Failed to get all judging scores:", error);
     return [];
   }
 }

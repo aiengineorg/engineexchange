@@ -88,3 +88,48 @@ export const submissions = pgTable(
 );
 
 export type Submission = InferSelectModel<typeof submissions>;
+
+// Judges table
+export const judges = pgTable(
+  "judges",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    name: text("name").notNull().unique(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  }
+);
+
+export type Judge = InferSelectModel<typeof judges>;
+
+// Judging scores table
+export const judgingScores = pgTable(
+  "judging_scores",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    judgeId: uuid("judge_id")
+      .notNull()
+      .references(() => judges.id, { onDelete: "cascade" }),
+    submissionId: uuid("submission_id")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+    futurePotential: text("future_potential").notNull(), // Score out of 10
+    demo: text("demo").notNull(), // Score out of 10
+    creativity: text("creativity").notNull(), // Score out of 10
+    pitchingQuality: text("pitching_quality").notNull(), // Score out of 10
+    bonusFlux: text("bonus_flux").default("0"), // Bonus score for using BFL Flux.2
+    additionalComments: text("additional_comments"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => ({
+    // One score per judge per submission
+    uniqueJudgeSubmission: uniqueIndex("unique_judge_submission").on(
+      table.judgeId,
+      table.submissionId
+    ),
+    judgeIdx: index("judging_scores_judge_idx").on(table.judgeId),
+    submissionIdx: index("judging_scores_submission_idx").on(table.submissionId),
+  })
+);
+
+export type JudgingScore = InferSelectModel<typeof judgingScores>;
