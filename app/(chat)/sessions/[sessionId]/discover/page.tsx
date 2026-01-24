@@ -111,8 +111,8 @@ export default function DiscoverPage({
       try {
         const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
 
-        if (response.status === 404) {
-          // Profile doesn't exist, redirect to profile creation
+        if (response.status === 404 || response.status === 401) {
+          // Profile doesn't exist or user not found, redirect to profile creation
           router.push(`/sessions/${sessionId}/profile/new`);
           return;
         }

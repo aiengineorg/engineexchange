@@ -85,31 +85,45 @@ export const {
   callbacks: {
     async signIn({ user, account, profile }) {
       // Handle OAuth sign-ins (Discord)
-      if (account?.provider === "discord" && user.email) {
+      if (account?.provider === "discord") {
         try {
           const discordProfile = profile as { id?: string } | undefined;
           const discordId = discordProfile?.id;
+          const userEmail = user.email;
 
-          const existingUsers = await getUser(user.email);
+          console.log("🔐 Discord sign-in:", { discordId, userEmail });
 
-          // If user doesn't exist, create them (without password for OAuth users)
-          if (existingUsers.length === 0) {
+          // Try to find existing user by Discord ID first
+          let existingUser = discordId ? await getUserByDiscordId(discordId) : null;
+
+          // Fall back to email lookup if available
+          if (!existingUser && userEmail) {
+            const existingUsers = await getUser(userEmail);
+            if (existingUsers.length > 0) {
+              existingUser = existingUsers[0];
+            }
+          }
+
+          // If user doesn't exist, create them
+          if (!existingUser) {
             try {
-              await createUser(user.email, "", discordId);
+              // Use email if available, otherwise use Discord ID-based placeholder
+              const emailToUse = userEmail || `discord_${discordId}@placeholder.local`;
+              console.log("📝 Creating new user:", emailToUse);
+              await createUser(emailToUse, "", discordId);
+              console.log("✅ User created successfully");
             } catch (error) {
-              console.error("Failed to create user from Discord OAuth:", error);
+              console.error("❌ Failed to create user from Discord OAuth:", error);
               return false;
             }
-          } else if (discordId) {
+          } else if (existingUser && discordId && existingUser.discordId !== discordId) {
             // Update existing user's Discord ID if it's missing or changed
-            const [existingUser] = existingUsers;
-            if (existingUser.discordId !== discordId) {
-              try {
-                await updateUserDiscordId(existingUser.id, discordId);
-              } catch (error) {
-                console.error("Failed to update Discord ID:", error);
-                // Don't fail sign-in if update fails
-              }
+            try {
+              await updateUserDiscordId(existingUser.id, discordId);
+              console.log("✅ Updated Discord ID for existing user");
+            } catch (error) {
+              console.error("Failed to update Discord ID:", error);
+              // Don't fail sign-in if update fails
             }
           }
 
@@ -150,29 +164,61 @@ export const {
       return true;
     },
     async jwt({ token, user, account, profile }) {
-      // For credentials provider, user.id is already set
-      if (user?.id) {
+      // For credentials provider, user.id is the database ID
+      if (account?.provider === "credentials" && user?.id) {
         token.id = user.id;
       }
 
       // For OAuth providers (Discord), fetch the user ID from the database
-      if (account?.provider === "discord" && user?.email) {
+      if (account?.provider === "discord") {
         const discordProfile = profile as { id?: string } | undefined;
         const discordId = discordProfile?.id;
+        const userEmail = user?.email;
+
+        console.log("🎫 JWT callback for Discord:", { discordId, userEmail });
 
         // First try to find user by Discord ID
         let dbUser = discordId ? await getUserByDiscordId(discordId) : null;
+        console.log("🔍 User found by Discord ID:", !!dbUser);
 
-        // Fall back to finding by email (normal flow)
-        if (!dbUser) {
-          const users = await getUser(user.email);
+        // Fall back to finding by email (if available)
+        if (!dbUser && userEmail) {
+          const users = await getUser(userEmail);
           if (users.length > 0) {
             dbUser = users[0];
+          }
+          console.log("🔍 User found by email:", !!dbUser);
+        }
+
+        // If user still doesn't exist, create them as a fallback
+        if (!dbUser) {
+          // Generate a placeholder email if none provided (Discord ID based)
+          const emailToUse = userEmail || `discord_${discordId}@placeholder.local`;
+          try {
+            console.log("📝 Creating user with email:", emailToUse);
+            await createUser(emailToUse, "", discordId);
+            // Fetch the newly created user to get their database ID
+            if (discordId) {
+              dbUser = await getUserByDiscordId(discordId);
+            }
+            if (!dbUser && userEmail) {
+              const newUsers = await getUser(userEmail);
+              if (newUsers.length > 0) {
+                dbUser = newUsers[0];
+              }
+            }
+            console.log("✅ User created:", !!dbUser);
+          } catch (error) {
+            console.error("❌ JWT callback: Failed to create user as fallback:", error);
           }
         }
 
         if (dbUser) {
           token.id = dbUser.id;
+          token.email = dbUser.email;
+          console.log("✅ Token ID set to:", dbUser.id);
+        } else {
+          console.error("❌ Could not find or create user for Discord:", { discordId, userEmail });
         }
 
         // Store Discord profile information

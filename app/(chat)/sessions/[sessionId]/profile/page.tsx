@@ -31,8 +31,8 @@ export default function ProfilePage({
       try {
         const response = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
 
-        if (response.status === 404) {
-          // No profile, redirect to create
+        if (response.status === 404 || response.status === 401) {
+          // No profile or user not found, redirect to create
           router.push(`/sessions/${sessionId}/profile/new`);
           return;
         }

@@ -115,8 +115,8 @@ export default function InterestedPage({
       // Check if profile exists first
       const profileCheck = await fetch(`/api/profiles/me?sessionId=${sessionId}`);
 
-      if (profileCheck.status === 404) {
-        // Profile doesn't exist, redirect to profile creation
+      if (profileCheck.status === 404 || profileCheck.status === 401) {
+        // Profile doesn't exist or user not found, redirect to profile creation
         router.push(`/sessions/${sessionId}/profile/new`);
         return;
       }
