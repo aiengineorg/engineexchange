@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FileText, Loader2, Upload, X, Github, ExternalLink, Save, ArrowLeft, Lock } from "lucide-react";
 import { EmailWarningBanner } from "@/components/email-warning-banner";
@@ -16,8 +16,14 @@ interface Submission {
   techStack: string;
   problemStatement: string;
   fileUploads: string[];
+  sponsorTech: string[];
   submittedAt: string;
 }
+
+const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA", "Anthropic", "Flux Models"] as const;
+
+// Deadline: January 25, 2026 at 2:15 PM (local time)
+const SUBMISSION_DEADLINE = new Date("2026-01-25T14:15:00");
 
 interface Team {
   id: string;
@@ -32,8 +38,6 @@ export default function MyTeamSubmissionPage({
 }) {
   const { sessionId } = use(params);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const isUnlocked = searchParams.get("test") === "true";
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
@@ -51,7 +55,12 @@ export default function MyTeamSubmissionPage({
     demoLink: "",
     techStack: "",
     problemStatement: "",
+    sponsorTech: [] as string[],
   });
+
+  // Check if deadline has passed (for new submissions only)
+  const isDeadlinePassed = new Date() > SUBMISSION_DEADLINE;
+  const canCreateNew = !isDeadlinePassed;
 
   const [fileUploads, setFileUploads] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -94,6 +103,7 @@ export default function MyTeamSubmissionPage({
           demoLink: subData.submission.demoLink || "",
           techStack: subData.submission.techStack,
           problemStatement: subData.submission.problemStatement,
+          sponsorTech: subData.submission.sponsorTech || [],
         });
         setFileUploads(subData.submission.fileUploads || []);
       }
@@ -169,6 +179,7 @@ export default function MyTeamSubmissionPage({
           techStack: formData.techStack,
           problemStatement: formData.problemStatement,
           fileUploads,
+          sponsorTech: formData.sponsorTech,
         }),
       });
 
@@ -186,40 +197,6 @@ export default function MyTeamSubmissionPage({
       setSaving(false);
     }
   };
-
-  // Show coming soon if not unlocked
-  if (!isUnlocked) {
-    return (
-      <div className="px-6 py-12 md:px-12 max-w-4xl mx-auto">
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-bfl-green" />
-            <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">
-              Hackathon
-            </span>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
-            Submit Project
-          </h1>
-        </div>
-
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-12 md:p-16 text-center">
-          <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center">
-            <Lock className="w-10 h-10 text-bfl-muted" />
-          </div>
-          <h2 className="text-3xl md:text-4xl font-normal text-white tracking-tighter uppercase mb-4">
-            Coming Soon
-          </h2>
-          <p className="text-bfl-muted font-medium max-w-md mx-auto mb-2">
-            Project submissions will open shortly. Check back soon to submit your hackathon project.
-          </p>
-          <p className="text-xs text-bfl-muted/60 font-mono">
-            Stay tuned for updates
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -255,6 +232,47 @@ export default function MyTeamSubmissionPage({
             className="text-sm text-amber-400 hover:text-amber-300 transition-colors"
           >
             Go to Teams →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Show deadline passed message if trying to create new submission after deadline
+  if (!submission && isDeadlinePassed) {
+    return (
+      <div className="px-6 py-12 md:px-12 max-w-4xl mx-auto">
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px w-8 bg-bfl-green" />
+            <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">
+              Hackathon
+            </span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
+            Submit Project
+          </h1>
+        </div>
+
+        <div className="bg-red-500/10 border border-red-500/30 p-12 md:p-16 text-center">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center">
+            <Lock className="w-10 h-10 text-red-400" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-normal text-white tracking-tighter uppercase mb-4">
+            Submissions Closed
+          </h2>
+          <p className="text-bfl-muted font-medium max-w-md mx-auto mb-2">
+            The submission deadline has passed. New submissions are no longer being accepted.
+          </p>
+          <p className="text-xs text-bfl-muted/60 font-mono">
+            Deadline was January 25, 2026 at 2:15 PM
+          </p>
+          <Link
+            href={`/sessions/${sessionId}/submissions`}
+            className="inline-flex items-center gap-2 mt-8 text-bfl-green hover:text-bfl-green/80 transition-colors"
+          >
+            <ArrowLeft size={16} />
+            <span className="text-sm font-mono uppercase tracking-wider">Back to Submissions</span>
           </Link>
         </div>
       </div>
@@ -396,6 +414,43 @@ export default function MyTeamSubmissionPage({
             maxLength={500}
             className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
           />
+        </div>
+
+        {/* Sponsor Tech */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
+          <label className="block text-sm text-bfl-muted mb-2">Which sponsor tech did you use?</label>
+          <p className="text-xs text-bfl-muted/70 mb-4">Select all that apply</p>
+          <div className="grid grid-cols-2 gap-3">
+            {SPONSOR_TECH_OPTIONS.map((tech) => {
+              const isSelected = formData.sponsorTech.includes(tech);
+              return (
+                <button
+                  key={tech}
+                  type="button"
+                  onClick={() => {
+                    if (isSelected) {
+                      setFormData({
+                        ...formData,
+                        sponsorTech: formData.sponsorTech.filter((t) => t !== tech),
+                      });
+                    } else {
+                      setFormData({
+                        ...formData,
+                        sponsorTech: [...formData.sponsorTech, tech],
+                      });
+                    }
+                  }}
+                  className={`px-4 py-3 border text-sm font-medium transition-all ${
+                    isSelected
+                      ? "bg-bfl-green/20 border-bfl-green text-bfl-green"
+                      : "bg-white/[0.04] border-white/15 text-bfl-muted hover:border-white/30 hover:text-white"
+                  }`}
+                >
+                  {tech}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* File Uploads */}

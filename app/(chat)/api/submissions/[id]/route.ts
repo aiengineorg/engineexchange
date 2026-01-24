@@ -15,6 +15,7 @@ const UpdateSubmissionSchema = z.object({
   techStack: z.string().min(1).max(500).optional(),
   problemStatement: z.string().min(10).max(1000).optional(),
   fileUploads: z.array(z.string().url()).max(5).optional(),
+  sponsorTech: z.array(z.enum(["Runware", "NVIDIA", "Anthropic", "Flux Models"])).optional(),
 });
 
 // PUT /api/submissions/[id] - Update a submission

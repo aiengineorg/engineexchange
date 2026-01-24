@@ -18,7 +18,11 @@ const CreateSubmissionSchema = z.object({
   techStack: z.string().min(1).max(500),
   problemStatement: z.string().min(10).max(1000),
   fileUploads: z.array(z.string().url()).max(5).default([]),
+  sponsorTech: z.array(z.enum(["Runware", "NVIDIA", "Anthropic", "Flux Models"])).default([]),
 });
+
+// Deadline: January 25, 2026 at 2:15 PM (local time)
+const SUBMISSION_DEADLINE = new Date("2026-01-25T14:15:00");
 
 // GET /api/submissions - Get all submissions
 export async function GET(request: Request) {
@@ -97,7 +101,16 @@ export async function POST(request: Request) {
       techStack,
       problemStatement,
       fileUploads,
+      sponsorTech,
     } = validation.data;
+
+    // Check if deadline has passed for new submissions
+    if (new Date() > SUBMISSION_DEADLINE) {
+      return NextResponse.json(
+        { error: "Submission deadline has passed. New submissions are no longer accepted." },
+        { status: 403 }
+      );
+    }
 
     // Check if user has valid contact email
     const hasEmail = await hasValidContactEmail(session.user.id, sessionId);
@@ -136,6 +149,7 @@ export async function POST(request: Request) {
       techStack,
       problemStatement,
       fileUploads,
+      sponsorTech,
     });
 
     return NextResponse.json(submission);

@@ -78,6 +78,7 @@ export const submissions = pgTable(
     techStack: text("tech_stack").notNull(),
     problemStatement: text("problem_statement").notNull(),
     fileUploads: jsonb("file_uploads").$type<string[]>().default([]),
+    sponsorTech: jsonb("sponsor_tech").$type<string[]>().default([]),
     submittedAt: timestamp("submitted_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

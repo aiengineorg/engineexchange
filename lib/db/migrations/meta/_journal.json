@@ -99,6 +99,13 @@
       "when": 1741400000000,
       "tag": "0013_add_discord_id_to_users",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1737780000000,
+      "tag": "0023_add_sponsor_tech_to_submissions",
+      "breakpoints": true
     }
   ]
 }

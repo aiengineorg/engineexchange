@@ -1282,6 +1282,7 @@ export async function createSubmission(data: {
   techStack: string;
   problemStatement: string;
   fileUploads?: string[];
+  sponsorTech?: string[];
 }): Promise<Submission> {
   try {
     const [submission] = await db
@@ -1289,6 +1290,7 @@ export async function createSubmission(data: {
       .values({
         ...data,
         fileUploads: data.fileUploads || [],
+        sponsorTech: data.sponsorTech || [],
       })
       .returning();
 
@@ -1312,6 +1314,7 @@ export async function updateSubmission(
     techStack?: string;
     problemStatement?: string;
     fileUploads?: string[];
+    sponsorTech?: string[];
   }
 ): Promise<Submission> {
   try {
