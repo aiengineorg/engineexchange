@@ -56,7 +56,7 @@ export default function TeamsPage({
   const { sessionId } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isUnlocked = searchParams.get("test") === "true";
+  const isUnlocked = true;
 
   const [loading, setLoading] = useState(true);
   const [hasValidEmail, setHasValidEmail] = useState(false);

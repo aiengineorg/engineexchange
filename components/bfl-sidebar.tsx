@@ -11,7 +11,7 @@ export function BFLSidebar() {
   const pathname = usePathname();
   const sessionId = params?.sessionId as string | undefined;
   const { isOpen, close, toggle } = useSidebar();
-
+  //testcommit
   const menuItems = sessionId
     ? [
         { icon: Compass, label: "Discover", path: `/sessions/${sessionId}/discover` },
