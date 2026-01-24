@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, use, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -64,12 +64,11 @@ interface ScoreFormData {
 
 const SCORE_OPTIONS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
-export default function ScoreSubmissionPage({
-  params,
+function ScoreSubmissionPageContent({
+  submissionId,
 }: {
-  params: Promise<{ submissionId: string }>;
+  submissionId: string;
 }) {
-  const { submissionId } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   const judgeId = searchParams.get("judgeId");
@@ -498,5 +497,25 @@ export default function ScoreSubmissionPage({
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ScoreSubmissionPage({
+  params,
+}: {
+  params: Promise<{ submissionId: string }>;
+}) {
+  const { submissionId } = use(params);
+
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+        </div>
+      }
+    >
+      <ScoreSubmissionPageContent submissionId={submissionId} />
+    </Suspense>
   );
 }
