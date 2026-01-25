@@ -20,6 +20,7 @@ import {
 interface Judge {
   id: string;
   name: string;
+  judgingGroup: string | null;
 }
 
 interface TeamMember {
@@ -31,6 +32,7 @@ interface TeamMember {
 interface Score {
   id: string;
   judgeName: string;
+  judgeGroup: string | null;
   futurePotential: string;
   demo: string;
   creativity: string;
@@ -322,9 +324,14 @@ export default function AdminJudgingPage() {
             {judges.map((judge) => (
               <span
                 key={judge.id}
-                className="px-3 py-1.5 bg-white/[0.06] text-sm text-white"
+                className="px-3 py-1.5 bg-white/[0.06] text-sm text-white flex items-center gap-2"
               >
                 {judge.name}
+                {judge.judgingGroup && (
+                  <span className="px-1.5 py-0.5 bg-[#77957f]/20 text-[#77957f] text-[10px] rounded">
+                    {judge.judgingGroup}
+                  </span>
+                )}
               </span>
             ))}
             {judges.length === 0 && (
@@ -554,7 +561,14 @@ export default function AdminJudgingPage() {
                                     className="bg-white/[0.02] border border-white/5 p-4"
                                   >
                                     <div className="flex items-center justify-between mb-2">
-                                      <span className="font-medium">{score.judgeName}</span>
+                                      <span className="font-medium flex items-center gap-2">
+                                        {score.judgeName}
+                                        {score.judgeGroup && (
+                                          <span className="px-1.5 py-0.5 bg-[#77957f]/20 text-[#77957f] text-[10px] rounded">
+                                            {score.judgeGroup}
+                                          </span>
+                                        )}
+                                      </span>
                                       <span className="text-[#77957f] font-bold">
                                         {score.total} / 50
                                       </span>

@@ -1558,6 +1558,23 @@ export async function getJudgeByName(name: string): Promise<Judge | null> {
 }
 
 /**
+ * Update a judge's group
+ */
+export async function updateJudgeGroup(judgeId: string, judgingGroup: string): Promise<Judge | null> {
+  try {
+    const [judge] = await db
+      .update(judges)
+      .set({ judgingGroup })
+      .where(eq(judges.id, judgeId))
+      .returning();
+    return judge || null;
+  } catch (error) {
+    console.error("Failed to update judge group:", error);
+    return null;
+  }
+}
+
+/**
  * Create or update a judging score
  */
 export async function upsertJudgingScore(data: {
@@ -1659,7 +1676,7 @@ export async function getScoreByJudgeAndSubmission(
 /**
  * Get all scores for a submission
  */
-export async function getScoresBySubmission(submissionId: string): Promise<Array<JudgingScore & { judgeName: string }>> {
+export async function getScoresBySubmission(submissionId: string): Promise<Array<JudgingScore & { judgeName: string; judgeGroup: string | null }>> {
   try {
     const scores = await db
       .select()
@@ -1672,6 +1689,7 @@ export async function getScoresBySubmission(submissionId: string): Promise<Array
         return {
           ...score,
           judgeName: judge?.name || "Unknown",
+          judgeGroup: judge?.judgingGroup || null,
         };
       })
     );

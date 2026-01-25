@@ -78,6 +78,7 @@ export async function GET() {
           scores: scores.map((s) => ({
             id: s.id,
             judgeName: s.judgeName,
+            judgeGroup: s.judgeGroup,
             futurePotential: s.futurePotential,
             demo: s.demo,
             creativity: s.creativity,

@@ -99,6 +99,7 @@ export const judges = pgTable(
   {
     id: uuid("id").primaryKey().notNull().defaultRandom(),
     name: text("name").notNull().unique(),
+    judgingGroup: text("judging_group"), // e.g., "Group A", "Group B", etc.
     createdAt: timestamp("created_at").notNull().defaultNow(),
   }
 );

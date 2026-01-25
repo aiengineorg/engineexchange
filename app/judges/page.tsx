@@ -17,12 +17,16 @@ import {
   Star,
   Search,
   X,
+  ChevronDown,
 } from "lucide-react";
 
 interface Judge {
   id: string;
   name: string;
+  judgingGroup: string | null;
 }
+
+const JUDGING_GROUPS = ["Group 1", "Group 2", "Group 3"];
 
 interface TeamMember {
   displayName: string;
@@ -81,6 +85,10 @@ function JudgesPageContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Group selection state
+  const [showGroupSelector, setShowGroupSelector] = useState(false);
+  const [updatingGroup, setUpdatingGroup] = useState(false);
+
   // Filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<"all" | "scored" | "unscored">("all");
@@ -107,7 +115,7 @@ function JudgesPageContent() {
   useEffect(() => {
     if (returnedJudgeId && returnedJudgeName) {
       setAuthenticated(true);
-      const judge = { id: returnedJudgeId, name: decodeURIComponent(returnedJudgeName) };
+      const judge: Judge = { id: returnedJudgeId, name: decodeURIComponent(returnedJudgeName), judgingGroup: null };
       setSelectedJudge(judge);
       localStorage.setItem("judges_authenticated", "true");
       localStorage.setItem("judges_selected_judge", JSON.stringify(judge));
@@ -190,6 +198,28 @@ function JudgesPageContent() {
       setError("Failed to add judge");
     } finally {
       setAddingJudge(false);
+    }
+  };
+
+  const handleUpdateGroup = async (newGroup: string) => {
+    if (!selectedJudge) return;
+    setUpdatingGroup(true);
+    try {
+      const response = await fetch("/api/judges", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ judgeId: selectedJudge.id, judgingGroup: newGroup }),
+      });
+      if (response.ok) {
+        const updatedJudge = await response.json();
+        setSelectedJudge(updatedJudge);
+        localStorage.setItem("judges_selected_judge", JSON.stringify(updatedJudge));
+      }
+    } catch (err) {
+      console.error("Failed to update group:", err);
+    } finally {
+      setUpdatingGroup(false);
+      setShowGroupSelector(false);
     }
   };
 
@@ -376,20 +406,52 @@ function JudgesPageContent() {
                 Welcome, {selectedJudge.name}
               </h1>
             </div>
-            <button
-              onClick={() => {
-                setSelectedJudge(null);
-                setSubmissions([]);
-                setSearchQuery("");
-                setFilterStatus("all");
-                localStorage.removeItem("judges_selected_judge");
-                // Clear URL params
-                router.push("/judges");
-              }}
-              className="px-4 py-2 bg-white/[0.06] border border-white/15 text-white/70 text-xs font-mono uppercase tracking-wider hover:bg-white/10 transition-all"
-            >
-              Switch Judge
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Group Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowGroupSelector(!showGroupSelector)}
+                  className="px-4 py-2 bg-white/[0.06] border border-white/15 text-white/70 text-xs font-mono uppercase tracking-wider hover:bg-white/10 transition-all flex items-center gap-2"
+                >
+                  <Users size={14} />
+                  {selectedJudge.judgingGroup || "Set Group"}
+                  <ChevronDown size={14} className={`transition-transform ${showGroupSelector ? "rotate-180" : ""}`} />
+                </button>
+                {showGroupSelector && (
+                  <div className="absolute right-0 top-full mt-2 bg-[#0a1612] border border-white/15 shadow-xl z-50 min-w-[160px]">
+                    {JUDGING_GROUPS.map((group) => (
+                      <button
+                        key={group}
+                        onClick={() => handleUpdateGroup(group)}
+                        disabled={updatingGroup}
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-white/10 transition-all ${
+                          selectedJudge.judgingGroup === group
+                            ? "bg-[#77957f]/20 text-[#77957f]"
+                            : "text-white/70"
+                        }`}
+                      >
+                        {group}
+                        {selectedJudge.judgingGroup === group && " ✓"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedJudge(null);
+                  setSubmissions([]);
+                  setSearchQuery("");
+                  setFilterStatus("all");
+                  localStorage.removeItem("judges_selected_judge");
+                  // Clear URL params
+                  router.push("/judges");
+                }}
+                className="px-4 py-2 bg-white/[0.06] border border-white/15 text-white/70 text-xs font-mono uppercase tracking-wider hover:bg-white/10 transition-all"
+              >
+                Switch Judge
+              </button>
+            </div>
           </div>
         </div>
       </div>
