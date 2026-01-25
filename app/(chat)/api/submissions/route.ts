@@ -25,8 +25,8 @@ const CreateSubmissionSchema = z.object({
   eventFeedback: z.string().max(1000).optional(),
 });
 
-// Deadline: January 25, 2026 at 2:15 PM (local time)
-const SUBMISSION_DEADLINE = new Date("2026-01-25T14:15:00");
+// Deadline: January 25, 2026 at 2:35 PM (local time)
+const SUBMISSION_DEADLINE = new Date("2026-01-25T14:35:00");
 
 // GET /api/submissions - Get all submissions
 export async function GET(request: Request) {

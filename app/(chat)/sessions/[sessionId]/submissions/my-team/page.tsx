@@ -25,8 +25,8 @@ interface Submission {
 
 const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA", "Anthropic", "Flux Models"] as const;
 
-// Deadline: January 25, 2026 at 2:15 PM (local time)
-const SUBMISSION_DEADLINE = new Date("2026-01-25T14:15:00");
+// Deadline: January 25, 2026 at 2:35 PM (local time)
+const SUBMISSION_DEADLINE = new Date("2026-01-25T14:35:00");
 
 interface Team {
   id: string;
@@ -277,7 +277,7 @@ export default function MyTeamSubmissionPage({
             The submission deadline has passed. New submissions are no longer being accepted.
           </p>
           <p className="text-xs text-bfl-muted/60 font-mono">
-            Deadline was January 25, 2026 at 2:15 PM
+            Deadline was January 25, 2026 at 2:35 PM
           </p>
           <Link
             href={`/sessions/${sessionId}/submissions`}
