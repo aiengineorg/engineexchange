@@ -184,7 +184,7 @@ export default function MyTeamSubmissionPage({
           projectName: formData.projectName,
           githubLink: formData.githubLink,
           description: formData.description,
-          demoLink: formData.demoLink || undefined,
+          demoLink: formData.demoLink,
           techStack: formData.techStack,
           problemStatement: formData.problemStatement,
           fileUploads,
@@ -364,13 +364,14 @@ export default function MyTeamSubmissionPage({
         <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
           <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
             <ExternalLink size={16} />
-            Demo Link (optional)
+            Demo Link *
           </label>
           <input
             type="url"
             value={formData.demoLink}
             onChange={(e) => setFormData({ ...formData, demoLink: e.target.value })}
             placeholder="https://your-demo.vercel.app"
+            required
             className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
           />
         </div>
@@ -602,6 +603,7 @@ export default function MyTeamSubmissionPage({
               saving ||
               !formData.projectName ||
               !formData.githubLink ||
+              !formData.demoLink ||
               formData.description.length < 10 ||
               formData.problemStatement.length < 10 ||
               !formData.techStack

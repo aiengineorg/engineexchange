@@ -11,7 +11,7 @@ const UpdateSubmissionSchema = z.object({
   projectName: z.string().min(1).max(100).optional(),
   githubLink: z.string().url().optional(),
   description: z.string().min(10).max(2000).optional(),
-  demoLink: z.string().url().optional().or(z.literal("")),
+  demoLink: z.string().url().optional(),
   techStack: z.string().min(1).max(500).optional(),
   problemStatement: z.string().min(10).max(1000).optional(),
   fileUploads: z.array(z.string().url()).max(5).optional(),
@@ -65,10 +65,7 @@ export async function PUT(
     }
 
     // Update submission
-    const updatedSubmission = await updateSubmission(id, {
-      ...validation.data,
-      demoLink: validation.data.demoLink || undefined,
-    });
+    const updatedSubmission = await updateSubmission(id, validation.data);
 
     return NextResponse.json(updatedSubmission);
   } catch (error) {
