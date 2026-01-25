@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Crown,
   Star,
+  Trash2,
 } from "lucide-react";
 
 interface TeamMember {
@@ -33,6 +34,10 @@ interface Submission {
   techStack: string;
   sponsorTech: string[];
   fileUploads: string[];
+  // Hidden feedback fields (visible only to judges)
+  sponsorFeatureFeedback?: string;
+  mediaPermission?: string;
+  eventFeedback?: string;
 }
 
 interface ExistingScore {
@@ -43,6 +48,8 @@ interface ExistingScore {
   pitchingQuality: string;
   bonusFlux: string | null;
   additionalComments: string | null;
+  recommendNvidia: string | null;
+  recommendRunware: string | null;
 }
 
 interface SubmissionData {
@@ -60,6 +67,8 @@ interface ScoreFormData {
   pitchingQuality: string;
   bonusFlux: string;
   additionalComments: string;
+  recommendNvidia: string;
+  recommendRunware: string;
 }
 
 const SCORE_OPTIONS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -76,6 +85,8 @@ function ScoreSubmissionPageContent({
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [submissionData, setSubmissionData] = useState<SubmissionData | null>(null);
   const [error, setError] = useState("");
 
@@ -86,6 +97,8 @@ function ScoreSubmissionPageContent({
     pitchingQuality: "",
     bonusFlux: "0",
     additionalComments: "",
+    recommendNvidia: "false",
+    recommendRunware: "false",
   });
 
   useEffect(() => {
@@ -115,6 +128,8 @@ function ScoreSubmissionPageContent({
             pitchingQuality: found.existingScore.pitchingQuality,
             bonusFlux: found.existingScore.bonusFlux || "0",
             additionalComments: found.existingScore.additionalComments || "",
+            recommendNvidia: found.existingScore.recommendNvidia || "false",
+            recommendRunware: found.existingScore.recommendRunware || "false",
           });
         }
       } else {
@@ -159,6 +174,36 @@ function ScoreSubmissionPageContent({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit score");
       setSaving(false);
+    }
+  };
+
+  const handleDeleteScore = async () => {
+    if (!judgeId || !submissionData) return;
+
+    setDeleting(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/judges/scores", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          judgeId,
+          submissionId: submissionData.submission.id,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to delete score");
+      }
+
+      // Redirect back to judges page
+      router.push(`/judges?judgeId=${judgeId}&judgeName=${encodeURIComponent(judgeName || "")}`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete score");
+      setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -338,6 +383,36 @@ function ScoreSubmissionPageContent({
                 ))}
               </div>
             </div>
+
+            {/* Hidden Feedback (Judges Only) */}
+            {(submission.sponsorFeatureFeedback || submission.eventFeedback || submission.mediaPermission) && (
+              <div className="bg-amber-500/10 border border-amber-500/30 p-6">
+                <h3 className="text-xs text-amber-400 uppercase tracking-wider mb-4">
+                  Participant Feedback (Judges Only)
+                </h3>
+
+                {submission.sponsorFeatureFeedback && (
+                  <div className="mb-4">
+                    <p className="text-xs text-white/50 mb-1">Sponsor Feature Feedback:</p>
+                    <p className="text-sm text-white/80">{submission.sponsorFeatureFeedback}</p>
+                  </div>
+                )}
+
+                {submission.eventFeedback && (
+                  <div className="mb-4">
+                    <p className="text-xs text-white/50 mb-1">Event Feedback:</p>
+                    <p className="text-sm text-white/80">{submission.eventFeedback}</p>
+                  </div>
+                )}
+
+                <div>
+                  <p className="text-xs text-white/50 mb-1">Media Permission:</p>
+                  <p className="text-sm text-white/80">
+                    {submission.mediaPermission === "true" ? "Granted" : "Not Granted"}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Scoring Form */}
@@ -473,6 +548,39 @@ function ScoreSubmissionPageContent({
                   />
                 </div>
 
+                {/* Sponsor Challenge Recommendations */}
+                <div className="bg-[#77957f]/10 border border-[#77957f]/30 p-4 space-y-3">
+                  <h4 className="text-sm font-medium text-[#77957f]">Sponsor Challenge Recommendations</h4>
+
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={scoreForm.recommendNvidia === "true"}
+                      onChange={(e) =>
+                        setScoreForm({ ...scoreForm, recommendNvidia: e.target.checked ? "true" : "false" })
+                      }
+                      className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-white/80">
+                      Would you recommend them for the <strong>NVIDIA agentic challenge</strong>?
+                    </span>
+                  </label>
+
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={scoreForm.recommendRunware === "true"}
+                      onChange={(e) =>
+                        setScoreForm({ ...scoreForm, recommendRunware: e.target.checked ? "true" : "false" })
+                      }
+                      className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-white/80">
+                      Would you recommend them for the <strong>Runware platform challenge</strong>?
+                    </span>
+                  </label>
+                </div>
+
                 {/* Total Score */}
                 <div className="bg-[#77957f]/10 border border-[#77957f]/30 p-4">
                   <div className="flex items-center justify-between">
@@ -486,11 +594,55 @@ function ScoreSubmissionPageContent({
                 {/* Submit */}
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || deleting}
                   className="w-full px-6 py-4 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#77957f]/90 transition-all disabled:opacity-50"
                 >
                   {saving ? "Submitting..." : submissionData.hasScored ? "Update Score" : "Submit Score"}
                 </button>
+
+                {/* Reset Score - only show if already scored */}
+                {submissionData.hasScored && (
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    {!showDeleteConfirm ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        disabled={saving || deleting}
+                        className="w-full px-4 py-3 border border-red-500/30 text-red-400 text-xs uppercase tracking-wider hover:bg-red-500/10 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Trash2 size={14} />
+                        Reset My Score
+                      </button>
+                    ) : (
+                      <div className="bg-red-500/10 border border-red-500/30 p-4">
+                        <p className="text-red-400 text-sm mb-3">Delete your score for this submission?</p>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowDeleteConfirm(false)}
+                            disabled={deleting}
+                            className="flex-1 px-3 py-2 border border-white/10 text-white/70 text-xs uppercase hover:bg-white/5 transition-all"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleDeleteScore}
+                            disabled={deleting}
+                            className="flex-1 px-3 py-2 bg-red-500 text-white text-xs uppercase hover:bg-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-1"
+                          >
+                            {deleting ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : (
+                              <Trash2 size={14} />
+                            )}
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>

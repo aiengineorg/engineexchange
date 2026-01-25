@@ -106,6 +106,20 @@
       "when": 1737780000000,
       "tag": "0023_add_sponsor_tech_to_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1737820000000,
+      "tag": "0024_add_judging_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1737880000000,
+      "tag": "0025_add_hidden_feedback_and_recommendations",
+      "breakpoints": true
     }
   ]
 }

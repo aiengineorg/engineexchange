@@ -52,6 +52,10 @@ export async function GET() {
 
         const numScores = scores.length || 1;
 
+        // Count recommendations
+        const nvidiaRecommendations = scores.filter(s => s.recommendNvidia === "true").length;
+        const runwareRecommendations = scores.filter(s => s.recommendRunware === "true").length;
+
         return {
           submission: {
             id: submission.id,
@@ -60,6 +64,10 @@ export async function GET() {
             demoLink: submission.demoLink,
             techStack: submission.techStack,
             sponsorTech: submission.sponsorTech || [],
+            // Hidden feedback fields
+            sponsorFeatureFeedback: submission.sponsorFeatureFeedback,
+            mediaPermission: submission.mediaPermission,
+            eventFeedback: submission.eventFeedback,
           },
           team: {
             id: team.id,
@@ -82,6 +90,8 @@ export async function GET() {
               (parseInt(s.creativity) || 0) +
               (parseInt(s.pitchingQuality) || 0) +
               (parseInt(s.bonusFlux || "0") || 0),
+            recommendNvidia: s.recommendNvidia,
+            recommendRunware: s.recommendRunware,
           })),
           averages: {
             futurePotential: (totalFuturePotential / numScores).toFixed(1),
@@ -93,6 +103,8 @@ export async function GET() {
           },
           totalScore: totalScore,
           numJudges: scores.length,
+          nvidiaRecommendations,
+          runwareRecommendations,
         };
       })
     );

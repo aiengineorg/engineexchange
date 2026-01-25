@@ -79,6 +79,10 @@ export const submissions = pgTable(
     problemStatement: text("problem_statement").notNull(),
     fileUploads: jsonb("file_uploads").$type<string[]>().default([]),
     sponsorTech: jsonb("sponsor_tech").$type<string[]>().default([]),
+    // Hidden feedback fields (visible only to judges/admins)
+    sponsorFeatureFeedback: text("sponsor_feature_feedback"), // "Did you use any feature from the sponsor that you loved?"
+    mediaPermission: text("media_permission").default("false"), // "Do you grant permission for multimedia usage?"
+    eventFeedback: text("event_feedback"), // "Anything else? Any quick feedback about the event?"
     submittedAt: timestamp("submitted_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
@@ -118,6 +122,9 @@ export const judgingScores = pgTable(
     pitchingQuality: text("pitching_quality").notNull(), // Score out of 10
     bonusFlux: text("bonus_flux").default("0"), // Bonus score for using BFL Flux.2
     additionalComments: text("additional_comments"),
+    // Sponsor challenge recommendations
+    recommendNvidia: text("recommend_nvidia").default("false"), // "Would you recommend for NVIDIA agentic challenge?"
+    recommendRunware: text("recommend_runware").default("false"), // "Would you recommend for Runware platform challenge?"
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

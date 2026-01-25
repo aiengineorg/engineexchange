@@ -17,6 +17,9 @@ interface Submission {
   problemStatement: string;
   fileUploads: string[];
   sponsorTech: string[];
+  sponsorFeatureFeedback?: string;
+  mediaPermission?: string;
+  eventFeedback?: string;
   submittedAt: string;
 }
 
@@ -56,6 +59,9 @@ export default function MyTeamSubmissionPage({
     techStack: "",
     problemStatement: "",
     sponsorTech: [] as string[],
+    sponsorFeatureFeedback: "",
+    mediaPermission: "false",
+    eventFeedback: "",
   });
 
   // Check if deadline has passed (for new submissions only)
@@ -104,6 +110,9 @@ export default function MyTeamSubmissionPage({
           techStack: subData.submission.techStack,
           problemStatement: subData.submission.problemStatement,
           sponsorTech: subData.submission.sponsorTech || [],
+          sponsorFeatureFeedback: subData.submission.sponsorFeatureFeedback || "",
+          mediaPermission: subData.submission.mediaPermission || "false",
+          eventFeedback: subData.submission.eventFeedback || "",
         });
         setFileUploads(subData.submission.fileUploads || []);
       }
@@ -180,6 +189,9 @@ export default function MyTeamSubmissionPage({
           problemStatement: formData.problemStatement,
           fileUploads,
           sponsorTech: formData.sponsorTech,
+          sponsorFeatureFeedback: formData.sponsorFeatureFeedback || undefined,
+          mediaPermission: formData.mediaPermission,
+          eventFeedback: formData.eventFeedback || undefined,
         }),
       });
 
@@ -508,6 +520,65 @@ export default function MyTeamSubmissionPage({
               )}
             </button>
           )}
+        </div>
+
+        {/* Sponsor Feature Feedback (optional) */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
+          <label className="block text-sm text-bfl-muted mb-2">
+            Did you use any feature from the sponsor that you loved? Or didn't know beforehand? (optional)
+          </label>
+          <textarea
+            value={formData.sponsorFeatureFeedback}
+            onChange={(e) => setFormData({ ...formData, sponsorFeatureFeedback: e.target.value })}
+            placeholder="Share any sponsor features you discovered or enjoyed..."
+            rows={3}
+            maxLength={1000}
+            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+          />
+          <p className="mt-2 text-xs text-bfl-muted text-right">
+            {formData.sponsorFeatureFeedback.length}/1000
+          </p>
+        </div>
+
+        {/* Media Permission */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
+          <label className="flex items-start gap-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.mediaPermission === "true"}
+              onChange={(e) =>
+                setFormData({ ...formData, mediaPermission: e.target.checked ? "true" : "false" })
+              }
+              className="mt-1 w-5 h-5 rounded border-white/30 bg-white/[0.06] text-bfl-green focus:ring-bfl-green focus:ring-offset-0"
+            />
+            <div>
+              <span className="text-sm text-white font-medium">Media Permission</span>
+              <p className="text-xs text-bfl-muted/70 mt-1">
+                Do you grant permission for the use of multimedia (including photos and video recordings)
+                taken during the event in which you may be included? These materials may be used for
+                promotional, news, online/multimedia, research, and educational purposes by the hackathon
+                organizers and sponsors.
+              </p>
+            </div>
+          </label>
+        </div>
+
+        {/* Event Feedback (optional) */}
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
+          <label className="block text-sm text-bfl-muted mb-2">
+            Anything else? Any quick feedback about the event? Any other sponsors you want to see? (optional)
+          </label>
+          <textarea
+            value={formData.eventFeedback}
+            onChange={(e) => setFormData({ ...formData, eventFeedback: e.target.value })}
+            placeholder="Share your thoughts about the event..."
+            rows={3}
+            maxLength={1000}
+            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+          />
+          <p className="mt-2 text-xs text-bfl-muted text-right">
+            {formData.eventFeedback.length}/1000
+          </p>
         </div>
 
         {/* Error */}

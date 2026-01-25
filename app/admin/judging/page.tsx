@@ -38,6 +38,8 @@ interface Score {
   bonusFlux: string | null;
   additionalComments: string | null;
   total: number;
+  recommendNvidia: string | null;
+  recommendRunware: string | null;
 }
 
 interface SubmissionWithScores {
@@ -48,6 +50,10 @@ interface SubmissionWithScores {
     demoLink: string | null;
     techStack: string;
     sponsorTech: string[];
+    // Hidden feedback fields
+    sponsorFeatureFeedback?: string;
+    mediaPermission?: string;
+    eventFeedback?: string;
   };
   team: {
     id: string;
@@ -66,6 +72,9 @@ interface SubmissionWithScores {
   };
   totalScore: number;
   numJudges: number;
+  // Recommendation counts
+  nvidiaRecommendations: number;
+  runwareRecommendations: number;
 }
 
 const ADMIN_PASSWORD = "fluxhack2025";
@@ -79,6 +88,9 @@ export default function AdminJudgingPage() {
   const [judges, setJudges] = useState<Judge[]>([]);
   const [expandedSubmission, setExpandedSubmission] = useState<string | null>(null);
   const [error, setError] = useState("");
+  // Filters
+  const [filterNvidia, setFilterNvidia] = useState(false);
+  const [filterRunware, setFilterRunware] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -321,6 +333,37 @@ export default function AdminJudgingPage() {
           </div>
         </div>
 
+        {/* Sponsor Challenge Filters */}
+        <div className="bg-[#77957f]/10 border border-[#77957f]/30 p-6 mb-8">
+          <h3 className="text-sm text-[#77957f] uppercase tracking-wider mb-4">
+            Filter by Sponsor Challenge Recommendations
+          </h3>
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filterNvidia}
+                onChange={(e) => setFilterNvidia(e.target.checked)}
+                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+              />
+              <span className="text-sm text-white/80">
+                NVIDIA Agentic Challenge ({submissions.filter(s => s.nvidiaRecommendations > 0).length} recommended)
+              </span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filterRunware}
+                onChange={(e) => setFilterRunware(e.target.checked)}
+                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+              />
+              <span className="text-sm text-white/80">
+                Runware Platform Challenge ({submissions.filter(s => s.runwareRecommendations > 0).length} recommended)
+              </span>
+            </label>
+          </div>
+        </div>
+
         {/* Error state */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/30 p-4 mb-6">
@@ -343,14 +386,28 @@ export default function AdminJudgingPage() {
               Leaderboard
             </h2>
 
-            {submissions.length === 0 ? (
-              <div className="text-center py-20 bg-white/[0.04] border border-white/10">
-                <FileText className="w-16 h-16 mx-auto text-white/20 mb-4" />
-                <p className="text-white/50">No submissions yet</p>
-              </div>
-            ) : (
+            {(() => {
+              // Apply filters
+              const filteredSubmissions = submissions.filter(sub => {
+                if (filterNvidia && sub.nvidiaRecommendations === 0) return false;
+                if (filterRunware && sub.runwareRecommendations === 0) return false;
+                return true;
+              });
+
+              if (filteredSubmissions.length === 0) {
+                return (
+                  <div className="text-center py-20 bg-white/[0.04] border border-white/10">
+                    <FileText className="w-16 h-16 mx-auto text-white/20 mb-4" />
+                    <p className="text-white/50">
+                      {submissions.length === 0 ? "No submissions yet" : "No submissions match the current filters"}
+                    </p>
+                  </div>
+                );
+              }
+
+              return (
               <div className="space-y-2">
-                {submissions.map((sub, index) => {
+                {filteredSubmissions.map((sub, index) => {
                   const isExpanded = expandedSubmission === sub.submission.id;
                   const rank = index + 1;
                   const medalColor =
@@ -383,13 +440,23 @@ export default function AdminJudgingPage() {
                             )}
                           </div>
                           <div className="text-left">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-mono text-[#77957f] text-sm">
                                 Team #{sub.team.teamNumber}
                               </span>
                               <span className="text-white font-medium">
                                 {sub.submission.projectName}
                               </span>
+                              {sub.nvidiaRecommendations > 0 && (
+                                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded">
+                                  NVIDIA ({sub.nvidiaRecommendations})
+                                </span>
+                              )}
+                              {sub.runwareRecommendations > 0 && (
+                                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
+                                  Runware ({sub.runwareRecommendations})
+                                </span>
+                              )}
                             </div>
                             <p className="text-sm text-white/50">{sub.team.name}</p>
                           </div>
@@ -439,7 +506,7 @@ export default function AdminJudgingPage() {
                           </div>
 
                           {/* Average Scores */}
-                          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+                          <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-6">
                             <div className="bg-white/[0.04] p-3">
                               <p className="text-xs text-white/50 mb-1">Future Potential</p>
                               <p className="text-xl font-bold">{sub.averages.futurePotential}</p>
@@ -459,6 +526,14 @@ export default function AdminJudgingPage() {
                             <div className="bg-white/[0.04] p-3">
                               <p className="text-xs text-white/50 mb-1">Bonus Flux</p>
                               <p className="text-xl font-bold">{sub.averages.bonusFlux}</p>
+                            </div>
+                            <div className="bg-white/[0.04] p-3">
+                              <p className="text-xs text-white/50 mb-1">NVIDIA Rec.</p>
+                              <p className={`text-xl font-bold ${sub.nvidiaRecommendations > 0 ? "text-green-400" : "text-white/30"}`}>{sub.nvidiaRecommendations}</p>
+                            </div>
+                            <div className="bg-white/[0.04] p-3">
+                              <p className="text-xs text-white/50 mb-1">Runware Rec.</p>
+                              <p className={`text-xl font-bold ${sub.runwareRecommendations > 0 ? "text-blue-400" : "text-white/30"}`}>{sub.runwareRecommendations}</p>
                             </div>
                             <div className="bg-[#77957f]/20 p-3 border border-[#77957f]/30">
                               <p className="text-xs text-[#77957f] mb-1">Total Avg</p>
@@ -484,7 +559,7 @@ export default function AdminJudgingPage() {
                                         {score.total} / 50
                                       </span>
                                     </div>
-                                    <div className="grid grid-cols-5 gap-2 text-sm">
+                                    <div className="grid grid-cols-7 gap-2 text-sm">
                                       <div>
                                         <span className="text-white/40">FP: </span>
                                         <span>{score.futurePotential}</span>
@@ -504,6 +579,14 @@ export default function AdminJudgingPage() {
                                       <div>
                                         <span className="text-white/40">Bonus: </span>
                                         <span>{score.bonusFlux || "0"}</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-white/40">NV: </span>
+                                        <span className={score.recommendNvidia === "true" ? "text-green-400" : ""}>{score.recommendNvidia === "true" ? "Y" : "-"}</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-white/40">RW: </span>
+                                        <span className={score.recommendRunware === "true" ? "text-blue-400" : ""}>{score.recommendRunware === "true" ? "Y" : "-"}</span>
                                       </div>
                                     </div>
                                     {score.additionalComments && (
@@ -546,7 +629,8 @@ export default function AdminJudgingPage() {
                   );
                 })}
               </div>
-            )}
+              );
+            })()}
           </div>
         )}
       </div>

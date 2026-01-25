@@ -6,6 +6,7 @@ import {
   getJudgeById,
   getSubmissionById,
   getTeamById,
+  deleteJudgeScore,
 } from "@/lib/db/queries";
 
 const ScoreSchema = z.object({
@@ -17,6 +18,14 @@ const ScoreSchema = z.object({
   pitchingQuality: z.string().regex(/^([0-9]|10)$/, "Must be 0-10"),
   bonusFlux: z.string().regex(/^([0-9]|10)$/, "Must be 0-10").optional(),
   additionalComments: z.string().max(2000).optional(),
+  // Sponsor challenge recommendations
+  recommendNvidia: z.string().optional().default("false"),
+  recommendRunware: z.string().optional().default("false"),
+});
+
+const DeleteScoreSchema = z.object({
+  judgeId: z.string().uuid(),
+  submissionId: z.string().uuid(),
 });
 
 // GET /api/judges/scores?judgeId=xxx - Get scores by judge
@@ -115,6 +124,43 @@ export async function POST(request: Request) {
     console.error("Failed to submit score:", error);
     return NextResponse.json(
       { error: "Failed to submit score" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/judges/scores - Delete a judge's score for a submission
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json();
+    const validation = DeleteScoreSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        { error: "Invalid request", details: validation.error.errors },
+        { status: 400 }
+      );
+    }
+
+    const { judgeId, submissionId } = validation.data;
+
+    // Verify judge exists
+    const judge = await getJudgeById(judgeId);
+    if (!judge) {
+      return NextResponse.json(
+        { error: "Judge not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete the score
+    await deleteJudgeScore(judgeId, submissionId);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete score:", error);
+    return NextResponse.json(
+      { error: "Failed to delete score" },
       { status: 500 }
     );
   }

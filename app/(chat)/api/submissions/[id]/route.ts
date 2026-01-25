@@ -16,6 +16,10 @@ const UpdateSubmissionSchema = z.object({
   problemStatement: z.string().min(10).max(1000).optional(),
   fileUploads: z.array(z.string().url()).max(5).optional(),
   sponsorTech: z.array(z.enum(["Runware", "NVIDIA", "Anthropic", "Flux Models"])).optional(),
+  // Hidden feedback fields (visible only to judges/admins)
+  sponsorFeatureFeedback: z.string().max(1000).optional(),
+  mediaPermission: z.string().optional(),
+  eventFeedback: z.string().max(1000).optional(),
 });
 
 // PUT /api/submissions/[id] - Update a submission

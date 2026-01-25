@@ -19,6 +19,10 @@ const CreateSubmissionSchema = z.object({
   problemStatement: z.string().min(10).max(1000),
   fileUploads: z.array(z.string().url()).max(5).default([]),
   sponsorTech: z.array(z.enum(["Runware", "NVIDIA", "Anthropic", "Flux Models"])).default([]),
+  // Hidden feedback fields (visible only to judges/admins)
+  sponsorFeatureFeedback: z.string().max(1000).optional(),
+  mediaPermission: z.string().optional().default("false"),
+  eventFeedback: z.string().max(1000).optional(),
 });
 
 // Deadline: January 25, 2026 at 2:15 PM (local time)
@@ -102,6 +106,9 @@ export async function POST(request: Request) {
       problemStatement,
       fileUploads,
       sponsorTech,
+      sponsorFeatureFeedback,
+      mediaPermission,
+      eventFeedback,
     } = validation.data;
 
     // Check if deadline has passed for new submissions
@@ -150,6 +157,9 @@ export async function POST(request: Request) {
       problemStatement,
       fileUploads,
       sponsorTech,
+      sponsorFeatureFeedback,
+      mediaPermission,
+      eventFeedback,
     });
 
     return NextResponse.json(submission);

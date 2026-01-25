@@ -38,6 +38,10 @@ export async function GET(request: Request) {
             techStack: submission.techStack,
             sponsorTech: submission.sponsorTech || [],
             fileUploads: submission.fileUploads || [],
+            // Hidden feedback fields (visible only to judges)
+            sponsorFeatureFeedback: submission.sponsorFeatureFeedback,
+            mediaPermission: submission.mediaPermission,
+            eventFeedback: submission.eventFeedback,
           },
           team: {
             id: team.id,

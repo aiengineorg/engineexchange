@@ -1287,6 +1287,9 @@ export async function createSubmission(data: {
   problemStatement: string;
   fileUploads?: string[];
   sponsorTech?: string[];
+  sponsorFeatureFeedback?: string;
+  mediaPermission?: string;
+  eventFeedback?: string;
 }): Promise<Submission> {
   try {
     const [submission] = await db
@@ -1295,6 +1298,9 @@ export async function createSubmission(data: {
         ...data,
         fileUploads: data.fileUploads || [],
         sponsorTech: data.sponsorTech || [],
+        sponsorFeatureFeedback: data.sponsorFeatureFeedback || null,
+        mediaPermission: data.mediaPermission || "false",
+        eventFeedback: data.eventFeedback || null,
       })
       .returning();
 
@@ -1319,6 +1325,9 @@ export async function updateSubmission(
     problemStatement?: string;
     fileUploads?: string[];
     sponsorTech?: string[];
+    sponsorFeatureFeedback?: string;
+    mediaPermission?: string;
+    eventFeedback?: string;
   }
 ): Promise<Submission> {
   try {
@@ -1373,6 +1382,23 @@ export async function getSubmissionById(id: string): Promise<Submission | null> 
   } catch (error) {
     console.error("Failed to get submission by id:", error);
     return null;
+  }
+}
+
+/**
+ * Delete a judge's score for a specific submission
+ */
+export async function deleteJudgeScore(judgeId: string, submissionId: string): Promise<void> {
+  try {
+    await db.delete(judgingScores).where(
+      and(
+        eq(judgingScores.judgeId, judgeId),
+        eq(judgingScores.submissionId, submissionId)
+      )
+    );
+  } catch (error) {
+    console.error("Failed to delete judge score:", error);
+    throw error;
   }
 }
 
@@ -1543,6 +1569,8 @@ export async function upsertJudgingScore(data: {
   pitchingQuality: string;
   bonusFlux?: string;
   additionalComments?: string;
+  recommendNvidia?: string;
+  recommendRunware?: string;
 }): Promise<JudgingScore> {
   try {
     // Check if score already exists
@@ -1575,6 +1603,8 @@ export async function upsertJudgingScore(data: {
         .values({
           ...data,
           bonusFlux: data.bonusFlux || "0",
+          recommendNvidia: data.recommendNvidia || "false",
+          recommendRunware: data.recommendRunware || "false",
         })
         .returning();
       return score;
