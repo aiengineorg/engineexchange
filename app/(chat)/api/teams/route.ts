@@ -8,6 +8,7 @@ import {
   hasValidContactEmail,
   isUserInTeam,
 } from "@/lib/db/queries";
+import { TEAMS_OPEN } from "@/lib/constants";
 
 const CreateTeamSchema = z.object({
   name: z.string().min(1).max(100),
@@ -52,6 +53,13 @@ export async function POST(request: Request) {
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!TEAMS_OPEN) {
+    return NextResponse.json(
+      { error: "Team creation is currently closed." },
+      { status: 403 }
+    );
   }
 
   try {
