@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     const resend = createResendClient();
     await resend.sendEmail({
       to: email,
-      subject: "Your BFL Hackathon Verification Code",
+      subject: "Your AI Engine Exchange Verification Code",
       html: generateVerificationCodeEmailHtml({ code }),
       text: generateVerificationCodeEmailText({ code }),
     });

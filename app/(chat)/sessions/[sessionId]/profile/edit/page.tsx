@@ -52,8 +52,8 @@ export default function EditProfilePage({
 
   // Prompt state
   const [generationMode, setGenerationMode] = useState<"enhance" | "create">("enhance");
-  const DEFAULT_ENHANCE_PROMPT = "reimagined in the black forest, surrounded by tall pine trees, mystical fog, and soft ethereal lighting";
-  const DEFAULT_CREATE_PROMPT = "a whimsical forest creature made of code and pixels, sitting by a glowing campfire in the black forest, magical and playful";
+  const DEFAULT_ENHANCE_PROMPT = "reimagined as a futuristic AI engineer, surrounded by glowing neural networks, holographic interfaces, and neon circuitry";
+  const DEFAULT_CREATE_PROMPT = "a creative robot artist made of code and light, building something extraordinary in a neon-lit workshop, vibrant and imaginative";
   const [imagePrompt, setImagePrompt] = useState(DEFAULT_ENHANCE_PROMPT);
 
   // Load existing profile
@@ -305,7 +305,7 @@ export default function EditProfilePage({
               <h4 className="text-2xl font-normal text-white">Profile Image</h4>
             </div>
             <p className="text-sm text-white/80 mb-6">
-              It's a generative media hackathon, so of course you'll have a fun profile photo. Upload your own photo to reimagine yourself in the black forest (labs), or prompt something completely out of the ordinary.
+              It's a generative AI hackathon, so of course you'll have a fun profile photo. Upload your own photo to reimagine yourself with AI, or prompt something completely out of the ordinary.
             </p>
 
             {/* Hidden file input */}

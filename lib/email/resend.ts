@@ -70,7 +70,7 @@ export function generateVerificationCodeEmailHtml(options: {
   code: string;
   appName?: string;
 }): string {
-  const appName = options.appName || "BFL Hackathon";
+  const appName = options.appName || "AI Engine Exchange";
 
   return `
 <!DOCTYPE html>
@@ -116,7 +116,7 @@ export function generateVerificationCodeEmailText(options: {
   code: string;
   appName?: string;
 }): string {
-  const appName = options.appName || "BFL Hackathon";
+  const appName = options.appName || "AI Engine Exchange";
 
   return `
 ${appName} - Verification Code
