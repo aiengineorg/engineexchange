@@ -14,8 +14,7 @@ export const DUMMY_PASSWORD = generateDummyPassword();
 
 // Active hackathon session ID — change env var to switch to a new session
 export const DEFAULT_SESSION_ID =
-  process.env.DEFAULT_SESSION_ID ||
-  "1784d222-27f9-4fed-a28f-f454444e760f";
+  (process.env.DEFAULT_SESSION_ID || "1784d222-27f9-4fed-a28f-f454444e760f").trim();
 
 // Previous session ID for BFL Hack alumni badge detection
 export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
