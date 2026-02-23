@@ -245,7 +245,7 @@ function JudgesPageContent() {
   if (!initialLoadDone) {
     return (
       <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+        <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
       </div>
     );
   }
@@ -257,8 +257,8 @@ function JudgesPageContent() {
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#77957f]/20 flex items-center justify-center">
-                <Star className="w-6 h-6 text-[#77957f]" />
+              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
+                <Star className="w-6 h-6 text-[#00D4A8]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Judges Portal</h1>
@@ -274,7 +274,7 @@ function JudgesPageContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter judges password"
-                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                   autoFocus
                 />
                 {passwordError && (
@@ -284,7 +284,7 @@ function JudgesPageContent() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#77957f]/90 transition-all"
+                className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all"
               >
                 Enter Judges Portal
               </button>
@@ -302,8 +302,8 @@ function JudgesPageContent() {
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#77957f]/20 flex items-center justify-center">
-                <Users className="w-6 h-6 text-[#77957f]" />
+              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
+                <Users className="w-6 h-6 text-[#00D4A8]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Select Your Name</h1>
@@ -322,7 +322,7 @@ function JudgesPageContent() {
                       value={judgeSearchQuery}
                       onChange={(e) => setJudgeSearchQuery(e.target.value)}
                       placeholder="Search judges..."
-                      className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
@@ -336,7 +336,7 @@ function JudgesPageContent() {
                             setSelectedJudge(judge);
                             localStorage.setItem("judges_selected_judge", JSON.stringify(judge));
                           }}
-                          className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-left hover:bg-white/10 hover:border-[#77957f]/50 transition-all"
+                          className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-left hover:bg-white/10 hover:border-[#00D4A8]/50 transition-all"
                         >
                           {judge.name}
                         </button>
@@ -349,7 +349,7 @@ function JudgesPageContent() {
               {!showAddJudge ? (
                 <button
                   onClick={() => setShowAddJudge(true)}
-                  className="w-full px-4 py-3 border-2 border-dashed border-white/20 text-white/60 hover:border-[#77957f]/50 hover:text-white transition-all flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 border-2 border-dashed border-white/20 text-white/60 hover:border-[#00D4A8]/50 hover:text-white transition-all flex items-center justify-center gap-2"
                 >
                   <Plus size={18} />
                   Add Your Name
@@ -361,7 +361,7 @@ function JudgesPageContent() {
                     value={newJudgeName}
                     onChange={(e) => setNewJudgeName(e.target.value)}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                     autoFocus
                   />
                   <div className="flex gap-2">
@@ -374,7 +374,7 @@ function JudgesPageContent() {
                     <button
                       onClick={handleAddJudge}
                       disabled={!newJudgeName.trim() || addingJudge}
-                      className="flex-1 px-4 py-2 bg-[#77957f] text-black font-bold text-sm hover:bg-[#77957f]/90 transition-all disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-[#00D4A8] text-black font-bold text-sm hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50"
                     >
                       {addingJudge ? "Adding..." : "Add"}
                     </button>
@@ -397,8 +397,8 @@ function JudgesPageContent() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-6 bg-[#77957f]" />
-                <span className="font-mono text-[10px] text-[#77957f] uppercase tracking-[0.4em]">
+                <div className="h-px w-6 bg-[#00D4A8]" />
+                <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
                   Judges Portal
                 </span>
               </div>
@@ -426,7 +426,7 @@ function JudgesPageContent() {
                         disabled={updatingGroup}
                         className={`w-full px-4 py-2 text-left text-sm hover:bg-white/10 transition-all ${
                           selectedJudge.judgingGroup === group
-                            ? "bg-[#77957f]/20 text-[#77957f]"
+                            ? "bg-[#00D4A8]/20 text-[#00D4A8]"
                             : "text-white/70"
                         }`}
                       >
@@ -461,7 +461,7 @@ function JudgesPageContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={20} className="text-[#77957f]" />
+              <FileText size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Submissions
               </span>
@@ -470,7 +470,7 @@ function JudgesPageContent() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <CheckCircle size={20} className="text-[#77957f]" />
+              <CheckCircle size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Scored
               </span>
@@ -481,7 +481,7 @@ function JudgesPageContent() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Circle size={20} className="text-[#77957f]" />
+              <Circle size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Remaining
               </span>
@@ -502,7 +502,7 @@ function JudgesPageContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by team number, team name, or project name..."
-              className="w-full pl-12 pr-10 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+              className="w-full pl-12 pr-10 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -520,7 +520,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("all")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "all"
-                  ? "bg-[#77957f] text-black"
+                  ? "bg-[#00D4A8] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -530,7 +530,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("unscored")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "unscored"
-                  ? "bg-[#77957f] text-black"
+                  ? "bg-[#00D4A8] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -540,7 +540,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("scored")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "scored"
-                  ? "bg-[#77957f] text-black"
+                  ? "bg-[#00D4A8] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -551,7 +551,7 @@ function JudgesPageContent() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
           </div>
         ) : (
           <>
@@ -578,23 +578,23 @@ function JudgesPageContent() {
                     href={`/judges/score/${sub.submission.id}?judgeId=${selectedJudge.id}&judgeName=${encodeURIComponent(selectedJudge.name)}`}
                     className={`block p-5 border transition-all hover:scale-[1.02] ${
                       sub.hasScored
-                        ? "bg-[#77957f]/10 border-[#77957f]/30 hover:border-[#77957f]"
+                        ? "bg-[#00D4A8]/10 border-[#00D4A8]/30 hover:border-[#00D4A8]"
                         : "bg-white/[0.04] border-white/10 hover:border-white/30"
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {sub.hasScored ? (
-                          <CheckCircle size={18} className="text-[#77957f]" />
+                          <CheckCircle size={18} className="text-[#00D4A8]" />
                         ) : (
                           <Circle size={18} className="text-white/30" />
                         )}
-                        <span className="font-mono text-[#77957f] text-sm">
+                        <span className="font-mono text-[#00D4A8] text-sm">
                           #{sub.team.teamNumber}
                         </span>
                       </div>
                       {sub.hasScored && (
-                        <span className="text-xs text-[#77957f] bg-[#77957f]/20 px-2 py-1">
+                        <span className="text-xs text-[#00D4A8] bg-[#00D4A8]/20 px-2 py-1">
                           Scored
                         </span>
                       )}
@@ -612,7 +612,7 @@ function JudgesPageContent() {
                     {/* Tech badges */}
                     <div className="flex flex-wrap gap-1">
                       {sub.submission.sponsorTech.slice(0, 2).map((tech, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-[#77957f]/20 text-[10px] text-[#77957f]">
+                        <span key={i} className="px-2 py-0.5 bg-[#00D4A8]/20 text-[10px] text-[#00D4A8]">
                           {tech}
                         </span>
                       ))}
@@ -651,7 +651,7 @@ export default function JudgesPage() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+          <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
         </div>
       }
     >

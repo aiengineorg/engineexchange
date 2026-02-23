@@ -191,8 +191,8 @@ export default function AdminJudgingPage() {
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#77957f]/20 flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-[#77957f]" />
+              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
+                <Trophy className="w-6 h-6 text-[#00D4A8]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Judging Admin</h1>
@@ -208,7 +208,7 @@ export default function AdminJudgingPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                   autoFocus
                 />
                 {passwordError && (
@@ -218,7 +218,7 @@ export default function AdminJudgingPage() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#77957f]/90 transition-all"
+                className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all"
               >
                 View Results
               </button>
@@ -238,8 +238,8 @@ export default function AdminJudgingPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-6 bg-[#77957f]" />
-                <span className="font-mono text-[10px] text-[#77957f] uppercase tracking-[0.4em]">
+                <div className="h-px w-6 bg-[#00D4A8]" />
+                <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
                   Admin Panel
                 </span>
               </div>
@@ -260,7 +260,7 @@ export default function AdminJudgingPage() {
               <button
                 onClick={exportToCSV}
                 disabled={submissions.length === 0}
-                className="flex items-center gap-2 px-5 py-3 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#77957f]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-3 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={16} />
                 Export CSV
@@ -275,7 +275,7 @@ export default function AdminJudgingPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={20} className="text-[#77957f]" />
+              <FileText size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Submissions
               </span>
@@ -284,7 +284,7 @@ export default function AdminJudgingPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Users size={20} className="text-[#77957f]" />
+              <Users size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Judges
               </span>
@@ -293,7 +293,7 @@ export default function AdminJudgingPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Star size={20} className="text-[#77957f]" />
+              <Star size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Fully Scored
               </span>
@@ -304,7 +304,7 @@ export default function AdminJudgingPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Trophy size={20} className="text-[#77957f]" />
+              <Trophy size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Scores
               </span>
@@ -328,7 +328,7 @@ export default function AdminJudgingPage() {
               >
                 {judge.name}
                 {judge.judgingGroup && (
-                  <span className="px-1.5 py-0.5 bg-[#77957f]/20 text-[#77957f] text-[10px] rounded">
+                  <span className="px-1.5 py-0.5 bg-[#00D4A8]/20 text-[#00D4A8] text-[10px] rounded">
                     {judge.judgingGroup}
                   </span>
                 )}
@@ -341,8 +341,8 @@ export default function AdminJudgingPage() {
         </div>
 
         {/* Sponsor Challenge Filters */}
-        <div className="bg-[#77957f]/10 border border-[#77957f]/30 p-6 mb-8">
-          <h3 className="text-sm text-[#77957f] uppercase tracking-wider mb-4">
+        <div className="bg-[#00D4A8]/10 border border-[#00D4A8]/30 p-6 mb-8">
+          <h3 className="text-sm text-[#00D4A8] uppercase tracking-wider mb-4">
             Filter by Sponsor Challenge Recommendations
           </h3>
           <div className="flex flex-wrap gap-6">
@@ -351,7 +351,7 @@ export default function AdminJudgingPage() {
                 type="checkbox"
                 checked={filterNvidia}
                 onChange={(e) => setFilterNvidia(e.target.checked)}
-                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
               />
               <span className="text-sm text-white/80">
                 NVIDIA Agentic Challenge ({submissions.filter(s => s.nvidiaRecommendations > 0).length} recommended)
@@ -362,7 +362,7 @@ export default function AdminJudgingPage() {
                 type="checkbox"
                 checked={filterRunware}
                 onChange={(e) => setFilterRunware(e.target.checked)}
-                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#77957f] focus:ring-[#77957f] focus:ring-offset-0"
+                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
               />
               <span className="text-sm text-white/80">
                 Runware Platform Challenge ({submissions.filter(s => s.runwareRecommendations > 0).length} recommended)
@@ -381,7 +381,7 @@ export default function AdminJudgingPage() {
         {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
           </div>
         )}
 
@@ -389,7 +389,7 @@ export default function AdminJudgingPage() {
         {!loading && (
           <div className="space-y-4">
             <h2 className="text-lg font-medium flex items-center gap-2">
-              <Trophy size={20} className="text-[#77957f]" />
+              <Trophy size={20} className="text-[#00D4A8]" />
               Leaderboard
             </h2>
 
@@ -448,7 +448,7 @@ export default function AdminJudgingPage() {
                           </div>
                           <div className="text-left">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-mono text-[#77957f] text-sm">
+                              <span className="font-mono text-[#00D4A8] text-sm">
                                 Team #{sub.team.teamNumber}
                               </span>
                               <span className="text-white font-medium">
@@ -471,7 +471,7 @@ export default function AdminJudgingPage() {
 
                         <div className="flex items-center gap-8">
                           <div className="text-right">
-                            <p className="text-2xl font-bold text-[#77957f]">
+                            <p className="text-2xl font-bold text-[#00D4A8]">
                               {sub.averages.total}
                             </p>
                             <p className="text-xs text-white/40">
@@ -504,7 +504,7 @@ export default function AdminJudgingPage() {
                                 href={sub.submission.demoLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-3 py-2 bg-[#77957f]/20 border border-[#77957f]/30 text-[#77957f] text-sm hover:bg-[#77957f]/30 transition-all"
+                                className="flex items-center gap-2 px-3 py-2 bg-[#00D4A8]/20 border border-[#00D4A8]/30 text-[#00D4A8] text-sm hover:bg-[#00D4A8]/30 transition-all"
                               >
                                 <ExternalLink size={14} />
                                 Demo
@@ -542,9 +542,9 @@ export default function AdminJudgingPage() {
                               <p className="text-xs text-white/50 mb-1">Runware Rec.</p>
                               <p className={`text-xl font-bold ${sub.runwareRecommendations > 0 ? "text-blue-400" : "text-white/30"}`}>{sub.runwareRecommendations}</p>
                             </div>
-                            <div className="bg-[#77957f]/20 p-3 border border-[#77957f]/30">
-                              <p className="text-xs text-[#77957f] mb-1">Total Avg</p>
-                              <p className="text-xl font-bold text-[#77957f]">{sub.averages.total}</p>
+                            <div className="bg-[#00D4A8]/20 p-3 border border-[#00D4A8]/30">
+                              <p className="text-xs text-[#00D4A8] mb-1">Total Avg</p>
+                              <p className="text-xl font-bold text-[#00D4A8]">{sub.averages.total}</p>
                             </div>
                           </div>
 
@@ -564,12 +564,12 @@ export default function AdminJudgingPage() {
                                       <span className="font-medium flex items-center gap-2">
                                         {score.judgeName}
                                         {score.judgeGroup && (
-                                          <span className="px-1.5 py-0.5 bg-[#77957f]/20 text-[#77957f] text-[10px] rounded">
+                                          <span className="px-1.5 py-0.5 bg-[#00D4A8]/20 text-[#00D4A8] text-[10px] rounded">
                                             {score.judgeGroup}
                                           </span>
                                         )}
                                       </span>
-                                      <span className="text-[#77957f] font-bold">
+                                      <span className="text-[#00D4A8] font-bold">
                                         {score.total} / 50
                                       </span>
                                     </div>

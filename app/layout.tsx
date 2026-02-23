@@ -43,7 +43,7 @@ export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
 };
 
-// FluxHack uses Inter for body text
+// AI Festival uses Inter for body text
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
@@ -51,8 +51,8 @@ const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
 
-const LIGHT_THEME_COLOR = "#F8FAF8"; // FluxHack light mode
-const DARK_THEME_COLOR = "#162822"; // FluxHack dark mode (lightened)
+const LIGHT_THEME_COLOR = "#FFFFFF"; // AI Festival light mode
+const DARK_THEME_COLOR = "#1B2640"; // AI Festival dark mode
 const THEME_COLOR_SCRIPT = `\
 (function() {
   var html = document.documentElement;

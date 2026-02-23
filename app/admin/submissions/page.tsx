@@ -162,8 +162,8 @@ export default function AdminSubmissionsPage() {
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#77957f]/20 flex items-center justify-center">
-                <Lock className="w-6 h-6 text-[#77957f]" />
+              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-[#00D4A8]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Admin Access</h1>
@@ -181,7 +181,7 @@ export default function AdminSubmissionsPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                   autoFocus
                 />
                 {passwordError && (
@@ -191,7 +191,7 @@ export default function AdminSubmissionsPage() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#77957f]/90 transition-all"
+                className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all"
               >
                 Access Submissions
               </button>
@@ -211,8 +211,8 @@ export default function AdminSubmissionsPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-6 bg-[#77957f]" />
-                <span className="font-mono text-[10px] text-[#77957f] uppercase tracking-[0.4em]">
+                <div className="h-px w-6 bg-[#00D4A8]" />
+                <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
                   Admin Panel
                 </span>
               </div>
@@ -233,7 +233,7 @@ export default function AdminSubmissionsPage() {
               <button
                 onClick={exportToExcel}
                 disabled={submissions.length === 0}
-                className="flex items-center gap-2 px-5 py-3 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#77957f]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-3 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={16} />
                 Export CSV
@@ -249,7 +249,7 @@ export default function AdminSubmissionsPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={20} className="text-[#77957f]" />
+              <FileText size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Submissions
               </span>
@@ -258,7 +258,7 @@ export default function AdminSubmissionsPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Users size={20} className="text-[#77957f]" />
+              <Users size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Participants
               </span>
@@ -269,7 +269,7 @@ export default function AdminSubmissionsPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Github size={20} className="text-[#77957f]" />
+              <Github size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 With Demo Links
               </span>
@@ -280,7 +280,7 @@ export default function AdminSubmissionsPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={20} className="text-[#77957f]" />
+              <FileText size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Using Sponsor Tech
               </span>
@@ -302,7 +302,7 @@ export default function AdminSubmissionsPage() {
               return (
                 <div key={tech} className="flex items-center gap-3 px-4 py-2 bg-white/[0.04] border border-white/10">
                   <span className="text-white">{tech}</span>
-                  <span className="text-[#77957f] font-mono">{count}</span>
+                  <span className="text-[#00D4A8] font-mono">{count}</span>
                 </div>
               );
             })}
@@ -319,7 +319,7 @@ export default function AdminSubmissionsPage() {
         {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
           </div>
         )}
 
@@ -347,7 +347,7 @@ export default function AdminSubmissionsPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-2">
-                        <span className="font-mono text-[#77957f] text-sm">
+                        <span className="font-mono text-[#00D4A8] text-sm">
                           #{sub.team.teamNumber}
                         </span>
                         <h3 className="text-lg text-white font-medium">
@@ -359,7 +359,7 @@ export default function AdminSubmissionsPage() {
                         {sub.sponsorTech?.map((tech) => (
                           <span
                             key={tech}
-                            className="px-2 py-1 bg-[#77957f]/20 text-[#77957f] text-xs"
+                            className="px-2 py-1 bg-[#00D4A8]/20 text-[#00D4A8] text-xs"
                           >
                             {tech}
                           </span>
@@ -382,9 +382,9 @@ export default function AdminSubmissionsPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="p-2 bg-[#77957f]/20 hover:bg-[#77957f]/30 transition-all"
+                          className="p-2 bg-[#00D4A8]/20 hover:bg-[#00D4A8]/30 transition-all"
                         >
-                          <ExternalLink size={16} className="text-[#77957f]" />
+                          <ExternalLink size={16} className="text-[#00D4A8]" />
                         </a>
                       )}
                       <span className="text-xs text-white/30">
@@ -413,7 +413,7 @@ export default function AdminSubmissionsPage() {
                           href={sub.demoLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-4 py-2 bg-[#77957f]/20 border border-[#77957f]/30 text-[#77957f] text-sm hover:bg-[#77957f]/30 transition-all"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#00D4A8]/20 border border-[#00D4A8]/30 text-[#00D4A8] text-sm hover:bg-[#00D4A8]/30 transition-all"
                         >
                           <ExternalLink size={16} />
                           Live Demo
@@ -471,7 +471,7 @@ export default function AdminSubmissionsPage() {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1 bg-white/[0.06] text-sm text-[#77957f] hover:bg-white/10 transition-all"
+                              className="px-3 py-1 bg-white/[0.06] text-sm text-[#00D4A8] hover:bg-white/10 transition-all"
                             >
                               File {i + 1}
                             </a>

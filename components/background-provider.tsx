@@ -24,6 +24,8 @@ function getBackgroundForPath(pathname: string): string {
   if (pathname.endsWith("/matches")) return "/backgrounds/matches.jpg";
   if (pathname.endsWith("/interested")) return "/backgrounds/interested.jpg";
   if (pathname.endsWith("/directory")) return "/backgrounds/directory.jpg";
+  if (pathname.endsWith("/teams")) return "/backgrounds/teams.jpg";
+  if (pathname.endsWith("/submissions")) return "/backgrounds/submissions.jpg";
 
   // Also check if the path contains these segments (for nested routes)
   if (pathname.includes("/profile/edit")) return "/backgrounds/profile-edit.jpg";
@@ -32,6 +34,8 @@ function getBackgroundForPath(pathname: string): string {
   if (pathname.includes("/matches")) return "/backgrounds/matches.jpg";
   if (pathname.includes("/interested")) return "/backgrounds/interested.jpg";
   if (pathname.includes("/directory")) return "/backgrounds/directory.jpg";
+  if (pathname.includes("/teams")) return "/backgrounds/teams.jpg";
+  if (pathname.includes("/submissions")) return "/backgrounds/submissions.jpg";
   if (pathname.includes("/profile")) return "/backgrounds/profile.jpg";
 
   return defaultBackground;

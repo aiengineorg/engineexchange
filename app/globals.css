@@ -1,4 +1,4 @@
-/* Font Imports - FluxHack Theme */
+/* Font Imports - AI Festival Theme */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&family=Tomorrow:wght@300;400;500&display=swap");
 
 @import "tailwindcss";
@@ -13,183 +13,183 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
-/* FLUXHACK THEME - Dark Mode (Default) */
+/* AI FESTIVAL THEME - Dark Mode (Default) */
 :root {
-  /* FluxHack Dark Mode Colors - Lightened */
-  --bfl-black: #162822;  /* Lighter base */
-  --bfl-dark-green: #1a302a;  /* Lighter dark green */
-  --bfl-green: #77957f;  /* User specified green */
-  --bfl-green-title: #b8c9ba;  /* Brighter title green */
-  --bfl-muted: #9caa9a;  /* Lighter muted */
+  /* AI Festival Dark Mode Colors */
+  --bfl-black: #1B2640;  /* Deep navy base */
+  --bfl-dark-green: #212D48;  /* Navy card/surface */
+  --bfl-green: #00D4A8;  /* Vibrant teal accent */
+  --bfl-green-title: #7B68F0;  /* Purple title accent */
+  --bfl-muted: #8E9DB2;  /* Slate muted */
   --bfl-off-white: #FFFFFF;
   --bfl-text-primary: #FFFFFF;
-  --bfl-border: rgba(255, 255, 255, 0.12);
-  --bfl-glass: rgba(22, 40, 34, 0.75);
-  --mist-overlay: rgba(22, 40, 34, 0.4);
-  --bfl-accent-purple: #C4B5D8;
+  --bfl-border: rgba(0, 212, 168, 0.25);
+  --bfl-glass: rgba(27, 38, 64, 0.7);
+  --mist-overlay: rgba(0, 212, 168, 0.05);
+  --bfl-accent-purple: #7B68F0;
 
   /* Mapped to existing variable names for compatibility */
-  --background: #162822;  /* Lighter background */
+  --background: #1B2640;  /* Navy background */
   --foreground: #FFFFFF;
 
-  --card: #1a302a;  /* Opaque card */
+  --card: #212D48;  /* Navy card */
   --card-foreground: #FFFFFF;
 
-  --popover: #1e3830;  /* Opaque popover/dropdown */
+  --popover: #263252;  /* Slightly lighter navy popover */
   --popover-foreground: #FFFFFF;
 
-  --primary: #77957f;  /* User specified green */
+  --primary: #00D4A8;  /* Teal primary */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #1a302a;  /* Opaque secondary */
-  --secondary-foreground: #b8c9ba;
+  --secondary: #212D48;  /* Navy secondary */
+  --secondary-foreground: #7B68F0;
 
-  --muted: #1a302a;  /* Opaque muted */
-  --muted-foreground: #9caa9a;  /* Lighter muted text */
+  --muted: #212D48;  /* Navy muted bg */
+  --muted-foreground: #8E9DB2;  /* Slate muted text */
 
-  --accent: #b8c9ba;  /* Brighter accent */
-  --accent-foreground: #162822;
-
-  --destructive: hsl(0 84.2% 60.2%);
-  --destructive-foreground: hsl(0 0% 98%);
-
-  --border: rgba(255, 255, 255, 0.12);
-  --input: #1a302a;  /* Opaque input */
-  --ring: #b8c9ba;
-
-  --chart-1: #77957f;
-  --chart-2: #b8c9ba;
-  --chart-3: #9caa9a;
-  --chart-4: #C4B5D8;
-  --chart-5: #162822;
-
-  --sidebar-background: #162822;  /* Opaque sidebar */
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #b8c9ba;
-  --sidebar-primary-foreground: #162822;
-  --sidebar-accent: #77957f;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.12);
-  --sidebar-ring: #b8c9ba;
-
-  --radius: 0.125rem; /* Small border radius like FluxHack */
-  --sidebar: #162822;  /* Opaque sidebar */
-}
-
-/* FLUXHACK THEME - Dark Mode */
-.dark {
-  --bfl-black: #162822;
-  --bfl-dark-green: #1a302a;
-  --bfl-green: #77957f;
-  --bfl-green-title: #b8c9ba;
-  --bfl-muted: #9caa9a;
-  --bfl-off-white: #FFFFFF;
-  --bfl-text-primary: #FFFFFF;
-  --bfl-border: rgba(255, 255, 255, 0.12);
-  --bfl-glass: rgba(22, 40, 34, 0.75);
-  --mist-overlay: rgba(22, 40, 34, 0.4);
-
-  --background: #162822;
-  --foreground: #FFFFFF;
-
-  --card: #1a302a;
-  --card-foreground: #FFFFFF;
-
-  --popover: #1e3830;
-  --popover-foreground: #FFFFFF;
-
-  --primary: #77957f;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #1a302a;
-  --secondary-foreground: #b8c9ba;
-
-  --muted: #1a302a;
-  --muted-foreground: #9caa9a;
-
-  --accent: #b8c9ba;
-  --accent-foreground: #162822;
-
-  --destructive: hsl(0 62.8% 30.6%);
-  --destructive-foreground: hsl(0 0% 98%);
-
-  --border: rgba(255, 255, 255, 0.12);
-  --input: #1a302a;
-  --ring: #b8c9ba;
-
-  --chart-1: #77957f;
-  --chart-2: #b8c9ba;
-  --chart-3: #9caa9a;
-  --chart-4: #C4B5D8;
-  --chart-5: #162822;
-
-  --sidebar-background: #162822;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #b8c9ba;
-  --sidebar-primary-foreground: #162822;
-  --sidebar-accent: #77957f;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(255, 255, 255, 0.12);
-  --sidebar-ring: #b8c9ba;
-  --sidebar: #162822;
-}
-
-/* FLUXHACK THEME - Light Mode */
-.light {
-  --bfl-black: #F8FAF8;
-  --bfl-dark-green: #EFF2EF;
-  --bfl-green: #3D4F44;
-  --bfl-green-title: #2D3D33;
-  --bfl-muted: #4A574D;
-  --bfl-off-white: #121212;
-  --bfl-text-primary: #121212;
-  --bfl-border: rgba(0, 0, 0, 0.12);
-  --bfl-glass: rgba(248, 250, 248, 0.9);
-  --mist-overlay: rgba(255, 255, 255, 0.1);
-
-  --background: #F8FAF8;
-  --foreground: #121212;
-
-  --card: #EFF2EF;
-  --card-foreground: #121212;
-
-  --popover: #EFF2EF;
-  --popover-foreground: #121212;
-
-  --primary: #3D4F44;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #F8FAF8;
-  --secondary-foreground: #2D3D33;
-
-  --muted: #EFF2EF;
-  --muted-foreground: #4A574D;
-
-  --accent: #3D4F44;
+  --accent: #7B68F0;  /* Purple accent */
   --accent-foreground: #FFFFFF;
 
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --border: rgba(0, 0, 0, 0.12);
-  --input: #EFF2EF;
-  --ring: #3D4F44;
+  --border: rgba(0, 212, 168, 0.25);
+  --input: #212D48;  /* Navy input */
+  --ring: #7B68F0;
 
-  --sidebar-background: #EFF2EF;
-  --sidebar-foreground: #121212;
-  --sidebar-primary: #3D4F44;
+  --chart-1: #00D4A8;
+  --chart-2: #7B68F0;
+  --chart-3: #8E9DB2;
+  --chart-4: #00D4A8;
+  --chart-5: #1B2640;
+
+  --sidebar-background: #1B2640;  /* Navy sidebar */
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #7B68F0;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #3D4F44;
+  --sidebar-accent: #00D4A8;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(0, 0, 0, 0.12);
-  --sidebar-ring: #3D4F44;
-  --sidebar: #EFF2EF;
+  --sidebar-border: rgba(0, 212, 168, 0.25);
+  --sidebar-ring: #7B68F0;
+
+  --radius: 0.125rem;
+  --sidebar: #1B2640;  /* Navy sidebar */
+}
+
+/* AI FESTIVAL THEME - Dark Mode */
+.dark {
+  --bfl-black: #1B2640;
+  --bfl-dark-green: #212D48;
+  --bfl-green: #00D4A8;
+  --bfl-green-title: #7B68F0;
+  --bfl-muted: #8E9DB2;
+  --bfl-off-white: #FFFFFF;
+  --bfl-text-primary: #FFFFFF;
+  --bfl-border: rgba(0, 212, 168, 0.25);
+  --bfl-glass: rgba(27, 38, 64, 0.7);
+  --mist-overlay: rgba(0, 212, 168, 0.05);
+
+  --background: #1B2640;
+  --foreground: #FFFFFF;
+
+  --card: #212D48;
+  --card-foreground: #FFFFFF;
+
+  --popover: #263252;
+  --popover-foreground: #FFFFFF;
+
+  --primary: #00D4A8;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #212D48;
+  --secondary-foreground: #7B68F0;
+
+  --muted: #212D48;
+  --muted-foreground: #8E9DB2;
+
+  --accent: #7B68F0;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: hsl(0 62.8% 30.6%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --border: rgba(0, 212, 168, 0.25);
+  --input: #212D48;
+  --ring: #7B68F0;
+
+  --chart-1: #00D4A8;
+  --chart-2: #7B68F0;
+  --chart-3: #8E9DB2;
+  --chart-4: #00D4A8;
+  --chart-5: #1B2640;
+
+  --sidebar-background: #1B2640;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #7B68F0;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #00D4A8;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(0, 212, 168, 0.25);
+  --sidebar-ring: #7B68F0;
+  --sidebar: #1B2640;
+}
+
+/* AI FESTIVAL THEME - Light Mode */
+.light {
+  --bfl-black: #FFFFFF;
+  --bfl-dark-green: #F3F4F8;
+  --bfl-green: #00B892;
+  --bfl-green-title: #6355D8;
+  --bfl-muted: #475569;
+  --bfl-off-white: #1B2640;
+  --bfl-text-primary: #1B2640;
+  --bfl-border: rgba(27, 38, 64, 0.12);
+  --bfl-glass: rgba(255, 255, 255, 0.85);
+  --mist-overlay: rgba(0, 0, 0, 0.02);
+
+  --background: #FFFFFF;
+  --foreground: #1B2640;
+
+  --card: #F3F4F8;
+  --card-foreground: #1B2640;
+
+  --popover: #F3F4F8;
+  --popover-foreground: #1B2640;
+
+  --primary: #00B892;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #FFFFFF;
+  --secondary-foreground: #6355D8;
+
+  --muted: #F3F4F8;
+  --muted-foreground: #475569;
+
+  --accent: #6355D8;
+  --accent-foreground: #FFFFFF;
+
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+
+  --border: rgba(27, 38, 64, 0.12);
+  --input: #F3F4F8;
+  --ring: #6355D8;
+
+  --sidebar-background: #F3F4F8;
+  --sidebar-foreground: #1B2640;
+  --sidebar-primary: #6355D8;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #00B892;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(27, 38, 64, 0.12);
+  --sidebar-ring: #6355D8;
+  --sidebar: #F3F4F8;
 }
 
 /* define theme */
 @theme {
   --font-sans: var(--font-inter), "Inter", sans-serif;
-  --font-mono: var(--font-inter), "Inter", sans-serif;  /* FluxHack uses Inter for everything */
+  --font-mono: var(--font-inter), "Inter", sans-serif;
   --font-tomorrow: "Tomorrow", sans-serif;
 
   --breakpoint-toast-mobile: 600px;
@@ -276,15 +276,15 @@
 @layer utilities {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 15, 33, 28;
-    --background-end-rgb: 7, 19, 14;
+    --background-start-rgb: 27, 38, 64;
+    --background-end-rgb: 18, 25, 45;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
       --foreground-rgb: 255, 255, 255;
-      --background-start-rgb: 15, 33, 28;
-      --background-end-rgb: 7, 19, 14;
+      --background-start-rgb: 27, 38, 64;
+      --background-end-rgb: 18, 25, 45;
     }
   }
 }
@@ -303,23 +303,23 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-normal tracking-tighter;  /* FluxHack uses font-normal (400) with tight tracking */
+    @apply font-normal tracking-tighter;
     font-family: "Tomorrow", var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   html {
     overflow-x: hidden;
-    background-color: #162822;
+    background-color: #1B2640;
   }
 }
 
-/* FluxHack Selection Styling */
+/* AI Festival Selection Styling */
 ::selection {
   background: var(--primary);
   color: #ffffff;
 }
 
-/* FluxHack Fade-in Animation */
+/* Fade-in Animation */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -360,13 +360,13 @@
 
 .cm-editor,
 .cm-gutters {
-  @apply bg-background! dark:bg-[#07130e]! outline-hidden! selection:bg-[#697568]!;
+  @apply bg-background! dark:bg-[#151E35]! outline-hidden! selection:bg-[#3A4566]!;
 }
 
 .ͼo.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
 .ͼo.cm-selectionBackground,
 .ͼo.cm-content::selection {
-  @apply bg-[#697568]/30! dark:bg-[#697568]/30!;
+  @apply bg-[#3A4566]/30! dark:bg-[#3A4566]/30!;
 }
 
 .cm-activeLine,
@@ -391,10 +391,10 @@
 }
 
 .suggestion-highlight {
-  @apply bg-[#697568]/30 hover:bg-[#697568]/50 dark:hover:bg-[#697568]/50 dark:text-white dark:bg-[#697568]/40;
+  @apply bg-[#3A4566]/30 hover:bg-[#3A4566]/50 dark:hover:bg-[#3A4566]/50 dark:text-white dark:bg-[#3A4566]/40;
 }
 
-/* FluxHack Scrollbar Styling */
+/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -434,7 +434,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* FluxHack Custom Colors */
+  /* AI Festival Custom Colors */
   --color-bfl-black: var(--bfl-black);
   --color-bfl-dark-green: var(--bfl-dark-green);
   --color-bfl-green: var(--bfl-green);
@@ -454,29 +454,29 @@
   }
 }
 
-/* FluxHack Glass Effect */
+/* Glass Effect */
 .glass {
   background: var(--bfl-glass);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
 }
 
-/* FluxHack Subtle Border */
+/* Subtle Border */
 .subtle-border {
   border: 1px solid var(--border);
 }
 
-/* FluxHack Blueprint Line */
+/* Blueprint Line */
 .blueprint-line {
   background: var(--border);
 }
 
-/* FluxHack Text Glow */
+/* AI Festival Text Glow */
 .text-glow {
-  text-shadow: 0 0 20px rgba(105, 117, 104, 0.3);
+  text-shadow: 0 0 20px rgba(0, 212, 168, 0.3);
 }
 
-/* FluxHack Green Glow for Status Indicators */
+/* AI Festival Teal Glow for Status Indicators */
 .green-glow {
-  box-shadow: 0 0 10px rgba(105, 117, 104, 0.5);
+  box-shadow: 0 0 10px rgba(0, 212, 168, 0.5);
 }

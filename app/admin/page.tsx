@@ -136,8 +136,8 @@ export default function AdminPage() {
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#77957f]/20 flex items-center justify-center">
-                <Lock className="w-6 h-6 text-[#77957f]" />
+              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-[#00D4A8]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Admin Access</h1>
@@ -155,7 +155,7 @@ export default function AdminPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter admin password"
-                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#77957f] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
                   autoFocus
                 />
                 {passwordError && (
@@ -165,7 +165,7 @@ export default function AdminPage() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#77957f]/90 transition-all"
+                className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all"
               >
                 Access Admin Panel
               </button>
@@ -185,8 +185,8 @@ export default function AdminPage() {
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-6 bg-[#77957f]" />
-                <span className="font-mono text-[10px] text-[#77957f] uppercase tracking-[0.4em]">
+                <div className="h-px w-6 bg-[#00D4A8]" />
+                <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
                   Admin Panel
                 </span>
               </div>
@@ -207,7 +207,7 @@ export default function AdminPage() {
               <button
                 onClick={exportToExcel}
                 disabled={teams.length === 0}
-                className="flex items-center gap-2 px-5 py-3 bg-[#77957f] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#77957f]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-3 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download size={16} />
                 Export Excel
@@ -223,7 +223,7 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Users size={20} className="text-[#77957f]" />
+              <Users size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Teams
               </span>
@@ -232,7 +232,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Users size={20} className="text-[#77957f]" />
+              <Users size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Members
               </span>
@@ -243,7 +243,7 @@ export default function AdminPage() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Users size={20} className="text-[#77957f]" />
+              <Users size={20} className="text-[#00D4A8]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Avg Team Size
               </span>
@@ -269,7 +269,7 @@ export default function AdminPage() {
         {/* Loading state */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#77957f] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
           </div>
         )}
 
@@ -291,7 +291,7 @@ export default function AdminPage() {
                 {/* Team header */}
                 <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
                   <div className="flex items-center gap-4">
-                    <span className="font-mono text-[#77957f] text-sm">
+                    <span className="font-mono text-[#00D4A8] text-sm">
                       #{team.teamNumber}
                     </span>
                     <h3 className="text-lg text-white font-medium">
