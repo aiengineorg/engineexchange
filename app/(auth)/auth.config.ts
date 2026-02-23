@@ -1,5 +1,9 @@
 import type { NextAuthConfig } from "next-auth";
-import { DEFAULT_SESSION_ID } from "@/lib/constants";
+
+// Read directly from env to avoid importing lib/constants (which pulls in bcrypt-ts via db/utils)
+const DEFAULT_SESSION_ID =
+  process.env.DEFAULT_SESSION_ID ||
+  "1784d222-27f9-4fed-a28f-f454444e760f";
 
 export const authConfig = {
   pages: {
