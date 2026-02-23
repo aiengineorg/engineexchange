@@ -8,6 +8,7 @@ import {
   getSubmissionByTeamId,
   hasValidContactEmail,
 } from "@/lib/db/queries";
+import { SUBMISSIONS_OPEN, SUBMISSION_DEADLINE } from "@/lib/constants";
 
 const CreateSubmissionSchema = z.object({
   sessionId: z.string().uuid(),
@@ -24,9 +25,6 @@ const CreateSubmissionSchema = z.object({
   mediaPermission: z.string().optional().default("false"),
   eventFeedback: z.string().max(1000).optional(),
 });
-
-// Deadline: January 25, 2026 at 2:35 PM (local time)
-const SUBMISSION_DEADLINE = new Date("2026-01-25T14:35:00");
 
 // GET /api/submissions - Get all submissions
 export async function GET(request: Request) {
@@ -57,7 +55,7 @@ export async function GET(request: Request) {
     }
 
     // Check if user is in a team
-    const team = await getTeamByUserId(session.user.id);
+    const team = await getTeamByUserId(session.user.id, sessionId);
     if (!team) {
       return NextResponse.json(
         { error: "You must be part of a team to view submissions" },
@@ -111,8 +109,16 @@ export async function POST(request: Request) {
       eventFeedback,
     } = validation.data;
 
+    // Check if submissions are open
+    if (!SUBMISSIONS_OPEN) {
+      return NextResponse.json(
+        { error: "Submissions are currently closed." },
+        { status: 403 }
+      );
+    }
+
     // Check if deadline has passed for new submissions
-    if (new Date() > SUBMISSION_DEADLINE) {
+    if (SUBMISSION_DEADLINE && new Date() > SUBMISSION_DEADLINE) {
       return NextResponse.json(
         { error: "Submission deadline has passed. New submissions are no longer accepted." },
         { status: 403 }
@@ -129,7 +135,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user is in a team
-    const team = await getTeamByUserId(session.user.id);
+    const team = await getTeamByUserId(session.user.id, sessionId);
     if (!team) {
       return NextResponse.json(
         { error: "You must be part of a team to submit a project" },

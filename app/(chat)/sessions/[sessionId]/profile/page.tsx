@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, ArrowLeft, Pencil, Users, Linkedin, Globe } from "lucide-react";
+import { User, ArrowLeft, Pencil, Users, Linkedin, Globe, Award } from "lucide-react";
 
 interface Profile {
   id: string;
@@ -13,6 +13,7 @@ interface Profile {
   linkedinUrl?: string | null;
   websiteOrGithub?: string | null;
   hasTeam?: boolean;
+  isBflAlumni?: boolean;
 }
 
 export default function ProfilePage({
@@ -142,8 +143,14 @@ export default function ProfilePage({
 
         {/* Profile Details Section - Team Status & Links */}
         <div className="px-4 py-2.5 border-b border-white/10 flex items-center justify-between gap-3">
-          {/* Team Status Indicator */}
+          {/* Team Status & Alumni Badge */}
           <div className="flex items-center gap-2">
+            {profile.isBflAlumni && (
+              <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/15 border border-amber-500/30 rounded-full">
+                <Award size={10} className="text-amber-400" />
+                <span className="text-[9px] font-bold text-amber-400 uppercase tracking-wider">BFL Hack</span>
+              </div>
+            )}
             {profile.hasTeam ? (
               <div className="flex items-center gap-1.5 px-2.5 py-1 bg-bfl-green/15 border border-bfl-green/30 rounded-full">
                 <Users size={11} className="text-bfl-green" />

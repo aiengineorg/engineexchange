@@ -53,8 +53,8 @@ export const teamMembers = pgTable(
     addedAt: timestamp("added_at").notNull().defaultNow(),
   },
   (table) => ({
-    // Ensure one team per user (user can only be in one team)
-    uniqueUserTeam: uniqueIndex("unique_user_team").on(table.userId),
+    // Prevent duplicate membership rows (user can be on different teams across sessions)
+    uniqueUserTeamMembership: uniqueIndex("unique_user_team_membership").on(table.userId, table.teamId),
     // Fast lookup by team
     teamIdx: index("team_members_team_idx").on(table.teamId),
   })

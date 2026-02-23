@@ -5,6 +5,7 @@ import {
   getSubmissionById,
   updateSubmission,
   getTeamByUserId,
+  getTeamById,
 } from "@/lib/db/queries";
 
 const UpdateSubmissionSchema = z.object({
@@ -55,8 +56,9 @@ export async function PUT(
       );
     }
 
-    // Check if user is in the team that owns this submission
-    const team = await getTeamByUserId(session.user.id);
+    // Get the team that owns this submission to determine session scope
+    const submissionTeam = await getTeamById(submission.teamId);
+    const team = await getTeamByUserId(session.user.id, submissionTeam?.sessionId);
     if (!team || team.id !== submission.teamId) {
       return NextResponse.json(
         { error: "You can only edit your team's submission" },

@@ -946,21 +946,31 @@ export async function getTeamByNumber(
 }
 
 /**
- * Get team that a user belongs to
+ * Get team that a user belongs to (optionally scoped to a session)
  */
-export async function getTeamByUserId(userId: string): Promise<Team | null> {
+export async function getTeamByUserId(userId: string, sessionId?: string): Promise<Team | null> {
   try {
-    const [membership] = await db
+    const query = db
       .select({ teamId: teamMembers.teamId })
-      .from(teamMembers)
-      .where(eq(teamMembers.userId, userId))
-      .limit(1);
+      .from(teamMembers);
 
-    if (!membership) {
+    let result;
+    if (sessionId) {
+      [result] = await query
+        .innerJoin(teams, eq(teams.id, teamMembers.teamId))
+        .where(and(eq(teamMembers.userId, userId), eq(teams.sessionId, sessionId)))
+        .limit(1);
+    } else {
+      [result] = await query
+        .where(eq(teamMembers.userId, userId))
+        .limit(1);
+    }
+
+    if (!result) {
       return null;
     }
 
-    return getTeamById(membership.teamId);
+    return getTeamById(result.teamId);
   } catch (error) {
     console.error("Failed to get team by user id:", error);
     return null;
@@ -1108,10 +1118,20 @@ export async function deleteTeam(teamId: string): Promise<void> {
 }
 
 /**
- * Check if user is already in a team
+ * Check if user is already in a team (optionally scoped to a session)
  */
-export async function isUserInTeam(userId: string): Promise<boolean> {
+export async function isUserInTeam(userId: string, sessionId?: string): Promise<boolean> {
   try {
+    if (sessionId) {
+      const [membership] = await db
+        .select({ id: teamMembers.id })
+        .from(teamMembers)
+        .innerJoin(teams, eq(teams.id, teamMembers.teamId))
+        .where(and(eq(teamMembers.userId, userId), eq(teams.sessionId, sessionId)))
+        .limit(1);
+      return !!membership;
+    }
+
     const [membership] = await db
       .select()
       .from(teamMembers)
@@ -1164,7 +1184,7 @@ export async function searchUsersByEmailWithContactEmail(
       matchingProfiles
         .filter((p) => p.contactEmail && p.contactEmail.includes("@"))
         .map(async (profile) => {
-          const inTeam = await isUserInTeam(profile.userId);
+          const inTeam = await isUserInTeam(profile.userId, sessionId);
           return {
             userId: profile.userId,
             displayName: profile.displayName,
@@ -1422,12 +1442,14 @@ export async function getAllSubmissionsWithTeams(
 > {
   try {
     const allSubmissions = await db
-      .select()
+      .select({ submission: submissions })
       .from(submissions)
+      .innerJoin(teams, eq(submissions.teamId, teams.id))
+      .where(eq(teams.sessionId, sessionId))
       .orderBy(desc(submissions.submittedAt));
 
     const submissionsWithTeams = await Promise.all(
-      allSubmissions.map(async (submission) => {
+      allSubmissions.map(async ({ submission }) => {
         const team = await getTeamById(submission.teamId);
         if (!team) {
           return null;
@@ -1749,6 +1771,35 @@ export async function getAllJudgingScores(): Promise<
   } catch (error) {
     console.error("Failed to get all judging scores:", error);
     return [];
+  }
+}
+
+// ==========================================
+// ALUMNI / MULTI-SESSION QUERIES
+// ==========================================
+
+/**
+ * Check which users had a profile in a given session (for alumni badge detection)
+ */
+export async function getUserIdsWithProfileInSession(
+  userIds: string[],
+  sessionId: string
+): Promise<Set<string>> {
+  if (userIds.length === 0) return new Set();
+  try {
+    const results = await db
+      .select({ userId: profiles.userId })
+      .from(profiles)
+      .where(
+        and(
+          inArray(profiles.userId, userIds),
+          eq(profiles.sessionId, sessionId)
+        )
+      );
+    return new Set(results.map((r) => r.userId));
+  } catch (error) {
+    console.error("Failed to get user ids with profile in session:", error);
+    return new Set();
   }
 }
 

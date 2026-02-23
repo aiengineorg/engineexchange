@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTeamsBySessionId, getTeamMembers } from "@/lib/db/queries";
-
-// Default hackathon session ID
-const DEFAULT_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
+import { DEFAULT_SESSION_ID } from "@/lib/constants";
 
 export async function GET() {
   try {

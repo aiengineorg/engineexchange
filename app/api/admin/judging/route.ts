@@ -5,9 +5,7 @@ import {
   getScoresBySubmission,
   getAllJudges,
 } from "@/lib/db/queries";
-
-// Default hackathon session ID
-const DEFAULT_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
+import { DEFAULT_SESSION_ID } from "@/lib/constants";
 
 // GET /api/admin/judging - Get all judging data for admin
 export async function GET() {

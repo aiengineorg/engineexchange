@@ -79,7 +79,7 @@ interface SubmissionWithScores {
   runwareRecommendations: number;
 }
 
-const ADMIN_PASSWORD = "fluxhack2025";
+const ADMIN_PASSWORD = "aifestival2026";
 
 export default function AdminJudgingPage() {
   const [authenticated, setAuthenticated] = useState(false);

@@ -25,8 +25,10 @@ interface Submission {
 
 const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA", "Anthropic", "Flux Models"] as const;
 
-// Deadline: January 25, 2026 at 2:35 PM (local time)
-const SUBMISSION_DEADLINE = new Date("2026-01-25T14:35:00");
+const SUBMISSIONS_OPEN = process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== "false";
+const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
+  ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)
+  : null;
 
 interface Team {
   id: string;
@@ -64,8 +66,40 @@ export default function MyTeamSubmissionPage({
     eventFeedback: "",
   });
 
-  // Check if deadline has passed (for new submissions only)
-  const isDeadlinePassed = new Date() > SUBMISSION_DEADLINE;
+  // Track which fields user has interacted with (for showing validation errors)
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const markTouched = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  // Validation helpers
+  const fieldErrors = {
+    projectName: !formData.projectName.trim() ? "Project name is required" : null,
+    githubLink: !formData.githubLink.trim()
+      ? "GitHub link is required"
+      : !/^https?:\/\/.+/.test(formData.githubLink) ? "Must be a valid URL" : null,
+    demoLink: !formData.demoLink.trim()
+      ? "Demo link is required"
+      : !/^https?:\/\/.+/.test(formData.demoLink) ? "Must be a valid URL" : null,
+    description: !formData.description.trim()
+      ? "Description is required"
+      : formData.description.length < 10 ? `${10 - formData.description.length} more characters needed` : null,
+    problemStatement: !formData.problemStatement.trim()
+      ? "Problem statement is required"
+      : formData.problemStatement.length < 10 ? `${10 - formData.problemStatement.length} more characters needed` : null,
+    techStack: !formData.techStack.trim() ? "Tech stack is required" : null,
+  };
+
+  const showError = (field: keyof typeof fieldErrors) =>
+    (touched[field] || submitAttempted) && fieldErrors[field];
+
+  const inputClass = (field: keyof typeof fieldErrors, base: string) =>
+    `${base} ${showError(field) ? "border-red-500/70 focus:ring-red-500" : "border-white/15 focus:ring-bfl-green"}`;
+
+  // Check if submissions are closed or deadline has passed (for new submissions only)
+  const isDeadlinePassed = !SUBMISSIONS_OPEN || (SUBMISSION_DEADLINE ? new Date() > SUBMISSION_DEADLINE : false);
   const canCreateNew = !isDeadlinePassed;
 
   const [fileUploads, setFileUploads] = useState<string[]>([]);
@@ -167,6 +201,12 @@ export default function MyTeamSubmissionPage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+
+    // Check if any required fields have errors
+    const hasErrors = Object.values(fieldErrors).some((err) => err !== null);
+    if (hasErrors) return;
+
     setSaving(true);
     setError("");
 
@@ -276,9 +316,11 @@ export default function MyTeamSubmissionPage({
           <p className="text-bfl-muted font-medium max-w-md mx-auto mb-2">
             The submission deadline has passed. New submissions are no longer being accepted.
           </p>
-          <p className="text-xs text-bfl-muted/60 font-mono">
-            Deadline was January 25, 2026 at 2:35 PM
-          </p>
+          {SUBMISSION_DEADLINE && (
+            <p className="text-xs text-bfl-muted/60 font-mono">
+              Deadline was {SUBMISSION_DEADLINE.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} at {SUBMISSION_DEADLINE.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+            </p>
+          )}
           <Link
             href={`/sessions/${sessionId}/submissions`}
             className="inline-flex items-center gap-2 mt-8 text-bfl-green hover:text-bfl-green/80 transition-colors"
@@ -337,11 +379,14 @@ export default function MyTeamSubmissionPage({
             type="text"
             value={formData.projectName}
             onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
+            onBlur={() => markTouched("projectName")}
             placeholder="e.g., AI Code Assistant"
-            required
             maxLength={100}
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+            className={inputClass("projectName", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 outline-none transition-all")}
           />
+          {showError("projectName") && (
+            <p className="mt-2 text-xs text-red-400">{fieldErrors.projectName}</p>
+          )}
         </div>
 
         {/* GitHub Link */}
@@ -354,10 +399,13 @@ export default function MyTeamSubmissionPage({
             type="url"
             value={formData.githubLink}
             onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
+            onBlur={() => markTouched("githubLink")}
             placeholder="https://github.com/your-team/project"
-            required
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+            className={inputClass("githubLink", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 outline-none transition-all")}
           />
+          {showError("githubLink") && (
+            <p className="mt-2 text-xs text-red-400">{fieldErrors.githubLink}</p>
+          )}
         </div>
 
         {/* Demo Link */}
@@ -370,10 +418,13 @@ export default function MyTeamSubmissionPage({
             type="url"
             value={formData.demoLink}
             onChange={(e) => setFormData({ ...formData, demoLink: e.target.value })}
+            onBlur={() => markTouched("demoLink")}
             placeholder="https://your-demo.vercel.app"
-            required
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+            className={inputClass("demoLink", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 outline-none transition-all")}
           />
+          {showError("demoLink") && (
+            <p className="mt-2 text-xs text-red-400">{fieldErrors.demoLink}</p>
+          )}
         </div>
 
         {/* Problem Statement */}
@@ -383,16 +434,22 @@ export default function MyTeamSubmissionPage({
           <textarea
             value={formData.problemStatement}
             onChange={(e) => setFormData({ ...formData, problemStatement: e.target.value })}
+            onBlur={() => markTouched("problemStatement")}
             placeholder="Describe the problem your project addresses..."
-            required
-            minLength={10}
             maxLength={1000}
             rows={4}
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+            className={inputClass("problemStatement", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 outline-none transition-all resize-none")}
           />
-          <p className="mt-2 text-xs text-bfl-muted text-right">
-            {formData.problemStatement.length}/1000
-          </p>
+          <div className="flex justify-between mt-2">
+            {showError("problemStatement") ? (
+              <p className="text-xs text-red-400">{fieldErrors.problemStatement}</p>
+            ) : (
+              <p className="text-xs text-bfl-muted">Min 10 characters</p>
+            )}
+            <p className={`text-xs ${formData.problemStatement.length > 0 && formData.problemStatement.length < 10 ? "text-red-400" : "text-bfl-muted"}`}>
+              {formData.problemStatement.length}/1000
+            </p>
+          </div>
         </div>
 
         {/* Description */}
@@ -402,16 +459,22 @@ export default function MyTeamSubmissionPage({
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            onBlur={() => markTouched("description")}
             placeholder="Tell us about your project..."
-            required
-            minLength={10}
             maxLength={2000}
             rows={6}
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+            className={inputClass("description", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 outline-none transition-all resize-none")}
           />
-          <p className="mt-2 text-xs text-bfl-muted text-right">
-            {formData.description.length}/2000
-          </p>
+          <div className="flex justify-between mt-2">
+            {showError("description") ? (
+              <p className="text-xs text-red-400">{fieldErrors.description}</p>
+            ) : (
+              <p className="text-xs text-bfl-muted">Min 10 characters</p>
+            )}
+            <p className={`text-xs ${formData.description.length > 0 && formData.description.length < 10 ? "text-red-400" : "text-bfl-muted"}`}>
+              {formData.description.length}/2000
+            </p>
+          </div>
         </div>
 
         {/* Tech Stack */}
@@ -422,11 +485,14 @@ export default function MyTeamSubmissionPage({
             type="text"
             value={formData.techStack}
             onChange={(e) => setFormData({ ...formData, techStack: e.target.value })}
+            onBlur={() => markTouched("techStack")}
             placeholder="React, Next.js, OpenAI, PostgreSQL"
-            required
             maxLength={500}
-            className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+            className={inputClass("techStack", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm focus:ring-1 outline-none transition-all")}
           />
+          {showError("techStack") && (
+            <p className="mt-2 text-xs text-red-400">{fieldErrors.techStack}</p>
+          )}
         </div>
 
         {/* Sponsor Tech */}
@@ -599,15 +665,7 @@ export default function MyTeamSubmissionPage({
           </Link>
           <button
             type="submit"
-            disabled={
-              saving ||
-              !formData.projectName ||
-              !formData.githubLink ||
-              !formData.demoLink ||
-              formData.description.length < 10 ||
-              formData.problemStatement.length < 10 ||
-              !formData.techStack
-            }
+            disabled={saving}
             className="flex-1 px-6 py-4 bg-bfl-green text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-bfl-green/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {saving ? (

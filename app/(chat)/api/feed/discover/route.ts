@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/app/(auth)/auth";
-import { getProfileByUserAndSession, getSwipesByProfile } from "@/lib/db/queries";
+import { getProfileByUserAndSession, getSwipesByProfile, getUserIdsWithProfileInSession } from "@/lib/db/queries";
 import { searchProfilesByVector } from "@/lib/matching/vector-search";
+import { BFL_HACK_SESSION_ID } from "@/lib/constants";
 
 // GET /api/feed/discover?sessionId={id}&query={text}&searchField={field}&test=true
 // Returns profiles ordered by vector similarity
@@ -208,11 +209,18 @@ export async function GET(request: Request) {
       minSimilarity: 0.5,
     });
 
-    // Match reasons are already set in vector-search.ts with proper context
+    // Check for BFL Hack alumni status (only for non-BFL sessions)
+    let profilesWithBadges = profiles;
+    if (sessionId !== BFL_HACK_SESSION_ID && profiles.length > 0) {
+      const userIds = profiles.map((p) => p.userId);
+      const bflAlumni = await getUserIdsWithProfileInSession(userIds, BFL_HACK_SESSION_ID);
+      profilesWithBadges = profiles.map((p) => ({
+        ...p,
+        isBflAlumni: bflAlumni.has(p.userId),
+      }));
+    }
 
-    // searchProfilesByVector already returns clean ProfileSearchResult objects
-    // without embedding fields, so they're safe to serialize
-    return NextResponse.json(profiles);
+    return NextResponse.json(profilesWithBadges);
   } catch (error) {
     console.error("Failed to get discover feed:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";

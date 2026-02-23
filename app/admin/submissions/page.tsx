@@ -32,7 +32,7 @@ interface SubmissionData {
   members: TeamMember[];
 }
 
-const ADMIN_PASSWORD = "fluxhack2025";
+const ADMIN_PASSWORD = "aifestival2026";
 
 export default function AdminSubmissionsPage() {
   const [authenticated, setAuthenticated] = useState(false);

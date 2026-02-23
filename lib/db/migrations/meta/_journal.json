@@ -120,6 +120,20 @@
       "when": 1737880000000,
       "tag": "0025_add_hidden_feedback_and_recommendations",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1740300000000,
+      "tag": "0026_fix_team_members_multi_session",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1740400000000,
+      "tag": "0027_drop_global_team_number_unique",
+      "breakpoints": true
     }
   ]
 }

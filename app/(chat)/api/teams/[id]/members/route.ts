@@ -63,7 +63,7 @@ export async function POST(
     }
 
     // Check if target user is already in a team
-    const alreadyInTeam = await isUserInTeam(userId);
+    const alreadyInTeam = await isUserInTeam(userId, sessionId);
     if (alreadyInTeam) {
       return NextResponse.json(
         { error: "This user is already in a team" },

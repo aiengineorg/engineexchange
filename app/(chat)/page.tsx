@@ -1,8 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "../(auth)/auth";
-
-// Hardcoded default session ID
-const DEFAULT_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
+import { DEFAULT_SESSION_ID } from "@/lib/constants";
 
 export default async function LandingPage() {
   const session = await auth();

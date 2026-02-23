@@ -59,7 +59,7 @@ interface SubmissionWithStatus {
   existingScore: unknown;
 }
 
-const ADMIN_PASSWORD = "fluxhack2025";
+const ADMIN_PASSWORD = "aifestival2026";
 
 function JudgesPageContent() {
   const router = useRouter();

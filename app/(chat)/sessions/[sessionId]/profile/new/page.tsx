@@ -51,6 +51,30 @@ export default function NewProfilePage({
   const [participantName, setParticipantName] = useState("");
   const [participantHasTeam, setParticipantHasTeam] = useState(false);
 
+  // Validation
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
+  const markTouched = (field: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const fieldErrors = {
+    displayName: !formData.displayName.trim() ? "Display name is required" : null,
+    whatImLookingFor: !formData.whatImLookingFor.trim()
+      ? "This field is required"
+      : formData.whatImLookingFor.length < 10 ? `${10 - formData.whatImLookingFor.length} more characters needed` : null,
+    whatIOffer: !formData.whatIOffer.trim()
+      ? "This field is required"
+      : formData.whatIOffer.length < 10 ? `${10 - formData.whatIOffer.length} more characters needed` : null,
+  };
+
+  const showError = (field: keyof typeof fieldErrors) =>
+    (touched[field] || submitAttempted) && fieldErrors[field];
+
+  const inputClass = (field: keyof typeof fieldErrors, base: string) =>
+    `${base} ${showError(field) ? "border-red-500/70 focus:ring-red-500" : "border-white/15 focus:ring-bfl-green"}`;
+
   // Pre-fill display name with Discord username if available
   useEffect(() => {
     if (session?.user?.discordUsername && !formData.displayName) {
@@ -238,6 +262,11 @@ export default function NewProfilePage({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitAttempted(true);
+
+    const hasErrors = Object.values(fieldErrors).some((err) => err !== null);
+    if (hasErrors) return;
+
     setLoading(true);
     setError("");
 
@@ -360,15 +389,17 @@ export default function NewProfilePage({
               onChange={(e) =>
                 setFormData({ ...formData, displayName: e.target.value })
               }
-              required
+              onBlur={() => markTouched("displayName")}
               maxLength={50}
-              className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 font-mono text-sm tracking-widest focus:ring-1 focus:ring-bfl-green outline-none transition-all"
+              className={inputClass("displayName", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 font-mono text-sm tracking-widest focus:ring-1 outline-none transition-all")}
             />
-            {session?.user?.discordUsername && (
+            {showError("displayName") ? (
+              <p className="mt-3 text-xs text-red-400">{fieldErrors.displayName}</p>
+            ) : session?.user?.discordUsername ? (
               <p className="mt-3 text-xs text-bfl-muted font-mono">
                 Pre-filled from Discord: {session.user.discordUsername}
               </p>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -395,15 +426,18 @@ export default function NewProfilePage({
                   whatImLookingFor: e.target.value,
                 })
               }
-              required
-              minLength={10}
+              onBlur={() => markTouched("whatImLookingFor")}
               maxLength={1000}
               rows={5}
-              className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+              className={inputClass("whatImLookingFor", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 outline-none transition-all resize-none")}
             />
             <div className="flex justify-between mt-3">
-              <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
-              <p className="text-xs text-bfl-muted font-mono">
+              {showError("whatImLookingFor") ? (
+                <p className="text-xs text-red-400 font-mono">{fieldErrors.whatImLookingFor}</p>
+              ) : (
+                <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
+              )}
+              <p className={`text-xs font-mono ${formData.whatImLookingFor.length > 0 && formData.whatImLookingFor.length < 10 ? "text-red-400" : "text-bfl-muted"}`}>
                 {formData.whatImLookingFor.length}/1000
               </p>
             </div>
@@ -548,15 +582,18 @@ export default function NewProfilePage({
                 onChange={(e) =>
                   setFormData({ ...formData, whatIOffer: e.target.value })
                 }
-                required
-                minLength={10}
+                onBlur={() => markTouched("whatIOffer")}
                 maxLength={1000}
                 rows={5}
-                className="w-full px-6 py-4 bg-white/[0.06] border border-white/15 rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 focus:ring-bfl-green outline-none transition-all resize-none"
+                className={inputClass("whatIOffer", "w-full px-6 py-4 bg-white/[0.06] border rounded-sm text-white placeholder-white/30 text-sm leading-relaxed focus:ring-1 outline-none transition-all resize-none")}
               />
               <div className="flex justify-between mt-3">
-                <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
-                <p className="text-xs text-bfl-muted font-mono">
+                {showError("whatIOffer") ? (
+                  <p className="text-xs text-red-400 font-mono">{fieldErrors.whatIOffer}</p>
+                ) : (
+                  <p className="text-xs text-bfl-muted font-mono">Min 10 characters</p>
+                )}
+                <p className={`text-xs font-mono ${formData.whatIOffer.length > 0 && formData.whatIOffer.length < 10 ? "text-red-400" : "text-bfl-muted"}`}>
                   {formData.whatIOffer.length}/1000
                 </p>
               </div>
@@ -948,12 +985,7 @@ export default function NewProfilePage({
           </button>
           <button
             type="submit"
-            disabled={
-              !formData.displayName ||
-              formData.whatIOffer.length < 10 ||
-              formData.whatImLookingFor.length < 10
-            }
-            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-sm"
+            className="flex-[2] px-12 py-5 bg-white text-bfl-black font-medium text-xs uppercase tracking-[0.3em] hover:bg-bfl-offwhite transition-all rounded-sm"
           >
             Create Profile
           </button>

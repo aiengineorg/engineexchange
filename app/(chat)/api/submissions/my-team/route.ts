@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     }
 
     // Check if user is in a team
-    const team = await getTeamByUserId(session.user.id);
+    const team = await getTeamByUserId(session.user.id, sessionId);
     if (!team) {
       return NextResponse.json(
         { error: "You must be part of a team to access submissions" },

@@ -16,6 +16,7 @@ interface Profile {
   linkedinUrl?: string;
   websiteOrGithub?: string;
   hasTeam?: boolean;
+  isBflAlumni?: boolean;
 }
 
 interface CardStackProps {

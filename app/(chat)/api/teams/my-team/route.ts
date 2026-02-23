@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     }
 
     // Get user's team
-    const team = await getTeamByUserId(session.user.id);
+    const team = await getTeamByUserId(session.user.id, sessionId);
 
     if (!team) {
       return NextResponse.json({ team: null, members: [] });

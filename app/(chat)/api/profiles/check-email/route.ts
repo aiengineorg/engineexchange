@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     }
 
     const hasEmail = await hasValidContactEmail(session.user.id, sessionId);
-    const team = await getTeamByUserId(session.user.id);
+    const team = await getTeamByUserId(session.user.id, sessionId);
 
     return NextResponse.json({
       hasValidEmail: hasEmail,

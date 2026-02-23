@@ -1,7 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-
-// Hardcoded default session ID for single-event mode
-const DEFAULT_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
+import { DEFAULT_SESSION_ID } from "@/lib/constants";
 
 export const authConfig = {
   pages: {
