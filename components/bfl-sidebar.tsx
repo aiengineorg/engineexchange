@@ -61,7 +61,7 @@ export function BFLSidebar() {
             </div>
           </div>
 
-          <nav className="flex-1 p-6 space-y-2">
+          <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
             <div className="px-4 py-2 mb-4">
               <span className="font-mono text-[10px] text-white/20 uppercase tracking-[0.5em]">Menu</span>
             </div>
