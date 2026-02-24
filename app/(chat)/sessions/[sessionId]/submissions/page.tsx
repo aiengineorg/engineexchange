@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FileText, Loader2, Github, ExternalLink, Users, Crown, Plus } from "lucide-react";
+import { FileText, Loader2, Github, ExternalLink, Users, Crown, Plus, Lock } from "lucide-react";
 import { EmailWarningBanner } from "@/components/email-warning-banner";
 
 interface TeamMember {
@@ -48,6 +48,8 @@ export default function SubmissionsPage({
   const { sessionId } = use(params);
   const router = useRouter();
 
+  const isUnlocked = process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== "false";
+
   const [loading, setLoading] = useState(true);
   const [hasValidEmail, setHasValidEmail] = useState(false);
   const [hasTeam, setHasTeam] = useState(false);
@@ -56,7 +58,9 @@ export default function SubmissionsPage({
   const [error, setError] = useState("");
 
   useEffect(() => {
-    loadData();
+    if (isUnlocked) {
+      loadData();
+    }
   }, [sessionId]);
 
   const loadData = async () => {
@@ -90,6 +94,39 @@ export default function SubmissionsPage({
       setLoading(false);
     }
   };
+
+  if (!isUnlocked) {
+    return (
+      <div className="px-6 py-12 md:px-12 max-w-4xl mx-auto">
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-px w-8 bg-bfl-green" />
+            <span className="font-mono text-[10px] text-bfl-green uppercase tracking-[0.4em] font-bold">
+              Hackathon
+            </span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-normal text-white tracking-tighter uppercase mb-4">
+            Submissions
+          </h1>
+        </div>
+
+        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-12 md:p-16 text-center">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center">
+            <Lock className="w-10 h-10 text-bfl-muted" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-normal text-white tracking-tighter uppercase mb-4">
+            Coming Soon
+          </h2>
+          <p className="text-bfl-muted font-medium max-w-md mx-auto mb-2">
+            Project submissions will open shortly. Check back soon to submit your hackathon project.
+          </p>
+          <p className="text-xs text-bfl-muted/60 font-mono">
+            Stay tuned for updates
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

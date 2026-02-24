@@ -372,7 +372,7 @@ export default function NewProfilePage({
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-12">
         {/* Display Name Section */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               01 / Identity
@@ -404,7 +404,7 @@ export default function NewProfilePage({
         </div>
 
         {/* What I'm Looking For Section */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               02 / What I'm Looking For
@@ -445,7 +445,7 @@ export default function NewProfilePage({
         </div>
 
         {/* What I Offer Section - Combined with Luma Verification */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               03 / What I Offer
@@ -602,7 +602,7 @@ export default function NewProfilePage({
         </div>
 
         {/* Team & Links Section - After Luma verification populates fields */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               04 / Team & Links
@@ -710,7 +710,7 @@ export default function NewProfilePage({
         </div>
 
         {/* Profile Image Section */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8 md:p-10">
+        <div className="bg-black/60 backdrop-blur-sm border border-white/10 p-8 md:p-10">
           <div className="relative pt-8 border-t border-white/10">
             <span className="absolute top-0 left-0 -translate-y-full font-mono text-[9px] text-bfl-muted uppercase tracking-[0.5em] py-2">
               05 / Profile Image

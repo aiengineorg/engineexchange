@@ -295,7 +295,7 @@ export default function EditProfilePage({
         <p className="text-bfl-muted mt-4 font-medium">Update your profile. AI matching will be recalculated.</p>
       </div>
 
-      <div className="bg-white/[0.15] subtle-border p-10">
+      <div className="bg-black/60 backdrop-blur-sm subtle-border p-10">
         <form onSubmit={handleSubmit} className="space-y-12">
           {/* Profile Image Section */}
           <div className="relative pt-8 border-t border-white/10">
