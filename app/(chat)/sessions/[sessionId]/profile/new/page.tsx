@@ -139,6 +139,7 @@ export default function NewProfilePage({
         ...prev,
         whatIOffer: data.participant?.profileSummary || prev.whatIOffer,
         displayName: data.participant?.name && !prev.displayName ? data.participant.name : prev.displayName,
+        contactEmail: data.participant?.email || prev.contactEmail,
         linkedinUrl: data.participant?.linkedin || prev.linkedinUrl,
         websiteOrGithub: data.participant?.websiteOrGithub || prev.websiteOrGithub,
         hasTeam: data.participant?.hasTeam || false,
