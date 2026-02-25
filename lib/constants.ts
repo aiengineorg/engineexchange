@@ -23,7 +23,7 @@ export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
 export const TEAMS_OPEN =
   process.env.TEAMS_OPEN !== undefined
     ? process.env.TEAMS_OPEN === "true"
-    : true; // default: open
+    : false; // default: closed (must explicitly opt-in)
 
 // Submissions configuration — toggle via env vars or change defaults here
 export const SUBMISSIONS_OPEN =
