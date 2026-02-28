@@ -712,6 +712,49 @@ export async function getHackathonParticipantByEmail(
 }
 
 /**
+ * Create a new hackathon participant (used by Luma webhook)
+ * Returns the created participant, or null if one already exists with that email
+ */
+export async function createHackathonParticipant(data: {
+  name: string | null;
+  email: string;
+  linkedin?: string | null;
+  websiteOrGithub?: string | null;
+  lumaId: string;
+  profileSummary?: string | null;
+  hasTeam?: boolean;
+}): Promise<HackathonParticipant | null> {
+  try {
+    const emailLower = data.email.toLowerCase();
+
+    // Check if participant already exists
+    const existing = await getHackathonParticipantByEmail(emailLower);
+    if (existing) {
+      console.log(`Participant already exists: ${emailLower}`);
+      return null;
+    }
+
+    const [participant] = await db
+      .insert(hackathonParticipants)
+      .values({
+        name: data.name,
+        email: emailLower,
+        linkedin: data.linkedin || null,
+        websiteOrGithub: data.websiteOrGithub || null,
+        lumaId: data.lumaId,
+        profileSummary: data.profileSummary || null,
+        hasTeam: data.hasTeam ?? false,
+      })
+      .returning();
+
+    return participant;
+  } catch (error) {
+    console.error("Failed to create hackathon participant:", error);
+    throw error;
+  }
+}
+
+/**
  * Save email verification token for a user
  */
 export async function saveEmailVerificationToken(

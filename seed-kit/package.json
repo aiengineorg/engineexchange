@@ -1,0 +1,14 @@
+{
+  "name": "luma-seed-kit",
+  "private": true,
+  "scripts": {
+    "seed": "npx tsx seed-from-csv.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.3"
+  }
+}
