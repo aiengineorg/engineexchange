@@ -25,12 +25,12 @@ export const TEAMS_OPEN =
     ? process.env.NEXT_PUBLIC_TEAMS_OPEN === "true"
     : false; // default: closed (must explicitly opt-in)
 
-// Submissions configuration — toggle via env vars or change defaults here
+// Submissions configuration — toggle via env vars (NEXT_PUBLIC_ prefix for client-side access)
 export const SUBMISSIONS_OPEN =
-  process.env.SUBMISSIONS_OPEN !== undefined
-    ? process.env.SUBMISSIONS_OPEN === "true"
+  process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== undefined
+    ? process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN === "true"
     : true; // default: open
 
-export const SUBMISSION_DEADLINE = process.env.SUBMISSION_DEADLINE
-  ? new Date(process.env.SUBMISSION_DEADLINE)
+export const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
+  ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)
   : null; // default: no deadline
