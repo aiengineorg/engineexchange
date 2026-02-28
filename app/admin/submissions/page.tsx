@@ -297,7 +297,7 @@ export default function AdminSubmissionsPage() {
             Sponsor Tech Usage
           </h3>
           <div className="flex flex-wrap gap-4">
-            {["Runware", "NVIDIA", "Anthropic", "Flux Models"].map((tech) => {
+            {["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific"].map((tech) => {
               const count = submissions.filter((s) => s.sponsorTech?.includes(tech)).length;
               return (
                 <div key={tech} className="flex items-center gap-3 px-4 py-2 bg-white/[0.04] border border-white/10">

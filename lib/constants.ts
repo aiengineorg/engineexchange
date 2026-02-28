@@ -23,7 +23,7 @@ export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
 export const TEAMS_OPEN =
   process.env.NEXT_PUBLIC_TEAMS_OPEN !== undefined
     ? process.env.NEXT_PUBLIC_TEAMS_OPEN === "true"
-    : false; // default: closed (must explicitly opt-in)
+    : true; // default: open
 
 // Submissions configuration — toggle via env vars (NEXT_PUBLIC_ prefix for client-side access)
 export const SUBMISSIONS_OPEN =
