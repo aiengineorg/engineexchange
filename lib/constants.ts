@@ -19,11 +19,8 @@ export const DEFAULT_SESSION_ID =
 // Previous session ID for BFL Hack alumni badge detection
 export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
 
-// Team creation — toggle via env var (NEXT_PUBLIC_ prefix for client-side access)
-export const TEAMS_OPEN =
-  process.env.NEXT_PUBLIC_TEAMS_OPEN !== undefined
-    ? process.env.NEXT_PUBLIC_TEAMS_OPEN === "true"
-    : true; // default: open
+// Team creation — always enabled
+export const TEAMS_OPEN = true;
 
 // Submissions configuration — toggle via env vars (NEXT_PUBLIC_ prefix for client-side access)
 export const SUBMISSIONS_OPEN =
