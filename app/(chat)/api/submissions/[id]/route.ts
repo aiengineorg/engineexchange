@@ -12,11 +12,10 @@ const UpdateSubmissionSchema = z.object({
   projectName: z.string().min(1).max(100).optional(),
   githubLink: z.string().url().optional(),
   description: z.string().min(10).max(2000).optional(),
-  demoLink: z.string().url().optional(),
+  demoLink: z.string().url(),
   techStack: z.string().min(1).max(500).optional(),
   problemStatement: z.string().min(10).max(1000).optional(),
-  fileUploads: z.array(z.string().url()).max(5).optional(),
-  sponsorTech: z.array(z.enum(["Runware", "NVIDIA", "Anthropic", "Flux Models"])).optional(),
+  sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific"])).optional(),
   // Hidden feedback fields (visible only to judges/admins)
   sponsorFeatureFeedback: z.string().max(1000).optional(),
   mediaPermission: z.string().optional(),
