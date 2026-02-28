@@ -26,33 +26,28 @@ export async function GET() {
         let totalDemo = 0;
         let totalCreativity = 0;
         let totalPitchingQuality = 0;
-        let totalBonusFlux = 0;
         let totalScore = 0;
+        let brainRotCount = 0;
 
         scores.forEach((score) => {
           const fp = parseInt(score.futurePotential) || 0;
           const demo = parseInt(score.demo) || 0;
           const creativity = parseInt(score.creativity) || 0;
           const pitching = parseInt(score.pitchingQuality) || 0;
-          const bonus = parseInt(score.bonusFlux || "0") || 0;
+          const brainRotPenalty = score.brainRot === "true" ? -1 : 0;
 
           totalFuturePotential += fp;
           totalDemo += demo;
           totalCreativity += creativity;
           totalPitchingQuality += pitching;
-          totalBonusFlux += bonus;
 
-          // Each category is 25%, so total base is out of 40 (4 categories * 10)
-          // Normalize to percentage and add bonus
+          if (score.brainRot === "true") brainRotCount++;
+
           const baseScore = fp + demo + creativity + pitching;
-          totalScore += baseScore + bonus;
+          totalScore += baseScore + brainRotPenalty;
         });
 
         const numScores = scores.length || 1;
-
-        // Count recommendations
-        const nvidiaRecommendations = scores.filter(s => s.recommendNvidia === "true").length;
-        const runwareRecommendations = scores.filter(s => s.recommendRunware === "true").length;
 
         return {
           submission: {
@@ -62,7 +57,6 @@ export async function GET() {
             demoLink: submission.demoLink,
             techStack: submission.techStack,
             sponsorTech: submission.sponsorTech || [],
-            // Hidden feedback fields
             sponsorFeatureFeedback: submission.sponsorFeatureFeedback,
             mediaPermission: submission.mediaPermission,
             eventFeedback: submission.eventFeedback,
@@ -73,37 +67,36 @@ export async function GET() {
             teamNumber: team.teamNumber,
           },
           members,
-          scores: scores.map((s) => ({
-            id: s.id,
-            judgeName: s.judgeName,
-            judgeGroup: s.judgeGroup,
-            futurePotential: s.futurePotential,
-            demo: s.demo,
-            creativity: s.creativity,
-            pitchingQuality: s.pitchingQuality,
-            bonusFlux: s.bonusFlux,
-            additionalComments: s.additionalComments,
-            total:
-              (parseInt(s.futurePotential) || 0) +
-              (parseInt(s.demo) || 0) +
-              (parseInt(s.creativity) || 0) +
-              (parseInt(s.pitchingQuality) || 0) +
-              (parseInt(s.bonusFlux || "0") || 0),
-            recommendNvidia: s.recommendNvidia,
-            recommendRunware: s.recommendRunware,
-          })),
+          scores: scores.map((s) => {
+            const brainRotPenalty = s.brainRot === "true" ? -1 : 0;
+            return {
+              id: s.id,
+              judgeName: s.judgeName,
+              judgeGroup: s.judgeGroup,
+              futurePotential: s.futurePotential,
+              demo: s.demo,
+              creativity: s.creativity,
+              pitchingQuality: s.pitchingQuality,
+              brainRot: s.brainRot,
+              additionalComments: s.additionalComments,
+              total:
+                (parseInt(s.futurePotential) || 0) +
+                (parseInt(s.demo) || 0) +
+                (parseInt(s.creativity) || 0) +
+                (parseInt(s.pitchingQuality) || 0) +
+                brainRotPenalty,
+            };
+          }),
           averages: {
             futurePotential: (totalFuturePotential / numScores).toFixed(1),
             demo: (totalDemo / numScores).toFixed(1),
             creativity: (totalCreativity / numScores).toFixed(1),
             pitchingQuality: (totalPitchingQuality / numScores).toFixed(1),
-            bonusFlux: (totalBonusFlux / numScores).toFixed(1),
             total: (totalScore / numScores).toFixed(1),
           },
           totalScore: totalScore,
           numJudges: scores.length,
-          nvidiaRecommendations,
-          runwareRecommendations,
+          brainRotCount,
         };
       })
     );

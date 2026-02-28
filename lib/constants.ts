@@ -22,11 +22,8 @@ export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
 // Team creation — always enabled
 export const TEAMS_OPEN = true;
 
-// Submissions configuration — toggle via env vars (NEXT_PUBLIC_ prefix for client-side access)
-export const SUBMISSIONS_OPEN =
-  process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== undefined
-    ? process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN === "true"
-    : true; // default: open
+// Submissions — always enabled
+export const SUBMISSIONS_OPEN = true;
 
 export const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
   ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)

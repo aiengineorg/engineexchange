@@ -106,9 +106,33 @@ export const judges = pgTable(
 
 export type Judge = InferSelectModel<typeof judges>;
 
-// Judging scores table
+// Legacy judging scores table (from previous hackathon - preserved as judging_scores_v1)
+export const judgingScoresV1 = pgTable(
+  "judging_scores_v1",
+  {
+    id: uuid("id").primaryKey().notNull().defaultRandom(),
+    judgeId: uuid("judge_id")
+      .notNull()
+      .references(() => judges.id, { onDelete: "cascade" }),
+    submissionId: uuid("submission_id")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+    futurePotential: text("future_potential").notNull(),
+    demo: text("demo").notNull(),
+    creativity: text("creativity").notNull(),
+    pitchingQuality: text("pitching_quality").notNull(),
+    bonusFlux: text("bonus_flux").default("0"),
+    additionalComments: text("additional_comments"),
+    recommendNvidia: text("recommend_nvidia").default("false"),
+    recommendRunware: text("recommend_runware").default("false"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  }
+);
+
+// Current judging scores table (v2)
 export const judgingScores = pgTable(
-  "judging_scores",
+  "judging_scores_v2",
   {
     id: uuid("id").primaryKey().notNull().defaultRandom(),
     judgeId: uuid("judge_id")
@@ -121,22 +145,19 @@ export const judgingScores = pgTable(
     demo: text("demo").notNull(), // Score out of 10
     creativity: text("creativity").notNull(), // Score out of 10
     pitchingQuality: text("pitching_quality").notNull(), // Score out of 10
-    bonusFlux: text("bonus_flux").default("0"), // Bonus score for using BFL Flux.2
+    brainRot: text("brain_rot").default("false"), // -1 penalty checkbox
     additionalComments: text("additional_comments"),
-    // Sponsor challenge recommendations
-    recommendNvidia: text("recommend_nvidia").default("false"), // "Would you recommend for NVIDIA agentic challenge?"
-    recommendRunware: text("recommend_runware").default("false"), // "Would you recommend for Runware platform challenge?"
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
     // One score per judge per submission
-    uniqueJudgeSubmission: uniqueIndex("unique_judge_submission").on(
+    uniqueJudgeSubmissionV2: uniqueIndex("unique_judge_submission_v2").on(
       table.judgeId,
       table.submissionId
     ),
-    judgeIdx: index("judging_scores_judge_idx").on(table.judgeId),
-    submissionIdx: index("judging_scores_submission_idx").on(table.submissionId),
+    judgeIdxV2: index("judging_scores_v2_judge_idx").on(table.judgeId),
+    submissionIdxV2: index("judging_scores_v2_submission_idx").on(table.submissionId),
   })
 );
 

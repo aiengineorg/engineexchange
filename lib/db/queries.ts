@@ -1649,10 +1649,8 @@ export async function upsertJudgingScore(data: {
   demo: string;
   creativity: string;
   pitchingQuality: string;
-  bonusFlux?: string;
+  brainRot?: string;
   additionalComments?: string;
-  recommendNvidia?: string;
-  recommendRunware?: string;
 }): Promise<JudgingScore> {
   try {
     // Check if score already exists
@@ -1684,9 +1682,7 @@ export async function upsertJudgingScore(data: {
         .insert(judgingScores)
         .values({
           ...data,
-          bonusFlux: data.bonusFlux || "0",
-          recommendNvidia: data.recommendNvidia || "false",
-          recommendRunware: data.recommendRunware || "false",
+          brainRot: data.brainRot || "false",
         })
         .returning();
       return score;

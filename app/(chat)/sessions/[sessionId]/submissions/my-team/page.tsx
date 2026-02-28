@@ -24,10 +24,8 @@ interface Submission {
 
 const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific"] as const;
 
-const SUBMISSIONS_OPEN = process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== "false";
-const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
-  ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)
-  : null;
+const SUBMISSIONS_OPEN = true;
+const SUBMISSION_DEADLINE: Date | null = null;
 
 interface Team {
   id: string;
