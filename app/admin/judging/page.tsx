@@ -37,11 +37,9 @@ interface Score {
   demo: string;
   creativity: string;
   pitchingQuality: string;
-  bonusFlux: string | null;
+  brainRot: string | null;
   additionalComments: string | null;
   total: number;
-  recommendNvidia: string | null;
-  recommendRunware: string | null;
 }
 
 interface SubmissionWithScores {
@@ -69,14 +67,11 @@ interface SubmissionWithScores {
     demo: string;
     creativity: string;
     pitchingQuality: string;
-    bonusFlux: string;
     total: string;
   };
   totalScore: number;
   numJudges: number;
-  // Recommendation counts
-  nvidiaRecommendations: number;
-  runwareRecommendations: number;
+  brainRotCount: number;
 }
 
 const ADMIN_PASSWORD = "aifestival2026";
@@ -91,8 +86,7 @@ export default function AdminJudgingPage() {
   const [expandedSubmission, setExpandedSubmission] = useState<string | null>(null);
   const [error, setError] = useState("");
   // Filters
-  const [filterNvidia, setFilterNvidia] = useState(false);
-  const [filterRunware, setFilterRunware] = useState(false);
+  const [filterBrainRot, setFilterBrainRot] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,7 +130,7 @@ export default function AdminJudgingPage() {
       "Avg Demo",
       "Avg Creativity",
       "Avg Pitching",
-      "Avg Bonus Flux",
+      "Brain Rot Count",
       "GitHub Link",
       "Demo Link",
       "Sponsor Tech",
@@ -154,7 +148,7 @@ export default function AdminJudgingPage() {
       sub.averages.demo,
       sub.averages.creativity,
       sub.averages.pitchingQuality,
-      sub.averages.bonusFlux,
+      String(sub.brainRotCount),
       sub.submission.githubLink,
       sub.submission.demoLink || "",
       sub.submission.sponsorTech.join(", "),
@@ -340,32 +334,21 @@ export default function AdminJudgingPage() {
           </div>
         </div>
 
-        {/* Sponsor Challenge Filters */}
-        <div className="bg-[#00D4A8]/10 border border-[#00D4A8]/30 p-6 mb-8">
-          <h3 className="text-sm text-[#00D4A8] uppercase tracking-wider mb-4">
-            Filter by Sponsor Challenge Recommendations
+        {/* Filters */}
+        <div className="bg-white/[0.04] border border-white/10 p-6 mb-8">
+          <h3 className="text-sm text-white/50 uppercase tracking-wider mb-4">
+            Filters
           </h3>
           <div className="flex flex-wrap gap-6">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
-                checked={filterNvidia}
-                onChange={(e) => setFilterNvidia(e.target.checked)}
-                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
+                checked={filterBrainRot}
+                onChange={(e) => setFilterBrainRot(e.target.checked)}
+                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-red-500 focus:ring-red-500 focus:ring-offset-0"
               />
               <span className="text-sm text-white/80">
-                NVIDIA Agentic Challenge ({submissions.filter(s => s.nvidiaRecommendations > 0).length} recommended)
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filterRunware}
-                onChange={(e) => setFilterRunware(e.target.checked)}
-                className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
-              />
-              <span className="text-sm text-white/80">
-                Runware Platform Challenge ({submissions.filter(s => s.runwareRecommendations > 0).length} recommended)
+                Show only Brain Rot flagged ({submissions.filter(s => s.brainRotCount > 0).length} flagged)
               </span>
             </label>
           </div>
@@ -396,8 +379,7 @@ export default function AdminJudgingPage() {
             {(() => {
               // Apply filters
               const filteredSubmissions = submissions.filter(sub => {
-                if (filterNvidia && sub.nvidiaRecommendations === 0) return false;
-                if (filterRunware && sub.runwareRecommendations === 0) return false;
+                if (filterBrainRot && sub.brainRotCount === 0) return false;
                 return true;
               });
 
@@ -454,14 +436,9 @@ export default function AdminJudgingPage() {
                               <span className="text-white font-medium">
                                 {sub.submission.projectName}
                               </span>
-                              {sub.nvidiaRecommendations > 0 && (
-                                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs rounded">
-                                  NVIDIA ({sub.nvidiaRecommendations})
-                                </span>
-                              )}
-                              {sub.runwareRecommendations > 0 && (
-                                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
-                                  Runware ({sub.runwareRecommendations})
+                              {sub.brainRotCount > 0 && (
+                                <span className="px-2 py-0.5 bg-red-500/20 text-red-400 text-xs rounded">
+                                  Brain Rot ({sub.brainRotCount})
                                 </span>
                               )}
                             </div>
@@ -513,7 +490,7 @@ export default function AdminJudgingPage() {
                           </div>
 
                           {/* Average Scores */}
-                          <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-6">
+                          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
                             <div className="bg-white/[0.04] p-3">
                               <p className="text-xs text-white/50 mb-1">Future Potential</p>
                               <p className="text-xl font-bold">{sub.averages.futurePotential}</p>
@@ -531,16 +508,8 @@ export default function AdminJudgingPage() {
                               <p className="text-xl font-bold">{sub.averages.pitchingQuality}</p>
                             </div>
                             <div className="bg-white/[0.04] p-3">
-                              <p className="text-xs text-white/50 mb-1">Bonus Flux</p>
-                              <p className="text-xl font-bold">{sub.averages.bonusFlux}</p>
-                            </div>
-                            <div className="bg-white/[0.04] p-3">
-                              <p className="text-xs text-white/50 mb-1">NVIDIA Rec.</p>
-                              <p className={`text-xl font-bold ${sub.nvidiaRecommendations > 0 ? "text-green-400" : "text-white/30"}`}>{sub.nvidiaRecommendations}</p>
-                            </div>
-                            <div className="bg-white/[0.04] p-3">
-                              <p className="text-xs text-white/50 mb-1">Runware Rec.</p>
-                              <p className={`text-xl font-bold ${sub.runwareRecommendations > 0 ? "text-blue-400" : "text-white/30"}`}>{sub.runwareRecommendations}</p>
+                              <p className="text-xs text-white/50 mb-1">Brain Rot</p>
+                              <p className={`text-xl font-bold ${sub.brainRotCount > 0 ? "text-red-400" : "text-white/30"}`}>{sub.brainRotCount}</p>
                             </div>
                             <div className="bg-[#00D4A8]/20 p-3 border border-[#00D4A8]/30">
                               <p className="text-xs text-[#00D4A8] mb-1">Total Avg</p>
@@ -570,10 +539,10 @@ export default function AdminJudgingPage() {
                                         )}
                                       </span>
                                       <span className="text-[#00D4A8] font-bold">
-                                        {score.total} / 50
+                                        {score.total} / 40
                                       </span>
                                     </div>
-                                    <div className="grid grid-cols-7 gap-2 text-sm">
+                                    <div className="grid grid-cols-5 gap-2 text-sm">
                                       <div>
                                         <span className="text-white/40">FP: </span>
                                         <span>{score.futurePotential}</span>
@@ -591,16 +560,8 @@ export default function AdminJudgingPage() {
                                         <span>{score.pitchingQuality}</span>
                                       </div>
                                       <div>
-                                        <span className="text-white/40">Bonus: </span>
-                                        <span>{score.bonusFlux || "0"}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-white/40">NV: </span>
-                                        <span className={score.recommendNvidia === "true" ? "text-green-400" : ""}>{score.recommendNvidia === "true" ? "Y" : "-"}</span>
-                                      </div>
-                                      <div>
-                                        <span className="text-white/40">RW: </span>
-                                        <span className={score.recommendRunware === "true" ? "text-blue-400" : ""}>{score.recommendRunware === "true" ? "Y" : "-"}</span>
+                                        <span className="text-white/40">BR: </span>
+                                        <span className={score.brainRot === "true" ? "text-red-400" : ""}>{score.brainRot === "true" ? "-1" : "-"}</span>
                                       </div>
                                     </div>
                                     {score.additionalComments && (

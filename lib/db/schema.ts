@@ -57,5 +57,5 @@ export type {
 } from "./schema/matching";
 
 // Re-export teams tables
-export { teams, teamMembers, submissions, judges, judgingScores } from "./schema/teams";
+export { teams, teamMembers, submissions, judges, judgingScores, judgingScoresV1 } from "./schema/teams";
 export type { Team, TeamMember, Submission, Judge, JudgingScore } from "./schema/teams";
