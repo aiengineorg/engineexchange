@@ -22,7 +22,7 @@ interface Submission {
   submittedAt: string;
 }
 
-const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific"] as const;
+const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"] as const;
 
 const SUBMISSIONS_OPEN = true;
 const SUBMISSION_DEADLINE: Date | null = null;

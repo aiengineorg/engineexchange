@@ -15,7 +15,7 @@ const UpdateSubmissionSchema = z.object({
   demoLink: z.string().url(),
   techStack: z.string().min(1).max(500).optional(),
   problemStatement: z.string().min(10).max(1000).optional(),
-  sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific"])).optional(),
+  sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"])).optional(),
   // Hidden feedback fields (visible only to judges/admins)
   sponsorFeatureFeedback: z.string().max(1000).optional(),
   mediaPermission: z.string().optional(),
