@@ -4,12 +4,12 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 // Default background for unmatched routes
-const defaultBackground = "/backgrounds/home.jpg";
+const defaultBackground = "/backgrounds/home.avif";
 
 // Get background image based on the last segment of the pathname
 function getBackgroundForPath(pathname: string): string {
   // Exact matches for specific routes
-  if (pathname === "/") return "/backgrounds/home.jpg";
+  if (pathname === "/") return "/backgrounds/home.avif";
   if (pathname === "/login") return "/backgrounds/login.jpg";
   if (pathname === "/register") return "/backgrounds/register.jpg";
   if (pathname === "/sessions/new") return "/backgrounds/sessions-new.jpg";
@@ -54,7 +54,7 @@ export function BackgroundProvider({ children }: { children: React.ReactNode }) 
       <div
         className="fixed inset-0 z-0 transition-opacity duration-1000"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(22, 40, 34, 0.4), rgba(22, 40, 34, 0.95)), url('${backgroundImage}')`,
+          backgroundImage: `linear-gradient(to bottom, rgba(10, 22, 40, 0.4), rgba(10, 22, 40, 0.95)), url('${backgroundImage}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

@@ -16,11 +16,8 @@ const ScoreSchema = z.object({
   demo: z.string().regex(/^([0-9]|10)$/, "Must be 0-10"),
   creativity: z.string().regex(/^([0-9]|10)$/, "Must be 0-10"),
   pitchingQuality: z.string().regex(/^([0-9]|10)$/, "Must be 0-10"),
-  bonusFlux: z.string().regex(/^([0-9]|10)$/, "Must be 0-10").optional(),
+  brainRot: z.string().optional().default("false"),
   additionalComments: z.string().max(2000).optional(),
-  // Sponsor challenge recommendations
-  recommendNvidia: z.string().optional().default("false"),
-  recommendRunware: z.string().optional().default("false"),
 });
 
 const DeleteScoreSchema = z.object({

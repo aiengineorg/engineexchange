@@ -46,10 +46,8 @@ interface ExistingScore {
   demo: string;
   creativity: string;
   pitchingQuality: string;
-  bonusFlux: string | null;
+  brainRot: string | null;
   additionalComments: string | null;
-  recommendNvidia: string | null;
-  recommendRunware: string | null;
 }
 
 interface SubmissionData {
@@ -65,10 +63,8 @@ interface ScoreFormData {
   demo: string;
   creativity: string;
   pitchingQuality: string;
-  bonusFlux: string;
+  brainRot: string;
   additionalComments: string;
-  recommendNvidia: string;
-  recommendRunware: string;
 }
 
 const SCORE_OPTIONS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -95,10 +91,8 @@ function ScoreSubmissionPageContent({
     demo: "",
     creativity: "",
     pitchingQuality: "",
-    bonusFlux: "0",
+    brainRot: "false",
     additionalComments: "",
-    recommendNvidia: "false",
-    recommendRunware: "false",
   });
 
   useEffect(() => {
@@ -126,10 +120,8 @@ function ScoreSubmissionPageContent({
             demo: found.existingScore.demo,
             creativity: found.existingScore.creativity,
             pitchingQuality: found.existingScore.pitchingQuality,
-            bonusFlux: found.existingScore.bonusFlux || "0",
+            brainRot: found.existingScore.brainRot || "false",
             additionalComments: found.existingScore.additionalComments || "",
-            recommendNvidia: found.existingScore.recommendNvidia || "false",
-            recommendRunware: found.existingScore.recommendRunware || "false",
           });
         }
       } else {
@@ -212,8 +204,8 @@ function ScoreSubmissionPageContent({
     const demo = parseInt(scoreForm.demo) || 0;
     const creativity = parseInt(scoreForm.creativity) || 0;
     const pitching = parseInt(scoreForm.pitchingQuality) || 0;
-    const bonus = parseInt(scoreForm.bonusFlux) || 0;
-    return fp + demo + creativity + pitching + bonus;
+    const brainRotPenalty = scoreForm.brainRot === "true" ? -1 : 0;
+    return fp + demo + creativity + pitching + brainRotPenalty;
   };
 
   if (loading) {
@@ -514,23 +506,24 @@ function ScoreSubmissionPageContent({
                   </select>
                 </div>
 
-                {/* Bonus Flux */}
-                <div>
-                  <label className="block text-sm text-white/70 mb-2">
-                    <span className="text-[#00D4A8]">[BONUS]</span> BFL Flux.2 [Klein] Usage
-                    <span className="block text-xs text-white/40 mt-1">
-                      Creating value using BFL Flux.2 [Klein]
+                {/* Brain Rot Penalty */}
+                <div className="bg-red-500/10 border border-red-500/30 p-4">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={scoreForm.brainRot === "true"}
+                      onChange={(e) =>
+                        setScoreForm({ ...scoreForm, brainRot: e.target.checked ? "true" : "false" })
+                      }
+                      className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-red-500 focus:ring-red-500 focus:ring-offset-0"
+                    />
+                    <span className="text-sm text-white/80">
+                      <strong className="text-red-400">Brain Rot (-1)</strong>
+                      <span className="block text-xs text-white/40 mt-0.5">
+                        Check this if the project is brain rot
+                      </span>
                     </span>
                   </label>
-                  <select
-                    value={scoreForm.bonusFlux}
-                    onChange={(e) => setScoreForm({ ...scoreForm, bonusFlux: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none"
-                  >
-                    {SCORE_OPTIONS.map((n) => (
-                      <option key={n} value={n}>{n}</option>
-                    ))}
-                  </select>
                 </div>
 
                 {/* Additional Comments */}
@@ -548,47 +541,17 @@ function ScoreSubmissionPageContent({
                   />
                 </div>
 
-                {/* Sponsor Challenge Recommendations */}
-                <div className="bg-[#00D4A8]/10 border border-[#00D4A8]/30 p-4 space-y-3">
-                  <h4 className="text-sm font-medium text-[#00D4A8]">Sponsor Challenge Recommendations</h4>
-
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={scoreForm.recommendNvidia === "true"}
-                      onChange={(e) =>
-                        setScoreForm({ ...scoreForm, recommendNvidia: e.target.checked ? "true" : "false" })
-                      }
-                      className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
-                    />
-                    <span className="text-sm text-white/80">
-                      Would you recommend them for the <strong>NVIDIA agentic challenge</strong>?
-                    </span>
-                  </label>
-
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={scoreForm.recommendRunware === "true"}
-                      onChange={(e) =>
-                        setScoreForm({ ...scoreForm, recommendRunware: e.target.checked ? "true" : "false" })
-                      }
-                      className="w-4 h-4 rounded border-white/30 bg-white/[0.06] text-[#00D4A8] focus:ring-[#00D4A8] focus:ring-offset-0"
-                    />
-                    <span className="text-sm text-white/80">
-                      Would you recommend them for the <strong>Runware platform challenge</strong>?
-                    </span>
-                  </label>
-                </div>
-
                 {/* Total Score */}
                 <div className="bg-[#00D4A8]/10 border border-[#00D4A8]/30 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-white/70">Total Score</span>
                     <span className="text-2xl font-bold text-[#00D4A8]">
-                      {calculateTotal()} / 50
+                      {calculateTotal()} / 40
                     </span>
                   </div>
+                  {scoreForm.brainRot === "true" && (
+                    <p className="text-xs text-red-400 mt-1">Includes -1 brain rot penalty</p>
+                  )}
                 </div>
 
                 {/* Submit */}

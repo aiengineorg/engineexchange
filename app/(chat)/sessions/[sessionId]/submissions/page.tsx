@@ -48,7 +48,7 @@ export default function SubmissionsPage({
   const { sessionId } = use(params);
   const router = useRouter();
 
-  const isUnlocked = process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== "false";
+  const isUnlocked = true;
 
   const [loading, setLoading] = useState(true);
   const [hasValidEmail, setHasValidEmail] = useState(false);

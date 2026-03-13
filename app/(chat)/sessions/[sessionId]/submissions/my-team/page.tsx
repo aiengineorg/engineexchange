@@ -1,9 +1,9 @@
 "use client";
 
-import { use, useEffect, useState, useRef } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FileText, Loader2, Upload, X, Github, ExternalLink, Save, ArrowLeft, Lock } from "lucide-react";
+import { FileText, Loader2, Github, ExternalLink, Save, ArrowLeft, Lock } from "lucide-react";
 import { EmailWarningBanner } from "@/components/email-warning-banner";
 
 interface Submission {
@@ -12,10 +12,9 @@ interface Submission {
   projectName: string;
   githubLink: string;
   description: string;
-  demoLink?: string;
+  demoLink: string;
   techStack: string;
   problemStatement: string;
-  fileUploads: string[];
   sponsorTech: string[];
   sponsorFeatureFeedback?: string;
   mediaPermission?: string;
@@ -23,12 +22,10 @@ interface Submission {
   submittedAt: string;
 }
 
-const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA", "Anthropic", "Flux Models"] as const;
+const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"] as const;
 
-const SUBMISSIONS_OPEN = process.env.NEXT_PUBLIC_SUBMISSIONS_OPEN !== "false";
-const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
-  ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)
-  : null;
+const SUBMISSIONS_OPEN = true;
+const SUBMISSION_DEADLINE: Date | null = null;
 
 interface Team {
   id: string;
@@ -43,7 +40,6 @@ export default function MyTeamSubmissionPage({
 }) {
   const { sessionId } = use(params);
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -81,7 +77,7 @@ export default function MyTeamSubmissionPage({
       ? "GitHub link is required"
       : !/^https?:\/\/.+/.test(formData.githubLink) ? "Must be a valid URL" : null,
     demoLink: !formData.demoLink.trim()
-      ? "Demo link is required"
+      ? "Demo link (Youtube/Loom/GDrive link) is required"
       : !/^https?:\/\/.+/.test(formData.demoLink) ? "Must be a valid URL" : null,
     description: !formData.description.trim()
       ? "Description is required"
@@ -102,8 +98,6 @@ export default function MyTeamSubmissionPage({
   const isDeadlinePassed = !SUBMISSIONS_OPEN || (SUBMISSION_DEADLINE ? new Date() > SUBMISSION_DEADLINE : false);
   const canCreateNew = !isDeadlinePassed;
 
-  const [fileUploads, setFileUploads] = useState<string[]>([]);
-  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -148,7 +142,6 @@ export default function MyTeamSubmissionPage({
           mediaPermission: subData.submission.mediaPermission || "false",
           eventFeedback: subData.submission.eventFeedback || "",
         });
-        setFileUploads(subData.submission.fileUploads || []);
       }
     } catch (err) {
       console.error("Failed to load submission:", err);
@@ -158,46 +151,6 @@ export default function MyTeamSubmissionPage({
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (fileUploads.length >= 5) {
-      alert("Maximum 5 files allowed");
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("sessionId", sessionId);
-
-      const response = await fetch("/api/submissions/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to upload file");
-      }
-
-      setFileUploads([...fileUploads, data.url]);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to upload file");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const removeFile = (index: number) => {
-    setFileUploads(fileUploads.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,7 +180,6 @@ export default function MyTeamSubmissionPage({
           demoLink: formData.demoLink,
           techStack: formData.techStack,
           problemStatement: formData.problemStatement,
-          fileUploads,
           sponsorTech: formData.sponsorTech,
           sponsorFeatureFeedback: formData.sponsorFeatureFeedback || undefined,
           mediaPermission: formData.mediaPermission,
@@ -363,15 +315,6 @@ export default function MyTeamSubmissionPage({
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Hidden file input */}
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          accept="image/*,application/pdf,video/*"
-          className="hidden"
-        />
-
         {/* Project Name */}
         <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
           <label className="block text-sm text-bfl-muted mb-2">Project Name *</label>
@@ -408,11 +351,11 @@ export default function MyTeamSubmissionPage({
           )}
         </div>
 
-        {/* Demo Link */}
+        {/* Demo Link (Youtube/Loom/GDrive link) */}
         <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
           <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
             <ExternalLink size={16} />
-            Demo Link *
+            Demo Link (Youtube/Loom/GDrive link) *
           </label>
           <input
             type="url"
@@ -530,63 +473,6 @@ export default function MyTeamSubmissionPage({
               );
             })}
           </div>
-        </div>
-
-        {/* File Uploads */}
-        <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
-          <label className="block text-sm text-bfl-muted mb-2">Attachments (optional)</label>
-          <p className="text-xs text-bfl-muted/70 mb-4">
-            Upload screenshots, diagrams, or demo videos (max 5 files, 50MB each)
-          </p>
-
-          {/* Uploaded files */}
-          {fileUploads.length > 0 && (
-            <div className="space-y-2 mb-4">
-              {fileUploads.map((url, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-white/[0.04] border border-white/10"
-                >
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-bfl-green hover:underline truncate flex-1 mr-4"
-                  >
-                    {url.split("/").pop()}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => removeFile(index)}
-                    className="text-red-400 hover:text-red-300 transition-colors"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {fileUploads.length < 5 && (
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="w-full px-6 py-4 border-2 border-dashed border-white/20 text-bfl-muted hover:border-bfl-green/50 hover:text-white transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload size={18} />
-                  Upload File
-                </>
-              )}
-            </button>
-          )}
         </div>
 
         {/* Sponsor Feature Feedback (optional) */}

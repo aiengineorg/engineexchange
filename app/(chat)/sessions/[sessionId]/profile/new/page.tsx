@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { User, Sparkles, Search, Upload, Image as ImageIcon, Loader2, X, Mail, CheckCircle, Users, Linkedin, Globe } from "lucide-react";
 
 const AI_ENGINE_API_URL = "https://api.aiengine.exchange";
+const IMAGE_GENERATION_ENABLED = false;
 
 export default function NewProfilePage({
   params,
@@ -196,6 +197,7 @@ export default function NewProfilePage({
 
   // Generate AI image - either enhance uploaded image or create from prompt
   const generateAIImage = async () => {
+    if (!IMAGE_GENERATION_ENABLED) return;
     const userEmail = session?.user?.email;
     if (!userEmail) {
       setImageError("Please sign in to generate an image");
@@ -898,7 +900,7 @@ export default function NewProfilePage({
               )}
 
               {/* AI Generation Controls - Show for create mode always, or enhance mode with uploaded image */}
-              {(generationMode === "create" || (generationMode === "enhance" && uploadedImagePreview)) && (
+              {IMAGE_GENERATION_ENABLED && (generationMode === "create" || (generationMode === "enhance" && uploadedImagePreview)) && (
                 <div className="space-y-4 p-4 bg-white/[0.02] rounded-sm border border-white/10">
                   <p className="text-xs text-bfl-muted font-mono uppercase tracking-wider">
                     {generationMode === "enhance" ? "Transformation Style" : "What would you like to create?"}

@@ -51,8 +51,8 @@ const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
 
-const LIGHT_THEME_COLOR = "#FFFFFF"; // AI Festival light mode
-const DARK_THEME_COLOR = "#1B2640"; // AI Festival dark mode
+const LIGHT_THEME_COLOR = "#f0f5fa"; // Edinburgh Edition light mode
+const DARK_THEME_COLOR = "#0a1628"; // Edinburgh Edition dark mode
 const THEME_COLOR_SCRIPT = `\
 (function() {
   var html = document.documentElement;

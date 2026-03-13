@@ -19,18 +19,12 @@ export const DEFAULT_SESSION_ID =
 // Previous session ID for BFL Hack alumni badge detection
 export const BFL_HACK_SESSION_ID = "1784d222-27f9-4fed-a28f-f454444e760f";
 
-// Team creation — toggle via env var
-export const TEAMS_OPEN =
-  process.env.TEAMS_OPEN !== undefined
-    ? process.env.TEAMS_OPEN === "true"
-    : false; // default: closed (must explicitly opt-in)
+// Team creation — always enabled
+export const TEAMS_OPEN = true;
 
-// Submissions configuration — toggle via env vars or change defaults here
-export const SUBMISSIONS_OPEN =
-  process.env.SUBMISSIONS_OPEN !== undefined
-    ? process.env.SUBMISSIONS_OPEN === "true"
-    : true; // default: open
+// Submissions — always enabled
+export const SUBMISSIONS_OPEN = true;
 
-export const SUBMISSION_DEADLINE = process.env.SUBMISSION_DEADLINE
-  ? new Date(process.env.SUBMISSION_DEADLINE)
+export const SUBMISSION_DEADLINE = process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE
+  ? new Date(process.env.NEXT_PUBLIC_SUBMISSION_DEADLINE)
   : null; // default: no deadline
