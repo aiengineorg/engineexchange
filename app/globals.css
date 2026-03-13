@@ -13,177 +13,177 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
-/* AI FESTIVAL THEME - Dark Mode (Default) */
+/* EDINBURGH EDITION THEME - Dark Mode (Default) */
 :root {
-  /* AI Festival Dark Mode Colors */
-  --bfl-black: #1B2640;  /* Deep navy base */
-  --bfl-dark-green: #212D48;  /* Navy card/surface */
-  --bfl-green: #00D4A8;  /* Vibrant teal accent */
-  --bfl-green-title: #7B68F0;  /* Purple title accent */
-  --bfl-muted: #8E9DB2;  /* Slate muted */
+  /* Edinburgh Dark Mode Colors */
+  --bfl-black: #0a1628;  /* Deep midnight base */
+  --bfl-dark-green: #0f1e3a;  /* Dark navy card/surface */
+  --bfl-green: #005EB8;  /* Edinburgh blue accent */
+  --bfl-green-title: #4a9eed;  /* Light blue title accent */
+  --bfl-muted: #8ba4c4;  /* Blue-slate muted */
   --bfl-off-white: #FFFFFF;
-  --bfl-text-primary: #FFFFFF;
-  --bfl-border: rgba(0, 212, 168, 0.25);
-  --bfl-glass: rgba(27, 38, 64, 0.7);
-  --mist-overlay: rgba(0, 212, 168, 0.05);
-  --bfl-accent-purple: #7B68F0;
+  --bfl-text-primary: #e8f0fa;
+  --bfl-border: rgba(0, 94, 184, 0.3);
+  --bfl-glass: rgba(10, 22, 40, 0.7);
+  --mist-overlay: rgba(0, 94, 184, 0.05);
+  --bfl-accent-purple: #C4B5D8;
 
   /* Mapped to existing variable names for compatibility */
-  --background: #1B2640;  /* Navy background */
-  --foreground: #FFFFFF;
+  --background: #0a1628;  /* Deep midnight background */
+  --foreground: #e8f0fa;
 
-  --card: #212D48;  /* Navy card */
-  --card-foreground: #FFFFFF;
+  --card: #0f1e3a;  /* Dark navy card */
+  --card-foreground: #e8f0fa;
 
-  --popover: #263252;  /* Slightly lighter navy popover */
-  --popover-foreground: #FFFFFF;
+  --popover: #122244;  /* Slightly lighter navy popover */
+  --popover-foreground: #e8f0fa;
 
-  --primary: #00D4A8;  /* Teal primary */
+  --primary: #005EB8;  /* Edinburgh blue primary */
   --primary-foreground: #FFFFFF;
 
-  --secondary: #212D48;  /* Navy secondary */
-  --secondary-foreground: #7B68F0;
+  --secondary: #0f1e3a;  /* Dark navy secondary */
+  --secondary-foreground: #4a9eed;
 
-  --muted: #212D48;  /* Navy muted bg */
-  --muted-foreground: #8E9DB2;  /* Slate muted text */
+  --muted: #0f1e3a;  /* Dark navy muted bg */
+  --muted-foreground: #8ba4c4;  /* Blue-slate muted text */
 
-  --accent: #7B68F0;  /* Purple accent */
+  --accent: #4a9eed;  /* Light blue accent */
   --accent-foreground: #FFFFFF;
 
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --border: rgba(0, 212, 168, 0.25);
-  --input: #212D48;  /* Navy input */
-  --ring: #7B68F0;
+  --border: rgba(0, 94, 184, 0.3);
+  --input: #0f1e3a;  /* Dark navy input */
+  --ring: #4a9eed;
 
-  --chart-1: #00D4A8;
-  --chart-2: #7B68F0;
-  --chart-3: #8E9DB2;
-  --chart-4: #00D4A8;
-  --chart-5: #1B2640;
+  --chart-1: #005EB8;
+  --chart-2: #4a9eed;
+  --chart-3: #8ba4c4;
+  --chart-4: #005EB8;
+  --chart-5: #0a1628;
 
-  --sidebar-background: #1B2640;  /* Navy sidebar */
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #7B68F0;
+  --sidebar-background: #0a1628;  /* Midnight sidebar */
+  --sidebar-foreground: #e8f0fa;
+  --sidebar-primary: #4a9eed;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #00D4A8;
+  --sidebar-accent: #005EB8;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(0, 212, 168, 0.25);
-  --sidebar-ring: #7B68F0;
+  --sidebar-border: rgba(0, 94, 184, 0.3);
+  --sidebar-ring: #4a9eed;
 
   --radius: 0.125rem;
-  --sidebar: #1B2640;  /* Navy sidebar */
+  --sidebar: #0a1628;  /* Midnight sidebar */
 }
 
-/* AI FESTIVAL THEME - Dark Mode */
+/* EDINBURGH EDITION THEME - Dark Mode */
 .dark {
-  --bfl-black: #1B2640;
-  --bfl-dark-green: #212D48;
-  --bfl-green: #00D4A8;
-  --bfl-green-title: #7B68F0;
-  --bfl-muted: #8E9DB2;
+  --bfl-black: #0a1628;
+  --bfl-dark-green: #0f1e3a;
+  --bfl-green: #005EB8;
+  --bfl-green-title: #4a9eed;
+  --bfl-muted: #8ba4c4;
   --bfl-off-white: #FFFFFF;
-  --bfl-text-primary: #FFFFFF;
-  --bfl-border: rgba(0, 212, 168, 0.25);
-  --bfl-glass: rgba(27, 38, 64, 0.7);
-  --mist-overlay: rgba(0, 212, 168, 0.05);
+  --bfl-text-primary: #e8f0fa;
+  --bfl-border: rgba(0, 94, 184, 0.3);
+  --bfl-glass: rgba(10, 22, 40, 0.7);
+  --mist-overlay: rgba(0, 94, 184, 0.05);
 
-  --background: #1B2640;
-  --foreground: #FFFFFF;
+  --background: #0a1628;
+  --foreground: #e8f0fa;
 
-  --card: #212D48;
-  --card-foreground: #FFFFFF;
+  --card: #0f1e3a;
+  --card-foreground: #e8f0fa;
 
-  --popover: #263252;
-  --popover-foreground: #FFFFFF;
+  --popover: #122244;
+  --popover-foreground: #e8f0fa;
 
-  --primary: #00D4A8;
+  --primary: #005EB8;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #212D48;
-  --secondary-foreground: #7B68F0;
+  --secondary: #0f1e3a;
+  --secondary-foreground: #4a9eed;
 
-  --muted: #212D48;
-  --muted-foreground: #8E9DB2;
+  --muted: #0f1e3a;
+  --muted-foreground: #8ba4c4;
 
-  --accent: #7B68F0;
+  --accent: #4a9eed;
   --accent-foreground: #FFFFFF;
 
   --destructive: hsl(0 62.8% 30.6%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --border: rgba(0, 212, 168, 0.25);
-  --input: #212D48;
-  --ring: #7B68F0;
+  --border: rgba(0, 94, 184, 0.3);
+  --input: #0f1e3a;
+  --ring: #4a9eed;
 
-  --chart-1: #00D4A8;
-  --chart-2: #7B68F0;
-  --chart-3: #8E9DB2;
-  --chart-4: #00D4A8;
-  --chart-5: #1B2640;
+  --chart-1: #005EB8;
+  --chart-2: #4a9eed;
+  --chart-3: #8ba4c4;
+  --chart-4: #005EB8;
+  --chart-5: #0a1628;
 
-  --sidebar-background: #1B2640;
-  --sidebar-foreground: #FFFFFF;
-  --sidebar-primary: #7B68F0;
+  --sidebar-background: #0a1628;
+  --sidebar-foreground: #e8f0fa;
+  --sidebar-primary: #4a9eed;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #00D4A8;
+  --sidebar-accent: #005EB8;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(0, 212, 168, 0.25);
-  --sidebar-ring: #7B68F0;
-  --sidebar: #1B2640;
+  --sidebar-border: rgba(0, 94, 184, 0.3);
+  --sidebar-ring: #4a9eed;
+  --sidebar: #0a1628;
 }
 
-/* AI FESTIVAL THEME - Light Mode */
+/* EDINBURGH EDITION THEME - Light Mode */
 .light {
-  --bfl-black: #FFFFFF;
-  --bfl-dark-green: #F3F4F8;
-  --bfl-green: #00B892;
-  --bfl-green-title: #6355D8;
-  --bfl-muted: #475569;
-  --bfl-off-white: #1B2640;
-  --bfl-text-primary: #1B2640;
-  --bfl-border: rgba(27, 38, 64, 0.12);
-  --bfl-glass: rgba(255, 255, 255, 0.85);
+  --bfl-black: #f0f5fa;
+  --bfl-dark-green: #e4ecf5;
+  --bfl-green: #005EB8;
+  --bfl-green-title: #0047a0;
+  --bfl-muted: #4a6585;
+  --bfl-off-white: #0a1628;
+  --bfl-text-primary: #0a1628;
+  --bfl-border: rgba(10, 22, 40, 0.15);
+  --bfl-glass: rgba(240, 245, 250, 0.85);
   --mist-overlay: rgba(0, 0, 0, 0.02);
 
-  --background: #FFFFFF;
-  --foreground: #1B2640;
+  --background: #f0f5fa;
+  --foreground: #0a1628;
 
-  --card: #F3F4F8;
-  --card-foreground: #1B2640;
+  --card: #e4ecf5;
+  --card-foreground: #0a1628;
 
-  --popover: #F3F4F8;
-  --popover-foreground: #1B2640;
+  --popover: #e4ecf5;
+  --popover-foreground: #0a1628;
 
-  --primary: #00B892;
+  --primary: #005EB8;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #FFFFFF;
-  --secondary-foreground: #6355D8;
+  --secondary: #f0f5fa;
+  --secondary-foreground: #0047a0;
 
-  --muted: #F3F4F8;
-  --muted-foreground: #475569;
+  --muted: #e4ecf5;
+  --muted-foreground: #4a6585;
 
-  --accent: #6355D8;
+  --accent: #0047a0;
   --accent-foreground: #FFFFFF;
 
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
 
-  --border: rgba(27, 38, 64, 0.12);
-  --input: #F3F4F8;
-  --ring: #6355D8;
+  --border: rgba(10, 22, 40, 0.15);
+  --input: #e4ecf5;
+  --ring: #0047a0;
 
-  --sidebar-background: #F3F4F8;
-  --sidebar-foreground: #1B2640;
-  --sidebar-primary: #6355D8;
+  --sidebar-background: #e4ecf5;
+  --sidebar-foreground: #0a1628;
+  --sidebar-primary: #0047a0;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #00B892;
+  --sidebar-accent: #005EB8;
   --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: rgba(27, 38, 64, 0.12);
-  --sidebar-ring: #6355D8;
-  --sidebar: #F3F4F8;
+  --sidebar-border: rgba(10, 22, 40, 0.15);
+  --sidebar-ring: #0047a0;
+  --sidebar: #e4ecf5;
 }
 
 /* define theme */
@@ -275,9 +275,9 @@
 
 @layer utilities {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 27, 38, 64;
-    --background-end-rgb: 18, 25, 45;
+    --foreground-rgb: 232, 240, 250;
+    --background-start-rgb: 10, 22, 40;
+    --background-end-rgb: 6, 14, 28;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -309,11 +309,11 @@
 
   html {
     overflow-x: hidden;
-    background-color: #1B2640;
+    background-color: #0a1628;
   }
 }
 
-/* AI Festival Selection Styling */
+/* Edinburgh Edition Selection Styling */
 ::selection {
   background: var(--primary);
   color: #ffffff;
@@ -360,13 +360,13 @@
 
 .cm-editor,
 .cm-gutters {
-  @apply bg-background! dark:bg-[#151E35]! outline-hidden! selection:bg-[#3A4566]!;
+  @apply bg-background! dark:bg-[#0f1e3a]! outline-hidden! selection:bg-[#1a3355]!;
 }
 
 .ͼo.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground,
 .ͼo.cm-selectionBackground,
 .ͼo.cm-content::selection {
-  @apply bg-[#3A4566]/30! dark:bg-[#3A4566]/30!;
+  @apply bg-[#1a3355]/30! dark:bg-[#1a3355]/30!;
 }
 
 .cm-activeLine,
@@ -391,7 +391,7 @@
 }
 
 .suggestion-highlight {
-  @apply bg-[#3A4566]/30 hover:bg-[#3A4566]/50 dark:hover:bg-[#3A4566]/50 dark:text-white dark:bg-[#3A4566]/40;
+  @apply bg-[#1a3355]/30 hover:bg-[#1a3355]/50 dark:hover:bg-[#1a3355]/50 dark:text-white dark:bg-[#1a3355]/40;
 }
 
 /* Scrollbar Styling */
@@ -471,12 +471,12 @@
   background: var(--border);
 }
 
-/* AI Festival Text Glow */
+/* Edinburgh Edition Text Glow */
 .text-glow {
-  text-shadow: 0 0 20px rgba(0, 212, 168, 0.3);
+  text-shadow: 0 0 20px rgba(0, 94, 184, 0.4);
 }
 
-/* AI Festival Teal Glow for Status Indicators */
+/* Edinburgh Edition Blue Glow for Status Indicators */
 .green-glow {
-  box-shadow: 0 0 10px rgba(0, 212, 168, 0.5);
+  box-shadow: 0 0 10px rgba(0, 94, 184, 0.5);
 }
