@@ -9,6 +9,7 @@ import {
   hasValidContactEmail,
 } from "@/lib/db/queries";
 import { SUBMISSIONS_OPEN, SUBMISSION_DEADLINE } from "@/lib/constants";
+import { SPONSOR_TECH_OPTIONS } from "@/lib/sponsor-tech";
 
 const optionalDemoLinkSchema = z
   .string()
@@ -26,7 +27,7 @@ const CreateSubmissionSchema = z.object({
   demoLink: optionalDemoLinkSchema,
   techStack: z.string().min(1).max(500),
   problemStatement: z.string().min(10).max(1000),
-  sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"])).default([]),
+  sponsorTech: z.array(z.enum(SPONSOR_TECH_OPTIONS)).default([]),
   // Hidden feedback fields (visible only to judges/admins)
   sponsorFeatureFeedback: z.string().max(1000).optional(),
   mediaPermission: z.string().optional().default("false"),

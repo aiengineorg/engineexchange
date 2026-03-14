@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FileText, Loader2, Github, ExternalLink, Save, ArrowLeft, Lock } from "lucide-react";
 import { EmailWarningBanner } from "@/components/email-warning-banner";
+import { SPONSOR_TECH_OPTIONS } from "@/lib/sponsor-tech";
 
 interface Submission {
   id: string;
@@ -21,8 +22,6 @@ interface Submission {
   eventFeedback?: string;
   submittedAt: string;
 }
-
-const SPONSOR_TECH_OPTIONS = ["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"] as const;
 
 const SUBMISSIONS_OPEN = true;
 const SUBMISSION_DEADLINE: Date | null = null;
@@ -129,6 +128,10 @@ export default function MyTeamSubmissionPage({
       setTeam(subData.team);
 
       if (subData.submission) {
+        const normalizedSponsorTech = (subData.submission.sponsorTech || []).filter((tech: string) =>
+          SPONSOR_TECH_OPTIONS.includes(tech as (typeof SPONSOR_TECH_OPTIONS)[number])
+        );
+
         setSubmission(subData.submission);
         setFormData({
           projectName: subData.submission.projectName,
@@ -137,7 +140,7 @@ export default function MyTeamSubmissionPage({
           demoLink: subData.submission.demoLink || "",
           techStack: subData.submission.techStack,
           problemStatement: subData.submission.problemStatement,
-          sponsorTech: subData.submission.sponsorTech || [],
+          sponsorTech: normalizedSponsorTech,
           sponsorFeatureFeedback: subData.submission.sponsorFeatureFeedback || "",
           mediaPermission: subData.submission.mediaPermission || "false",
           eventFeedback: subData.submission.eventFeedback || "",
