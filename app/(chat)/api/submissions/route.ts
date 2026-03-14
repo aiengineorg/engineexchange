@@ -10,12 +10,20 @@ import {
 } from "@/lib/db/queries";
 import { SUBMISSIONS_OPEN, SUBMISSION_DEADLINE } from "@/lib/constants";
 
+const optionalDemoLinkSchema = z
+  .string()
+  .trim()
+  .transform((value) => value || null)
+  .refine((value) => value === null || z.string().url().safeParse(value).success, {
+    message: "Invalid URL",
+  });
+
 const CreateSubmissionSchema = z.object({
   sessionId: z.string().uuid(),
   projectName: z.string().min(1).max(100),
   githubLink: z.string().url(),
   description: z.string().min(10).max(2000),
-  demoLink: z.string().url(),
+  demoLink: optionalDemoLinkSchema,
   techStack: z.string().min(1).max(500),
   problemStatement: z.string().min(10).max(1000),
   sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"])).default([]),
