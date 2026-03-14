@@ -76,9 +76,7 @@ export default function MyTeamSubmissionPage({
     githubLink: !formData.githubLink.trim()
       ? "GitHub link is required"
       : !/^https?:\/\/.+/.test(formData.githubLink) ? "Must be a valid URL" : null,
-    demoLink: !formData.demoLink.trim()
-      ? "Demo link (Youtube/Loom/GDrive link) is required"
-      : !/^https?:\/\/.+/.test(formData.demoLink) ? "Must be a valid URL" : null,
+    demoLink: formData.demoLink.trim() && !/^https?:\/\/.+/.test(formData.demoLink) ? "Must be a valid URL" : null,
     description: !formData.description.trim()
       ? "Description is required"
       : formData.description.length < 10 ? `${10 - formData.description.length} more characters needed` : null,
@@ -355,7 +353,7 @@ export default function MyTeamSubmissionPage({
         <div className="bg-white/[0.08] backdrop-blur-sm border border-white/10 p-8">
           <label className="flex items-center gap-2 text-sm text-bfl-muted mb-2">
             <ExternalLink size={16} />
-            Demo Link (Youtube/Loom/GDrive link) *
+            Demo Link (Youtube/Loom/GDrive link)
           </label>
           <input
             type="url"

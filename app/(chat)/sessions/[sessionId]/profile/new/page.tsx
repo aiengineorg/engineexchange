@@ -45,8 +45,7 @@ export default function NewProfilePage({
 
   // Email verification state
   const [lumaEmail, setLumaEmail] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [verificationStep, setVerificationStep] = useState<"email" | "code" | "verified">("email");
+  const [verificationStep, setVerificationStep] = useState<"email" | "verified">("email");
   const [verificationLoading, setVerificationLoading] = useState(false);
   const [verificationError, setVerificationError] = useState("");
   const [participantName, setParticipantName] = useState("");
@@ -86,7 +85,7 @@ export default function NewProfilePage({
     }
   }, [session?.user?.discordUsername, formData.displayName]);
 
-  // Send verification code to email
+  // Verify email directly — auto-fill if found, allow manual entry if not
   const handleSendVerification = async () => {
     if (!lumaEmail) return;
 
@@ -103,51 +102,29 @@ export default function NewProfilePage({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to send verification code");
+        throw new Error(data.error || "Failed to verify email");
       }
 
-      setParticipantName(data.participantName || "");
-      setVerificationStep("code");
-    } catch (err) {
-      setVerificationError(err instanceof Error ? err.message : "Failed to send code");
-    } finally {
-      setVerificationLoading(false);
-    }
-  };
-
-  // Verify the code and get participant data
-  const handleVerifyCode = async () => {
-    if (verificationCode.length !== 6) return;
-
-    setVerificationLoading(true);
-    setVerificationError("");
-
-    try {
-      const response = await fetch("/api/auth/verify-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: verificationCode }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to verify code");
+      if (data.found && data.participant) {
+        // Email found — auto-fill form from participant data
+        setParticipantName(data.participantName || "");
+        setFormData((prev) => ({
+          ...prev,
+          whatIOffer: data.participant?.profileSummary || prev.whatIOffer,
+          displayName: data.participant?.name && !prev.displayName ? data.participant.name : prev.displayName,
+          contactEmail: data.participant?.email || prev.contactEmail,
+          linkedinUrl: data.participant?.linkedin || prev.linkedinUrl,
+          websiteOrGithub: data.participant?.websiteOrGithub || prev.websiteOrGithub,
+          hasTeam: data.participant?.hasTeam || false,
+        }));
+        setParticipantHasTeam(data.participant?.hasTeam || false);
+      } else {
+        // Email not found — set contact email and let them fill manually
+        setFormData((prev) => ({
+          ...prev,
+          contactEmail: lumaEmail,
+        }));
       }
-
-      // Auto-fill form fields from participant data
-      setFormData((prev) => ({
-        ...prev,
-        whatIOffer: data.participant?.profileSummary || prev.whatIOffer,
-        displayName: data.participant?.name && !prev.displayName ? data.participant.name : prev.displayName,
-        contactEmail: data.participant?.email || prev.contactEmail,
-        linkedinUrl: data.participant?.linkedin || prev.linkedinUrl,
-        websiteOrGithub: data.participant?.websiteOrGithub || prev.websiteOrGithub,
-        hasTeam: data.participant?.hasTeam || false,
-      }));
-
-      // Store team status for display
-      setParticipantHasTeam(data.participant?.hasTeam || false);
 
       setVerificationStep("verified");
     } catch (err) {
@@ -466,16 +443,16 @@ export default function NewProfilePage({
                     <Mail className="text-bfl-green" size={24} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-white font-medium mb-1">Auto-fill from your Luma registration</h3>
+                    <h3 className="text-white font-medium mb-1">Auto-fill from your registration</h3>
                     <p className="text-sm text-bfl-muted mb-4">
-                      We have your profile summary from when you registered. Verify your email to auto-fill this section.
+                      Enter your registration email to auto-fill your profile, or skip to fill in manually.
                     </p>
 
                     {verificationStep === "email" && (
                       <div className="space-y-3">
                         <input
                           type="email"
-                          placeholder="Enter your Luma registration email"
+                          placeholder="Enter your registration email"
                           value={lumaEmail}
                           onChange={(e) => setLumaEmail(e.target.value)}
                           className="w-full px-4 py-3 bg-black/30 border border-bfl-green/30 rounded-md text-white placeholder-white/30 font-mono text-sm focus:ring-2 focus:ring-bfl-green/50 outline-none transition-all"
@@ -489,63 +466,15 @@ export default function NewProfilePage({
                           {verificationLoading ? (
                             <>
                               <Loader2 size={16} className="animate-spin" />
-                              Sending Code...
+                              Looking up...
                             </>
                           ) : (
                             <>
                               <Mail size={16} />
-                              Send Verification Code
+                              Look Up & Auto-fill
                             </>
                           )}
                         </button>
-                      </div>
-                    )}
-
-                    {verificationStep === "code" && (
-                      <div className="space-y-3">
-                        <p className="text-sm text-bfl-green font-medium">
-                          Code sent to {lumaEmail}
-                          {participantName && <span className="text-bfl-muted font-normal"> - Found: {participantName}</span>}
-                        </p>
-                        <input
-                          type="text"
-                          placeholder="000000"
-                          value={verificationCode}
-                          onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                          maxLength={6}
-                          className="w-full px-4 py-4 bg-black/30 border border-bfl-green/30 rounded-md text-white placeholder-white/20 font-mono text-3xl tracking-[0.8em] text-center focus:ring-2 focus:ring-bfl-green/50 outline-none transition-all"
-                        />
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setVerificationStep("email");
-                              setVerificationCode("");
-                              setVerificationError("");
-                            }}
-                            className="px-4 py-3 border border-white/20 text-bfl-muted font-bold text-xs uppercase tracking-[0.15em] hover:text-white hover:bg-white/5 transition-all rounded-md"
-                          >
-                            Back
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleVerifyCode}
-                            disabled={verificationCode.length !== 6 || verificationLoading}
-                            className="flex-1 px-6 py-3 bg-bfl-green text-black font-bold text-xs uppercase tracking-[0.15em] hover:bg-bfl-green/90 transition-all disabled:opacity-30 disabled:cursor-not-allowed rounded-md flex items-center justify-center gap-2"
-                          >
-                            {verificationLoading ? (
-                              <>
-                                <Loader2 size={16} className="animate-spin" />
-                                Verifying...
-                              </>
-                            ) : (
-                              <>
-                                <CheckCircle size={16} />
-                                Verify & Auto-fill
-                              </>
-                            )}
-                          </button>
-                        </div>
                       </div>
                     )}
 
@@ -564,8 +493,12 @@ export default function NewProfilePage({
               <div className="mb-6 flex items-center gap-3 p-4 bg-bfl-green/15 border border-bfl-green/40 rounded-lg">
                 <CheckCircle className="text-bfl-green flex-shrink-0" size={24} />
                 <div>
-                  <p className="text-bfl-green font-medium">Profile auto-filled from Luma!</p>
-                  <p className="text-sm text-bfl-muted">Feel free to edit the text below.</p>
+                  <p className="text-bfl-green font-medium">
+                    {participantName ? "Profile auto-filled from your registration!" : "Email confirmed — fill in your details below."}
+                  </p>
+                  <p className="text-sm text-bfl-muted">
+                    {participantName ? "Feel free to edit the text below." : "We couldn't find a registration for this email, but you can continue manually."}
+                  </p>
                 </div>
               </div>
             )}
@@ -573,9 +506,9 @@ export default function NewProfilePage({
             {/* Textarea - more prominent when verified or has content */}
             <div className={verificationStep === "email" && !formData.whatIOffer ? "opacity-50" : ""}>
               <p className="text-sm text-bfl-muted mb-4">
-                {verificationStep === "verified"
-                  ? "Your profile summary from Luma registration:"
-                  : "Or write your own description of yourself, your interests, and what you bring to a connection."
+                {verificationStep === "verified" && participantName
+                  ? "Your profile summary from registration:"
+                  : "Write a description of yourself, your interests, and what you bring to a connection."
                 }
               </p>
               <textarea

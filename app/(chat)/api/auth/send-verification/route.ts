@@ -3,26 +3,14 @@ import { z } from "zod";
 import { auth } from "@/app/(auth)/auth";
 import {
   getHackathonParticipantByEmail,
-  saveEmailVerificationToken,
+  linkParticipantToUser,
 } from "@/lib/db/queries";
-import {
-  createResendClient,
-  generateVerificationCodeEmailHtml,
-  generateVerificationCodeEmailText,
-} from "@/lib/email/resend";
 
 const SendVerificationSchema = z.object({
   email: z.string().email(),
 });
 
-/**
- * Generate a 6-digit verification code
- */
-function generateVerificationCode(): string {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-// POST /api/auth/send-verification - Send verification code to email
+// POST /api/auth/send-verification - Verify email by looking up participant directly (no code/email step)
 export async function POST(request: Request) {
   const session = await auth();
 
@@ -47,37 +35,35 @@ export async function POST(request: Request) {
     const participant = await getHackathonParticipantByEmail(email);
 
     if (!participant) {
-      return NextResponse.json(
-        { error: "This email is not registered for the hackathon. Please use the email you registered with on Luma." },
-        { status: 404 }
-      );
+      // Email not found — allow manual entry, no error
+      return NextResponse.json({
+        success: true,
+        found: false,
+        message: "Email not found in registrations. You can fill in your details manually.",
+      });
     }
 
-    // Generate verification code
-    const code = generateVerificationCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    // Save token to user
-    await saveEmailVerificationToken(session.user.id, email, code, expiresAt);
-
-    // Send email
-    const resend = createResendClient();
-    await resend.sendEmail({
-      to: email,
-      subject: "Your AI Engine Exchange Verification Code",
-      html: generateVerificationCodeEmailHtml({ code }),
-      text: generateVerificationCodeEmailText({ code }),
-    });
+    // Link participant to user directly (skip email verification)
+    await linkParticipantToUser(session.user.id, participant.id);
 
     return NextResponse.json({
       success: true,
-      message: "Verification code sent",
+      found: true,
+      message: "Email verified",
       participantName: participant.name,
+      participant: {
+        name: participant.name,
+        email: participant.email,
+        linkedin: participant.linkedin,
+        websiteOrGithub: participant.websiteOrGithub,
+        profileSummary: participant.profileSummary,
+        hasTeam: participant.hasTeam,
+      },
     });
   } catch (error) {
-    console.error("Failed to send verification:", error);
+    console.error("Failed to verify email:", error);
     return NextResponse.json(
-      { error: "Failed to send verification code" },
+      { error: "Failed to verify email" },
       { status: 500 }
     );
   }
