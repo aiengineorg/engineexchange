@@ -33,6 +33,24 @@ declare module "next-auth/jwt" {
   }
 }
 
+async function createDiscordUserWithFallback(email: string, discordId?: string) {
+  try {
+    await createUser(email, "", discordId);
+    return;
+  } catch (error) {
+    if (!discordId) {
+      throw error;
+    }
+
+    console.error(
+      "Failed to create Discord user with discord_id. Retrying without discord_id; check that migration 0013 has been applied.",
+      error
+    );
+
+    await createUser(email, "");
+  }
+}
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -110,11 +128,12 @@ export const {
               // Use email if available, otherwise use Discord ID-based placeholder
               const emailToUse = userEmail || `discord_${discordId}@placeholder.local`;
               console.log("📝 Creating new user:", emailToUse);
-              await createUser(emailToUse, "", discordId);
+              await createDiscordUserWithFallback(emailToUse, discordId);
               console.log("✅ User created successfully");
             } catch (error) {
               console.error("❌ Failed to create user from Discord OAuth:", error);
-              return false;
+              // Let the JWT callback retry so users do not get sent straight to /api/auth/error.
+              return true;
             }
           } else if (existingUser && discordId && existingUser.discordId !== discordId) {
             // Update existing user's Discord ID if it's missing or changed
@@ -196,13 +215,14 @@ export const {
           const emailToUse = userEmail || `discord_${discordId}@placeholder.local`;
           try {
             console.log("📝 Creating user with email:", emailToUse);
-            await createUser(emailToUse, "", discordId);
-            // Fetch the newly created user to get their database ID
+            await createDiscordUserWithFallback(emailToUse, discordId);
+            // Fetch the newly created user to get their database ID. Fall back to
+            // email lookup so auth still works if discord_id is not queryable yet.
             if (discordId) {
               dbUser = await getUserByDiscordId(discordId);
             }
-            if (!dbUser && userEmail) {
-              const newUsers = await getUser(userEmail);
+            if (!dbUser) {
+              const newUsers = await getUser(emailToUse);
               if (newUsers.length > 0) {
                 dbUser = newUsers[0];
               }
