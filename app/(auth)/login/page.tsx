@@ -7,8 +7,8 @@ import { toast } from "@/components/toast";
 import { ShieldCheck } from "lucide-react";
 
 const DEFAULT_SESSION_ID =
-  process.env.NEXT_PUBLIC_DEFAULT_SESSION_ID ||
-  "1784d222-27f9-4fed-a28f-f454444e760f";
+  (process.env.NEXT_PUBLIC_DEFAULT_SESSION_ID ||
+    "1784d222-27f9-4fed-a28f-f454444e760f").trim();
 
 export default function Page() {
   const [consentAccepted, setConsentAccepted] = useState(false);

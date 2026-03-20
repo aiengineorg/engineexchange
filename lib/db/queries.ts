@@ -1345,7 +1345,7 @@ export async function createSubmission(data: {
   projectName: string;
   githubLink: string;
   description: string;
-  demoLink?: string;
+  demoLink?: string | null;
   techStack: string;
   problemStatement: string;
   fileUploads?: string[];
@@ -1383,7 +1383,7 @@ export async function updateSubmission(
     projectName?: string;
     githubLink?: string;
     description?: string;
-    demoLink?: string;
+    demoLink?: string | null;
     techStack?: string;
     problemStatement?: string;
     fileUploads?: string[];
@@ -1841,4 +1841,3 @@ export async function getUserIdsWithProfileInSession(
     return new Set();
   }
 }
-

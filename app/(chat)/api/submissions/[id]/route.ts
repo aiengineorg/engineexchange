@@ -7,15 +7,24 @@ import {
   getTeamByUserId,
   getTeamById,
 } from "@/lib/db/queries";
+import { SPONSOR_TECH_OPTIONS } from "@/lib/sponsor-tech";
+
+const optionalDemoLinkSchema = z
+  .string()
+  .trim()
+  .transform((value) => value || null)
+  .refine((value) => value === null || z.string().url().safeParse(value).success, {
+    message: "Invalid URL",
+  });
 
 const UpdateSubmissionSchema = z.object({
   projectName: z.string().min(1).max(100).optional(),
   githubLink: z.string().url().optional(),
   description: z.string().min(10).max(2000).optional(),
-  demoLink: z.string().url(),
+  demoLink: optionalDemoLinkSchema.optional(),
   techStack: z.string().min(1).max(500).optional(),
   problemStatement: z.string().min(10).max(1000).optional(),
-  sponsorTech: z.array(z.enum(["Runware", "NVIDIA (Nemotron)", "Anthropic", "Anthropic Agent SDK", "Doubleword", "Prolific", "Lovable"])).optional(),
+  sponsorTech: z.array(z.enum(SPONSOR_TECH_OPTIONS)).optional(),
   // Hidden feedback fields (visible only to judges/admins)
   sponsorFeatureFeedback: z.string().max(1000).optional(),
   mediaPermission: z.string().optional(),
