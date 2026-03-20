@@ -210,20 +210,20 @@ function ScoreSubmissionPageContent({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
+      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#4a9eed] animate-spin" />
       </div>
     );
   }
 
   if (!submissionData) {
     return (
-      <div className="min-h-screen bg-[#0a1612] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center p-4">
         <div className="text-center">
           <p className="text-white/50 mb-4">{error || "Submission not found"}</p>
           <Link
             href={`/judges?judgeId=${judgeId}&judgeName=${encodeURIComponent(judgeName || "")}`}
-            className="text-[#00D4A8] hover:underline"
+            className="text-[#4a9eed] hover:underline"
           >
             Back to Judges Portal
           </Link>
@@ -235,7 +235,7 @@ function ScoreSubmissionPageContent({
   const { submission, team, members } = submissionData;
 
   return (
-    <div className="min-h-screen bg-[#0a1612] text-white">
+    <div className="min-h-screen bg-[#0a1628] text-white">
       {/* Header */}
       <div className="border-b border-white/10 bg-white/[0.02]">
         <div className="max-w-4xl mx-auto px-6 py-6">
@@ -247,8 +247,8 @@ function ScoreSubmissionPageContent({
             <span className="text-sm font-mono uppercase tracking-wider">Back to Submissions</span>
           </Link>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-px w-6 bg-[#00D4A8]" />
-            <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
+            <div className="h-px w-6 bg-[#4a9eed]" />
+            <span className="font-mono text-[10px] text-[#4a9eed] uppercase tracking-[0.4em]">
               Scoring as {judgeName}
             </span>
           </div>
@@ -281,7 +281,7 @@ function ScoreSubmissionPageContent({
                   href={submission.demoLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-[#00D4A8]/20 border border-[#00D4A8]/30 text-[#00D4A8] text-sm hover:bg-[#00D4A8]/30 transition-all"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#4a9eed]/20 border border-[#4a9eed]/30 text-[#4a9eed] text-sm hover:bg-[#4a9eed]/30 transition-all"
                 >
                   <ExternalLink size={16} />
                   Demo
@@ -331,7 +331,7 @@ function ScoreSubmissionPageContent({
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {submission.sponsorTech.map((tech, i) => (
-                    <span key={i} className="px-2 py-1 bg-[#00D4A8]/20 text-xs text-[#00D4A8]">
+                    <span key={i} className="px-2 py-1 bg-[#4a9eed]/20 text-xs text-[#4a9eed]">
                       {tech}
                     </span>
                   ))}
@@ -352,7 +352,7 @@ function ScoreSubmissionPageContent({
                       href={url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1 bg-white/[0.06] text-sm text-[#00D4A8] hover:bg-white/10 transition-all"
+                      className="px-3 py-1 bg-white/[0.06] text-sm text-[#4a9eed] hover:bg-white/10 transition-all"
                     >
                       File {i + 1}
                     </a>
@@ -411,7 +411,7 @@ function ScoreSubmissionPageContent({
           <div>
             <form onSubmit={handleSubmitScore} className="bg-white/[0.04] border border-white/10 p-6 sticky top-6">
               <div className="flex items-center gap-2 mb-6">
-                <Star size={20} className="text-[#00D4A8]" />
+                <Star size={20} className="text-[#4a9eed]" />
                 <h2 className="text-lg font-medium">Score this Submission</h2>
               </div>
 
@@ -433,7 +433,7 @@ function ScoreSubmissionPageContent({
                   <select
                     value={scoreForm.futurePotential}
                     onChange={(e) => setScoreForm({ ...scoreForm, futurePotential: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none"
                     required
                   >
                     <option value="">Select score (0-10)</option>
@@ -454,7 +454,7 @@ function ScoreSubmissionPageContent({
                   <select
                     value={scoreForm.demo}
                     onChange={(e) => setScoreForm({ ...scoreForm, demo: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none"
                     required
                   >
                     <option value="">Select score (0-10)</option>
@@ -475,7 +475,7 @@ function ScoreSubmissionPageContent({
                   <select
                     value={scoreForm.creativity}
                     onChange={(e) => setScoreForm({ ...scoreForm, creativity: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none"
                     required
                   >
                     <option value="">Select score (0-10)</option>
@@ -496,7 +496,7 @@ function ScoreSubmissionPageContent({
                   <select
                     value={scoreForm.pitchingQuality}
                     onChange={(e) => setScoreForm({ ...scoreForm, pitchingQuality: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none"
                     required
                   >
                     <option value="">Select score (0-10)</option>
@@ -537,15 +537,15 @@ function ScoreSubmissionPageContent({
                     placeholder="Any additional feedback or notes..."
                     rows={3}
                     maxLength={2000}
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none resize-none"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none resize-none"
                   />
                 </div>
 
                 {/* Total Score */}
-                <div className="bg-[#00D4A8]/10 border border-[#00D4A8]/30 p-4">
+                <div className="bg-[#4a9eed]/10 border border-[#4a9eed]/30 p-4">
                   <div className="flex items-center justify-between">
                     <span className="text-white/70">Total Score</span>
-                    <span className="text-2xl font-bold text-[#00D4A8]">
+                    <span className="text-2xl font-bold text-[#4a9eed]">
                       {calculateTotal()} / 40
                     </span>
                   </div>
@@ -558,7 +558,7 @@ function ScoreSubmissionPageContent({
                 <button
                   type="submit"
                   disabled={saving || deleting}
-                  className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50"
+                  className="w-full px-6 py-4 bg-[#4a9eed] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#4a9eed]/90 transition-all disabled:opacity-50"
                 >
                   {saving ? "Submitting..." : submissionData.hasScored ? "Update Score" : "Submit Score"}
                 </button>
@@ -625,8 +625,8 @@ export default function ScoreSubmissionPage({
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
+        <div className="min-h-screen bg-[#0a1628] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-[#4a9eed] animate-spin" />
         </div>
       }
     >

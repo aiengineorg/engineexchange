@@ -24,7 +24,7 @@ interface TeamWithMembers {
   members: TeamMemberData[];
 }
 
-const ADMIN_PASSWORD = "aifestival2026"; // Simple password for admin access
+const ADMIN_PASSWORD = "edinburgh2026"; // Simple password for admin access
 
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState(false);

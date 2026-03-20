@@ -75,9 +75,7 @@ export default function MyTeamSubmissionPage({
     githubLink: !formData.githubLink.trim()
       ? "GitHub link is required"
       : !/^https?:\/\/.+/.test(formData.githubLink) ? "Must be a valid URL" : null,
-    demoLink: formData.demoLink.trim() && !/^https?:\/\/.+/.test(formData.demoLink)
-      ? "Must be a valid URL"
-      : null,
+    demoLink: formData.demoLink.trim() && !/^https?:\/\/.+/.test(formData.demoLink) ? "Must be a valid URL" : null,
     description: !formData.description.trim()
       ? "Description is required"
       : formData.description.length < 10 ? `${10 - formData.description.length} more characters needed` : null,

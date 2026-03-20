@@ -59,7 +59,7 @@ interface SubmissionWithStatus {
   existingScore: unknown;
 }
 
-const ADMIN_PASSWORD = "aifestival2026";
+const ADMIN_PASSWORD = "edinburgh2026";
 
 function JudgesPageContent() {
   const router = useRouter();
@@ -244,8 +244,8 @@ function JudgesPageContent() {
   // Show loading while checking localStorage
   if (!initialLoadDone) {
     return (
-      <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
+      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#4a9eed] animate-spin" />
       </div>
     );
   }
@@ -253,16 +253,16 @@ function JudgesPageContent() {
   // Login screen
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-[#0a1612] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
-                <Star className="w-6 h-6 text-[#00D4A8]" />
+              <div className="w-12 h-12 rounded-full bg-[#4a9eed]/20 flex items-center justify-center">
+                <Star className="w-6 h-6 text-[#4a9eed]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Judges Portal</h1>
-                <p className="text-sm text-white/50">FluxHack 2025</p>
+                <p className="text-sm text-white/50">AI Engine Hack — Edinburgh</p>
               </div>
             </div>
 
@@ -274,7 +274,7 @@ function JudgesPageContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter judges password"
-                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none transition-all"
                   autoFocus
                 />
                 {passwordError && (
@@ -284,7 +284,7 @@ function JudgesPageContent() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-4 bg-[#00D4A8] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#00D4A8]/90 transition-all"
+                className="w-full px-6 py-4 bg-[#4a9eed] text-black font-bold text-xs uppercase tracking-[0.2em] hover:bg-[#4a9eed]/90 transition-all"
               >
                 Enter Judges Portal
               </button>
@@ -298,12 +298,12 @@ function JudgesPageContent() {
   // Judge selection screen
   if (!selectedJudge) {
     return (
-      <div className="min-h-screen bg-[#0a1612] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0a1628] flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white/[0.04] border border-white/10 p-8">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-[#00D4A8]/20 flex items-center justify-center">
-                <Users className="w-6 h-6 text-[#00D4A8]" />
+              <div className="w-12 h-12 rounded-full bg-[#4a9eed]/20 flex items-center justify-center">
+                <Users className="w-6 h-6 text-[#4a9eed]" />
               </div>
               <div>
                 <h1 className="text-2xl text-white font-medium">Select Your Name</h1>
@@ -322,7 +322,7 @@ function JudgesPageContent() {
                       value={judgeSearchQuery}
                       onChange={(e) => setJudgeSearchQuery(e.target.value)}
                       placeholder="Search judges..."
-                      className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-2 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none transition-all"
                     />
                   </div>
                   <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
@@ -336,7 +336,7 @@ function JudgesPageContent() {
                             setSelectedJudge(judge);
                             localStorage.setItem("judges_selected_judge", JSON.stringify(judge));
                           }}
-                          className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-left hover:bg-white/10 hover:border-[#00D4A8]/50 transition-all"
+                          className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white text-left hover:bg-white/10 hover:border-[#4a9eed]/50 transition-all"
                         >
                           {judge.name}
                         </button>
@@ -349,7 +349,7 @@ function JudgesPageContent() {
               {!showAddJudge ? (
                 <button
                   onClick={() => setShowAddJudge(true)}
-                  className="w-full px-4 py-3 border-2 border-dashed border-white/20 text-white/60 hover:border-[#00D4A8]/50 hover:text-white transition-all flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 border-2 border-dashed border-white/20 text-white/60 hover:border-[#4a9eed]/50 hover:text-white transition-all flex items-center justify-center gap-2"
                 >
                   <Plus size={18} />
                   Add Your Name
@@ -361,7 +361,7 @@ function JudgesPageContent() {
                     value={newJudgeName}
                     onChange={(e) => setNewJudgeName(e.target.value)}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none transition-all"
                     autoFocus
                   />
                   <div className="flex gap-2">
@@ -374,7 +374,7 @@ function JudgesPageContent() {
                     <button
                       onClick={handleAddJudge}
                       disabled={!newJudgeName.trim() || addingJudge}
-                      className="flex-1 px-4 py-2 bg-[#00D4A8] text-black font-bold text-sm hover:bg-[#00D4A8]/90 transition-all disabled:opacity-50"
+                      className="flex-1 px-4 py-2 bg-[#4a9eed] text-black font-bold text-sm hover:bg-[#4a9eed]/90 transition-all disabled:opacity-50"
                     >
                       {addingJudge ? "Adding..." : "Add"}
                     </button>
@@ -390,15 +390,15 @@ function JudgesPageContent() {
 
   // Main judging interface
   return (
-    <div className="min-h-screen bg-[#0a1612] text-white">
+    <div className="min-h-screen bg-[#0a1628] text-white">
       {/* Header */}
       <div className="border-b border-white/10 bg-white/[0.02]">
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className="h-px w-6 bg-[#00D4A8]" />
-                <span className="font-mono text-[10px] text-[#00D4A8] uppercase tracking-[0.4em]">
+                <div className="h-px w-6 bg-[#4a9eed]" />
+                <span className="font-mono text-[10px] text-[#4a9eed] uppercase tracking-[0.4em]">
                   Judges Portal
                 </span>
               </div>
@@ -418,7 +418,7 @@ function JudgesPageContent() {
                   <ChevronDown size={14} className={`transition-transform ${showGroupSelector ? "rotate-180" : ""}`} />
                 </button>
                 {showGroupSelector && (
-                  <div className="absolute right-0 top-full mt-2 bg-[#0a1612] border border-white/15 shadow-xl z-50 min-w-[160px]">
+                  <div className="absolute right-0 top-full mt-2 bg-[#0a1628] border border-white/15 shadow-xl z-50 min-w-[160px]">
                     {JUDGING_GROUPS.map((group) => (
                       <button
                         key={group}
@@ -426,7 +426,7 @@ function JudgesPageContent() {
                         disabled={updatingGroup}
                         className={`w-full px-4 py-2 text-left text-sm hover:bg-white/10 transition-all ${
                           selectedJudge.judgingGroup === group
-                            ? "bg-[#00D4A8]/20 text-[#00D4A8]"
+                            ? "bg-[#4a9eed]/20 text-[#4a9eed]"
                             : "text-white/70"
                         }`}
                       >
@@ -461,7 +461,7 @@ function JudgesPageContent() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <FileText size={20} className="text-[#00D4A8]" />
+              <FileText size={20} className="text-[#4a9eed]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Total Submissions
               </span>
@@ -470,7 +470,7 @@ function JudgesPageContent() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <CheckCircle size={20} className="text-[#00D4A8]" />
+              <CheckCircle size={20} className="text-[#4a9eed]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Scored
               </span>
@@ -481,7 +481,7 @@ function JudgesPageContent() {
           </div>
           <div className="bg-white/[0.04] border border-white/10 p-6">
             <div className="flex items-center gap-3 mb-2">
-              <Circle size={20} className="text-[#00D4A8]" />
+              <Circle size={20} className="text-[#4a9eed]" />
               <span className="text-xs text-white/50 uppercase tracking-wider">
                 Remaining
               </span>
@@ -502,7 +502,7 @@ function JudgesPageContent() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by team number, team name, or project name..."
-              className="w-full pl-12 pr-10 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#00D4A8] outline-none transition-all"
+              className="w-full pl-12 pr-10 py-3 bg-white/[0.06] border border-white/15 text-white placeholder-white/30 text-sm focus:ring-1 focus:ring-[#4a9eed] outline-none transition-all"
             />
             {searchQuery && (
               <button
@@ -520,7 +520,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("all")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "all"
-                  ? "bg-[#00D4A8] text-black"
+                  ? "bg-[#4a9eed] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -530,7 +530,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("unscored")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "unscored"
-                  ? "bg-[#00D4A8] text-black"
+                  ? "bg-[#4a9eed] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -540,7 +540,7 @@ function JudgesPageContent() {
               onClick={() => setFilterStatus("scored")}
               className={`px-4 py-3 text-sm font-medium transition-all ${
                 filterStatus === "scored"
-                  ? "bg-[#00D4A8] text-black"
+                  ? "bg-[#4a9eed] text-black"
                   : "bg-white/[0.06] border border-white/15 text-white/70 hover:bg-white/10"
               }`}
             >
@@ -551,7 +551,7 @@ function JudgesPageContent() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
+            <Loader2 className="w-8 h-8 text-[#4a9eed] animate-spin" />
           </div>
         ) : (
           <>
@@ -578,23 +578,23 @@ function JudgesPageContent() {
                     href={`/judges/score/${sub.submission.id}?judgeId=${selectedJudge.id}&judgeName=${encodeURIComponent(selectedJudge.name)}`}
                     className={`block p-5 border transition-all hover:scale-[1.02] ${
                       sub.hasScored
-                        ? "bg-[#00D4A8]/10 border-[#00D4A8]/30 hover:border-[#00D4A8]"
+                        ? "bg-[#4a9eed]/10 border-[#4a9eed]/30 hover:border-[#4a9eed]"
                         : "bg-white/[0.04] border-white/10 hover:border-white/30"
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         {sub.hasScored ? (
-                          <CheckCircle size={18} className="text-[#00D4A8]" />
+                          <CheckCircle size={18} className="text-[#4a9eed]" />
                         ) : (
                           <Circle size={18} className="text-white/30" />
                         )}
-                        <span className="font-mono text-[#00D4A8] text-sm">
+                        <span className="font-mono text-[#4a9eed] text-sm">
                           #{sub.team.teamNumber}
                         </span>
                       </div>
                       {sub.hasScored && (
-                        <span className="text-xs text-[#00D4A8] bg-[#00D4A8]/20 px-2 py-1">
+                        <span className="text-xs text-[#4a9eed] bg-[#4a9eed]/20 px-2 py-1">
                           Scored
                         </span>
                       )}
@@ -612,7 +612,7 @@ function JudgesPageContent() {
                     {/* Tech badges */}
                     <div className="flex flex-wrap gap-1">
                       {sub.submission.sponsorTech.slice(0, 2).map((tech, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-[#00D4A8]/20 text-[10px] text-[#00D4A8]">
+                        <span key={i} className="px-2 py-0.5 bg-[#4a9eed]/20 text-[10px] text-[#4a9eed]">
                           {tech}
                         </span>
                       ))}
@@ -650,8 +650,8 @@ export default function JudgesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#0a1612] flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-[#00D4A8] animate-spin" />
+        <div className="min-h-screen bg-[#0a1628] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-[#4a9eed] animate-spin" />
         </div>
       }
     >
